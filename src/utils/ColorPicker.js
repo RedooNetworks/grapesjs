@@ -1093,12 +1093,20 @@ export default function($, undefined) {
 
     offset.top += inputHeight;
 
-    offset.left -= Math.min(
-      offset.left,
-      offset.left + dpWidth > viewWidth && viewWidth > dpWidth
-        ? Math.abs(offset.left + dpWidth - viewWidth)
-        : 0
-    );
+    var offsetParent = $(".gjs-editor").offsetParent();
+
+    var leftCorrection = 0;
+    var topCorrection = 0;
+
+    if(offsetParent.length > 0) {
+      var offsetCorrection = offsetParent.offset();
+      leftCorrection = offsetCorrection.left;
+      topCorrection = offsetCorrection.top;
+    }
+
+    offset.top -= topCorrection;
+    offset.left -= leftCorrection;
+    offset.left -= dpWidth;
 
     offset.top -= Math.min(
       offset.top,
