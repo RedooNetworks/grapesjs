@@ -90,6 +90,11 @@ export default Backbone.View.extend({
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(
+      model,
+      'change:name change:className change:full',
+      this.render
+    );
 
     const init = this.init && this.init.bind(this);
     init && init();
@@ -132,10 +137,10 @@ export default Backbone.View.extend({
   /**
    * Clear the property from the target
    */
-  clear(e) {
-    e && e.stopPropagation();
+  clear(ev) {
+    ev && ev.stopPropagation();
     this.model.clearValue();
-    // Skip one stack with setTimeout to avoid inconsistencies
+    // Skip one stack with setTimeout to avoid inconsistencies (eg. visible on padding composite clear)
     setTimeout(() => this.targetUpdated());
   },
 
@@ -200,7 +205,7 @@ export default Backbone.View.extend({
   setStatus(value) {
     this.model.set('status', value);
     const parent = this.model.parent;
-    parent && value && parent.set('status', value);
+    parent && value == 'updated' && parent.set('status', value);
   },
 
   emitUpdateTarget: debounce(function() {
@@ -211,7 +216,7 @@ export default Backbone.View.extend({
   /**
    * Fired when the target is changed
    * */
-  targetUpdated() {
+  targetUpdated(mod, val, opts = {}) {
     this.emitUpdateTarget();
 
     if (!this.checkVisibility()) {
@@ -249,13 +254,46 @@ export default Backbone.View.extend({
       status = '';
     }
 
-    model.setValue(value, 0, { fromTarget: 1 });
     this.setStatus(status);
+    model.setValue(value, 0, { fromTarget: 1, ...opts });
 
     if (em) {
-      em.trigger('styleManager:change', this, property, value);
-      em.trigger(`styleManager:change:${property}`, this, value);
+      const data = {
+        status,
+        targetValue,
+        defaultValue,
+        computedValue,
+        value
+      };
+      em.trigger('styleManager:change', this, property, value, data);
+      em.trigger(`styleManager:change:${property}`, this, value, data);
+      this._emitUpdate(data);
     }
+  },
+
+  _emitUpdate(addData = {}) {
+    const { em, model } = this;
+    if (!em) return;
+    const property = model.get('property');
+    const data = { ...this._getEventData(), ...addData };
+    const { id } = data;
+
+    em.trigger('style:update', data);
+    em.trigger(`style:update:${property}`, data);
+    property !== id && em.trigger(`style:update:${id}`, data);
+  },
+
+  _getEventData() {
+    const { model } = this;
+
+    return {
+      propertyView: this,
+      targets: this.getTargets(),
+      value: model.getFullValue(),
+      property: model,
+      id: model.get('id'),
+      name: model.get('property')
+    };
   },
 
   checkVisibility() {
@@ -287,10 +325,10 @@ export default Backbone.View.extend({
    * @private
    */
   getTargetValue(opts = {}) {
-    var result;
-    var model = this.model;
-    var target = this.getTargetModel();
-    var customFetchValue = this.customValue;
+    let result;
+    const { model } = this;
+    const target = this.getTargetModel();
+    const customFetchValue = this.customValue;
 
     if (!target) {
       return result;
@@ -304,7 +342,7 @@ export default Backbone.View.extend({
 
     if (typeof customFetchValue == 'function' && !opts.ignoreCustomValue) {
       let index = model.collection.indexOf(model);
-      let customValue = customFetchValue(this, index);
+      let customValue = customFetchValue(this, index, result);
 
       if (customValue) {
         result = customValue;
@@ -328,7 +366,7 @@ export default Backbone.View.extend({
     const notToSkip = avoid.indexOf(property) < 0;
     const value = computed[property];
     const valueDef = computedDef[camelCase(property)];
-    return computed && notToSkip && valueDef !== value && value;
+    return (computed && notToSkip && valueDef !== value && value) || '';
   },
 
   /**
@@ -390,10 +428,12 @@ export default Backbone.View.extend({
     const component = em && em.getSelected();
 
     if (em && component) {
-      em.trigger('component:update', component);
+      !opt.noEmit && em.trigger('component:update', component);
       em.trigger('component:styleUpdate', component, prop);
       em.trigger(`component:styleUpdate:${prop}`, component);
     }
+
+    this._emitUpdate();
   },
 
   /**
@@ -569,11 +609,12 @@ export default Backbone.View.extend({
     const el = this.el;
     const property = model.get('property');
     const full = model.get('full');
+    const cls = model.get('className') || '';
     const className = `${pfx}property`;
     el.innerHTML = this.template(model);
     el.className = `${className} ${pfx}${model.get(
       'type'
-    )} ${className}__${property}`;
+    )} ${className}__${property} ${cls}`.trim();
     el.className += full ? ` ${className}--full` : '';
     this.updateStatus();
 

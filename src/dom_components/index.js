@@ -59,6 +59,7 @@ import ComponentImageView from './view/ComponentImageView';
 import ComponentScript from './model/ComponentScript';
 import ComponentScriptView from './view/ComponentScriptView';
 import ComponentSvg from './model/ComponentSvg';
+import ComponentSvgIn from './model/ComponentSvgIn';
 import ComponentSvgView from './view/ComponentSvgView';
 import ComponentComment from './model/ComponentComment';
 import ComponentCommentView from './view/ComponentCommentView';
@@ -134,6 +135,11 @@ export default () => {
       id: 'script',
       model: ComponentScript,
       view: ComponentScriptView
+    },
+    {
+      id: 'svg-in',
+      model: ComponentSvgIn,
+      view: ComponentSvgView
     },
     {
       id: 'svg',
@@ -338,12 +344,13 @@ export default () => {
         const handleChanges = this.handleChanges.bind(this);
         const handleRemoves = this.handleRemoves.bind(this);
         um.add(coll);
-        [[coll, 'add', handleChanges], [coll, 'remove', handleRemoves]].forEach(
-          els => {
-            em.stopListening(els[0], els[1], els[2]);
-            em.listenTo(els[0], els[1], els[2]);
-          }
-        );
+        [
+          [coll, 'add', handleChanges],
+          [coll, 'remove', handleRemoves]
+        ].forEach(els => {
+          em.stopListening(els[0], els[1], els[2]);
+          em.listenTo(els[0], els[1], els[2]);
+        });
       }
     },
 

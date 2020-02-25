@@ -2,6 +2,7 @@ import { isUndefined, isString } from 'underscore';
 import { getModel } from 'utils/mixins';
 import Backbone from 'backbone';
 import ComponentView from 'dom_components/view/ComponentView';
+import { eventDrag } from 'dom_components/model/Component';
 
 const inputProp = 'contentEditable';
 const $ = Backbone.$;
@@ -160,7 +161,7 @@ export default Backbone.View.extend({
     const name = inputEl.textContent;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
-    this.model.set({ name });
+    this.model.set({ 'custom-name': name });
     em && em.setEditing(0);
     $el
       .find(`.${this.inputNameCls}`)
@@ -225,7 +226,7 @@ export default Backbone.View.extend({
       const model = this.model;
       em.setSelected(model, { fromLayers: 1 });
       const scroll = config.scrollCanvas;
-      scroll && em.get('Canvas').scrollTo(model, scroll);
+      scroll && model.views.forEach(view => view.scrollIntoView(scroll));
     }
   },
 
@@ -244,10 +245,15 @@ export default Backbone.View.extend({
    * */
   startSort(e) {
     e.stopPropagation();
-    const sorter = this.sorter;
+    const { em, sorter } = this;
     // Right or middel click
     if (e.button && e.button !== 0) return;
-    sorter && sorter.startSort(e.target);
+
+    if (sorter) {
+      sorter.onStart = data => em.trigger(`${eventDrag}:start`, data);
+      sorter.onMoveClb = data => em.trigger(eventDrag, data);
+      sorter.startSort(e.target);
+    }
   },
 
   /**

@@ -395,16 +395,16 @@ module.exports = _toConsumableArray;
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-function _typeof(obj) {
-  "@babel/helpers - typeof";
+function _typeof2(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
 
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+function _typeof(obj) {
+  if (typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol") {
     module.exports = _typeof = function _typeof(obj) {
-      return typeof obj;
+      return _typeof2(obj);
     };
   } else {
     module.exports = _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj);
     };
   }
 
@@ -4820,8 +4820,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     } else if (emitter.attachEvent) {
       emitter.attachEvent("on" + type, f);
     } else {
-      var map = emitter._handlers || (emitter._handlers = {});
-      map[type] = (map[type] || noHandlers).concat(f);
+      var map$$1 = emitter._handlers || (emitter._handlers = {});
+      map$$1[type] = (map$$1[type] || noHandlers).concat(f);
     }
   };
 
@@ -4835,11 +4835,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     } else if (emitter.detachEvent) {
       emitter.detachEvent("on" + type, f);
     } else {
-      var map = emitter._handlers, arr = map && map[type];
+      var map$$1 = emitter._handlers, arr = map$$1 && map$$1[type];
       if (arr) {
         var index = indexOf(arr, f);
         if (index > -1)
-          { map[type] = arr.slice(0, index).concat(arr.slice(index + 1)); }
+          { map$$1[type] = arr.slice(0, index).concat(arr.slice(index + 1)); }
       }
     }
   }
@@ -4967,11 +4967,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     try { return te.selectionStart != te.selectionEnd }
     catch(e) { return false }
   } : function (te) {
-    var range;
-    try {range = te.ownerDocument.selection.createRange();}
+    var range$$1;
+    try {range$$1 = te.ownerDocument.selection.createRange();}
     catch(e) {}
-    if (!range || range.parentElement() != te) { return false }
-    return range.compareEndPoints("StartToEnd", range) != 0
+    if (!range$$1 || range$$1.parentElement() != te) { return false }
+    return range$$1.compareEndPoints("StartToEnd", range$$1) != 0
   };
 
   var hasCopyEvent = (function () {
@@ -5119,8 +5119,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     return this.pos > start
   };
   StringStream.prototype.eatSpace = function () {
+      var this$1 = this;
+
     var start = this.pos;
-    while (/[\s\u00a0]/.test(this.string.charAt(this.pos))) { ++this.pos; }
+    while (/[\s\u00a0]/.test(this.string.charAt(this.pos))) { ++this$1.pos; }
     return this.pos > start
   };
   StringStream.prototype.skipToEnd = function () {this.pos = this.string.length;};
@@ -5316,9 +5318,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   };
 
   Context.prototype.baseToken = function (n) {
+      var this$1 = this;
+
     if (!this.baseTokens) { return null }
     while (this.baseTokens[this.baseTokenPos] <= n)
-      { this.baseTokenPos += 2; }
+      { this$1.baseTokenPos += 2; }
     var type = this.baseTokens[this.baseTokenPos + 1];
     return {type: type && type.replace(/( |^)overlay .*/, ""),
             size: this.baseTokens[this.baseTokenPos] - n}
@@ -5807,8 +5811,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   // Test whether there exists a collapsed span that partially
   // overlaps (covers the start or end, but not both) of a new span.
   // Such overlap is not allowed.
-  function conflictingCollapsedRange(doc, lineNo, from, to, marker) {
-    var line = getLine(doc, lineNo);
+  function conflictingCollapsedRange(doc, lineNo$$1, from, to, marker) {
+    var line = getLine(doc, lineNo$$1);
     var sps = sawCollapsedSpans && line.markedSpans;
     if (sps) { for (var i = 0; i < sps.length; ++i) {
       var sp = sps[i];
@@ -6489,10 +6493,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   function updateLineWidgets(cm, lineView, dims) {
     if (lineView.alignable) { lineView.alignable = null; }
-    var isWidget = classTest("CodeMirror-linewidget");
     for (var node = lineView.node.firstChild, next = (void 0); node; node = next) {
       next = node.nextSibling;
-      if (isWidget.test(node.className)) { lineView.node.removeChild(node); }
+      if (node.className == "CodeMirror-linewidget")
+        { lineView.node.removeChild(node); }
     }
     insertLineWidgets(cm, lineView, dims);
   }
@@ -6522,7 +6526,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     if (!line.widgets) { return }
     var wrap = ensureLineWrapped(lineView);
     for (var i = 0, ws = line.widgets; i < ws.length; ++i) {
-      var widget = ws[i], node = elt("div", [widget.node], "CodeMirror-linewidget" + (widget.className ? " " + widget.className : ""));
+      var widget = ws[i], node = elt("div", [widget.node], "CodeMirror-linewidget");
       if (!widget.handleMouseEvents) { node.setAttribute("cm-ignore-events", "true"); }
       positionLineWidget(widget, node, lineView, dims);
       cm.display.input.setUneditable(node);
@@ -6710,36 +6714,36 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   var nullRect = {left: 0, right: 0, top: 0, bottom: 0};
 
-  function nodeAndOffsetInLineMap(map, ch, bias) {
+  function nodeAndOffsetInLineMap(map$$1, ch, bias) {
     var node, start, end, collapse, mStart, mEnd;
     // First, search the line map for the text node corresponding to,
     // or closest to, the target character.
-    for (var i = 0; i < map.length; i += 3) {
-      mStart = map[i];
-      mEnd = map[i + 1];
+    for (var i = 0; i < map$$1.length; i += 3) {
+      mStart = map$$1[i];
+      mEnd = map$$1[i + 1];
       if (ch < mStart) {
         start = 0; end = 1;
         collapse = "left";
       } else if (ch < mEnd) {
         start = ch - mStart;
         end = start + 1;
-      } else if (i == map.length - 3 || ch == mEnd && map[i + 3] > ch) {
+      } else if (i == map$$1.length - 3 || ch == mEnd && map$$1[i + 3] > ch) {
         end = mEnd - mStart;
         start = end - 1;
         if (ch >= mEnd) { collapse = "right"; }
       }
       if (start != null) {
-        node = map[i + 2];
+        node = map$$1[i + 2];
         if (mStart == mEnd && bias == (node.insertLeft ? "left" : "right"))
           { collapse = bias; }
         if (bias == "left" && start == 0)
-          { while (i && map[i - 2] == map[i - 3] && map[i - 1].insertLeft) {
-            node = map[(i -= 3) + 2];
+          { while (i && map$$1[i - 2] == map$$1[i - 3] && map$$1[i - 1].insertLeft) {
+            node = map$$1[(i -= 3) + 2];
             collapse = "left";
           } }
         if (bias == "right" && start == mEnd - mStart)
-          { while (i < map.length - 3 && map[i + 3] == map[i + 4] && !map[i + 5].insertLeft) {
-            node = map[(i += 3) + 2];
+          { while (i < map$$1.length - 3 && map$$1[i + 3] == map$$1[i + 4] && !map$$1[i + 5].insertLeft) {
+            node = map$$1[(i += 3) + 2];
             collapse = "right";
           } }
         break
@@ -7022,13 +7026,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     return box.bottom <= y ? false : box.top > y ? true : (left ? box.left : box.right) > x
   }
 
-  function coordsCharInner(cm, lineObj, lineNo, x, y) {
+  function coordsCharInner(cm, lineObj, lineNo$$1, x, y) {
     // Move y into line-local coordinate space
     y -= heightAtLine(lineObj);
     var preparedMeasure = prepareMeasureForLine(cm, lineObj);
     // When directly calling `measureCharPrepared`, we have to adjust
     // for the widgets at this line.
-    var widgetHeight = widgetTopHeight(lineObj);
+    var widgetHeight$$1 = widgetTopHeight(lineObj);
     var begin = 0, end = lineObj.text.length, ltr = true;
 
     var order = getOrder(lineObj, cm.doc.direction);
@@ -7036,7 +7040,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     // which bidi section the coordinates fall into.
     if (order) {
       var part = (cm.options.lineWrapping ? coordsBidiPartWrapped : coordsBidiPart)
-                   (cm, lineObj, lineNo, preparedMeasure, order, x, y);
+                   (cm, lineObj, lineNo$$1, preparedMeasure, order, x, y);
       ltr = part.level != 1;
       // The awkward -1 offsets are needed because findFirst (called
       // on these below) will treat its first bound as inclusive,
@@ -7052,7 +7056,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     var chAround = null, boxAround = null;
     var ch = findFirst(function (ch) {
       var box = measureCharPrepared(cm, preparedMeasure, ch);
-      box.top += widgetHeight; box.bottom += widgetHeight;
+      box.top += widgetHeight$$1; box.bottom += widgetHeight$$1;
       if (!boxIsAfter(box, x, y, false)) { return false }
       if (box.top <= y && box.left <= x) {
         chAround = ch;
@@ -7076,27 +7080,27 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       // left of the character and compare it's vertical position to the
       // coordinates
       sticky = ch == 0 ? "after" : ch == lineObj.text.length ? "before" :
-        (measureCharPrepared(cm, preparedMeasure, ch - (ltr ? 1 : 0)).bottom + widgetHeight <= y) == ltr ?
+        (measureCharPrepared(cm, preparedMeasure, ch - (ltr ? 1 : 0)).bottom + widgetHeight$$1 <= y) == ltr ?
         "after" : "before";
       // Now get accurate coordinates for this place, in order to get a
       // base X position
-      var coords = cursorCoords(cm, Pos(lineNo, ch, sticky), "line", lineObj, preparedMeasure);
+      var coords = cursorCoords(cm, Pos(lineNo$$1, ch, sticky), "line", lineObj, preparedMeasure);
       baseX = coords.left;
       outside = y < coords.top ? -1 : y >= coords.bottom ? 1 : 0;
     }
 
     ch = skipExtendingChars(lineObj.text, ch, 1);
-    return PosWithInfo(lineNo, ch, sticky, outside, x - baseX)
+    return PosWithInfo(lineNo$$1, ch, sticky, outside, x - baseX)
   }
 
-  function coordsBidiPart(cm, lineObj, lineNo, preparedMeasure, order, x, y) {
+  function coordsBidiPart(cm, lineObj, lineNo$$1, preparedMeasure, order, x, y) {
     // Bidi parts are sorted left-to-right, and in a non-line-wrapping
     // situation, we can take this ordering to correspond to the visual
     // ordering. This finds the first part whose end is after the given
     // coordinates.
     var index = findFirst(function (i) {
       var part = order[i], ltr = part.level != 1;
-      return boxIsAfter(cursorCoords(cm, Pos(lineNo, ltr ? part.to : part.from, ltr ? "before" : "after"),
+      return boxIsAfter(cursorCoords(cm, Pos(lineNo$$1, ltr ? part.to : part.from, ltr ? "before" : "after"),
                                      "line", lineObj, preparedMeasure), x, y, true)
     }, 0, order.length - 1);
     var part = order[index];
@@ -7105,7 +7109,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     // that start, move one part back.
     if (index > 0) {
       var ltr = part.level != 1;
-      var start = cursorCoords(cm, Pos(lineNo, ltr ? part.from : part.to, ltr ? "after" : "before"),
+      var start = cursorCoords(cm, Pos(lineNo$$1, ltr ? part.from : part.to, ltr ? "after" : "before"),
                                "line", lineObj, preparedMeasure);
       if (boxIsAfter(start, x, y, true) && start.top > y)
         { part = order[index - 1]; }
@@ -7245,7 +7249,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     try { x = e.clientX - space.left; y = e.clientY - space.top; }
     catch (e) { return null }
     var coords = coordsChar(cm, x, y), line;
-    if (forRect && coords.xRel > 0 && (line = getLine(cm.doc, coords.line).text).length == coords.ch) {
+    if (forRect && coords.xRel == 1 && (line = getLine(cm.doc, coords.line).text).length == coords.ch) {
       var colDiff = countColumn(line, line.length, cm.options.tabSize) - line.length;
       coords = Pos(coords.line, Math.max(0, Math.round((x - paddingH(cm.display).left) / charWidth(cm.display)) - colDiff));
     }
@@ -7426,13 +7430,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
     for (var i = 0; i < doc.sel.ranges.length; i++) {
       if (!primary && i == doc.sel.primIndex) { continue }
-      var range = doc.sel.ranges[i];
-      if (range.from().line >= cm.display.viewTo || range.to().line < cm.display.viewFrom) { continue }
-      var collapsed = range.empty();
+      var range$$1 = doc.sel.ranges[i];
+      if (range$$1.from().line >= cm.display.viewTo || range$$1.to().line < cm.display.viewFrom) { continue }
+      var collapsed = range$$1.empty();
       if (collapsed || cm.options.showCursorWhenSelecting)
-        { drawSelectionCursor(cm, range.head, curFragment); }
+        { drawSelectionCursor(cm, range$$1.head, curFragment); }
       if (!collapsed)
-        { drawSelectionRange(cm, range, selFragment); }
+        { drawSelectionRange(cm, range$$1, selFragment); }
     }
     return result
   }
@@ -7459,7 +7463,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   function cmpCoords(a, b) { return a.top - b.top || a.left - b.left }
 
   // Draws the given range as a highlighted selection
-  function drawSelectionRange(cm, range, output) {
+  function drawSelectionRange(cm, range$$1, output) {
     var display = cm.display, doc = cm.doc;
     var fragment = document.createDocumentFragment();
     var padding = paddingH(cm.display), leftSide = padding.left;
@@ -7528,7 +7532,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       return {start: start, end: end}
     }
 
-    var sFrom = range.from(), sTo = range.to();
+    var sFrom = range$$1.from(), sTo = range$$1.to();
     if (sFrom.line == sTo.line) {
       drawForLine(sFrom.line, sFrom.ch, sTo.ch);
     } else {
@@ -7795,9 +7799,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     if (y != null) { cm.curOp.scrollTop = y; }
   }
 
-  function scrollToRange(cm, range) {
+  function scrollToRange(cm, range$$1) {
     resolveScrollToPos(cm);
-    cm.curOp.scrollToPos = range;
+    cm.curOp.scrollToPos = range$$1;
   }
 
   // When an operation has its scrollToPos property set, and another
@@ -7805,11 +7809,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   // 'simulates' scrolling that position into view in a cheap way, so
   // that the effect of intermediate scroll commands is not ignored.
   function resolveScrollToPos(cm) {
-    var range = cm.curOp.scrollToPos;
-    if (range) {
+    var range$$1 = cm.curOp.scrollToPos;
+    if (range$$1) {
       cm.curOp.scrollToPos = null;
-      var from = estimateCoords(cm, range.from), to = estimateCoords(cm, range.to);
-      scrollToCoordsRange(cm, from, to, range.margin);
+      var from = estimateCoords(cm, range$$1.from), to = estimateCoords(cm, range$$1.to);
+      scrollToCoordsRange(cm, from, to, range$$1.margin);
     }
   }
 
@@ -7956,9 +7960,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       // (when the bar is hidden). If it is still visible, we keep
       // it enabled, if it's hidden, we disable pointer events.
       var box = bar.getBoundingClientRect();
-      var elt = type == "vert" ? document.elementFromPoint(box.right - 1, (box.top + box.bottom) / 2)
+      var elt$$1 = type == "vert" ? document.elementFromPoint(box.right - 1, (box.top + box.bottom) / 2)
           : document.elementFromPoint((box.right + box.left) / 2, box.bottom - 1);
-      if (elt != bar) { bar.style.pointerEvents = "none"; }
+      if (elt$$1 != bar) { bar.style.pointerEvents = "none"; }
       else { delay.set(1000, maybeDisable); }
     }
     delay.set(1000, maybeDisable);
@@ -8298,8 +8302,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       { this.events.push(arguments); }
   };
   DisplayUpdate.prototype.finish = function () {
+      var this$1 = this;
+
     for (var i = 0; i < this.events.length; i++)
-      { signal.apply(null, this.events[i]); }
+      { signal.apply(null, this$1.events[i]); }
   };
 
   function maybeClipScrollbars(cm) {
@@ -8334,11 +8340,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     if (!snapshot || !snapshot.activeElt || snapshot.activeElt == activeElt()) { return }
     snapshot.activeElt.focus();
     if (snapshot.anchorNode && contains(document.body, snapshot.anchorNode) && contains(document.body, snapshot.focusNode)) {
-      var sel = window.getSelection(), range = document.createRange();
-      range.setEnd(snapshot.anchorNode, snapshot.anchorOffset);
-      range.collapse(false);
+      var sel = window.getSelection(), range$$1 = document.createRange();
+      range$$1.setEnd(snapshot.anchorNode, snapshot.anchorOffset);
+      range$$1.collapse(false);
       sel.removeAllRanges();
-      sel.addRange(range);
+      sel.addRange(range$$1);
       sel.extend(snapshot.focusNode, snapshot.focusOffset);
     }
   }
@@ -8831,32 +8837,40 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   Selection.prototype.primary = function () { return this.ranges[this.primIndex] };
 
   Selection.prototype.equals = function (other) {
+      var this$1 = this;
+
     if (other == this) { return true }
     if (other.primIndex != this.primIndex || other.ranges.length != this.ranges.length) { return false }
     for (var i = 0; i < this.ranges.length; i++) {
-      var here = this.ranges[i], there = other.ranges[i];
+      var here = this$1.ranges[i], there = other.ranges[i];
       if (!equalCursorPos(here.anchor, there.anchor) || !equalCursorPos(here.head, there.head)) { return false }
     }
     return true
   };
 
   Selection.prototype.deepCopy = function () {
+      var this$1 = this;
+
     var out = [];
     for (var i = 0; i < this.ranges.length; i++)
-      { out[i] = new Range(copyPos(this.ranges[i].anchor), copyPos(this.ranges[i].head)); }
+      { out[i] = new Range(copyPos(this$1.ranges[i].anchor), copyPos(this$1.ranges[i].head)); }
     return new Selection(out, this.primIndex)
   };
 
   Selection.prototype.somethingSelected = function () {
+      var this$1 = this;
+
     for (var i = 0; i < this.ranges.length; i++)
-      { if (!this.ranges[i].empty()) { return true } }
+      { if (!this$1.ranges[i].empty()) { return true } }
     return false
   };
 
   Selection.prototype.contains = function (pos, end) {
+      var this$1 = this;
+
     if (!end) { end = pos; }
     for (var i = 0; i < this.ranges.length; i++) {
-      var range = this.ranges[i];
+      var range = this$1.ranges[i];
       if (cmp(end, range.from()) >= 0 && cmp(pos, range.to()) <= 0)
         { return i }
     }
@@ -8982,16 +8996,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   }
 
   // Perform a change on the document data structure.
-  function updateDoc(doc, change, markedSpans, estimateHeight) {
+  function updateDoc(doc, change, markedSpans, estimateHeight$$1) {
     function spansFor(n) {return markedSpans ? markedSpans[n] : null}
     function update(line, text, spans) {
-      updateLine(line, text, spans, estimateHeight);
+      updateLine(line, text, spans, estimateHeight$$1);
       signalLater(line, "change", line, change);
     }
     function linesFor(start, end) {
       var result = [];
       for (var i = start; i < end; ++i)
-        { result.push(new Line(text[i], spansFor(i), estimateHeight)); }
+        { result.push(new Line(text[i], spansFor(i), estimateHeight$$1)); }
       return result
     }
 
@@ -9015,7 +9029,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
         update(firstLine, firstLine.text.slice(0, from.ch) + lastText + firstLine.text.slice(to.ch), lastSpans);
       } else {
         var added$1 = linesFor(1, text.length - 1);
-        added$1.push(new Line(lastText + firstLine.text.slice(to.ch), lastSpans, estimateHeight));
+        added$1.push(new Line(lastText + firstLine.text.slice(to.ch), lastSpans, estimateHeight$$1));
         update(firstLine, firstLine.text.slice(0, from.ch) + text[0], spansFor(0));
         doc.insert(from.line + 1, added$1);
       }
@@ -9352,9 +9366,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     var obj = {
       ranges: sel.ranges,
       update: function(ranges) {
+        var this$1 = this;
+
         this.ranges = [];
         for (var i = 0; i < ranges.length; i++)
-          { this.ranges[i] = new Range(clipPos(doc, ranges[i].anchor),
+          { this$1.ranges[i] = new Range(clipPos(doc, ranges[i].anchor),
                                      clipPos(doc, ranges[i].head)); }
       },
       origin: options && options.origin
@@ -9841,11 +9857,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   // See also http://marijnhaverbeke.nl/blog/codemirror-line-tree.html
 
   function LeafChunk(lines) {
+    var this$1 = this;
+
     this.lines = lines;
     this.parent = null;
     var height = 0;
     for (var i = 0; i < lines.length; ++i) {
-      lines[i].parent = this;
+      lines[i].parent = this$1;
       height += lines[i].height;
     }
     this.height = height;
@@ -9856,9 +9874,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
     // Remove the n lines at offset 'at'.
     removeInner: function(at, n) {
+      var this$1 = this;
+
       for (var i = at, e = at + n; i < e; ++i) {
-        var line = this.lines[i];
-        this.height -= line.height;
+        var line = this$1.lines[i];
+        this$1.height -= line.height;
         cleanUpLine(line);
         signalLater(line, "delete");
       }
@@ -9873,25 +9893,31 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     // Insert the given array of lines at offset 'at', count them as
     // having the given height.
     insertInner: function(at, lines, height) {
+      var this$1 = this;
+
       this.height += height;
       this.lines = this.lines.slice(0, at).concat(lines).concat(this.lines.slice(at));
-      for (var i = 0; i < lines.length; ++i) { lines[i].parent = this; }
+      for (var i = 0; i < lines.length; ++i) { lines[i].parent = this$1; }
     },
 
     // Used to iterate over a part of the tree.
     iterN: function(at, n, op) {
+      var this$1 = this;
+
       for (var e = at + n; at < e; ++at)
-        { if (op(this.lines[at])) { return true } }
+        { if (op(this$1.lines[at])) { return true } }
     }
   };
 
   function BranchChunk(children) {
+    var this$1 = this;
+
     this.children = children;
     var size = 0, height = 0;
     for (var i = 0; i < children.length; ++i) {
       var ch = children[i];
       size += ch.chunkSize(); height += ch.height;
-      ch.parent = this;
+      ch.parent = this$1;
     }
     this.size = size;
     this.height = height;
@@ -9902,14 +9928,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     chunkSize: function() { return this.size },
 
     removeInner: function(at, n) {
+      var this$1 = this;
+
       this.size -= n;
       for (var i = 0; i < this.children.length; ++i) {
-        var child = this.children[i], sz = child.chunkSize();
+        var child = this$1.children[i], sz = child.chunkSize();
         if (at < sz) {
           var rm = Math.min(n, sz - at), oldHeight = child.height;
           child.removeInner(at, rm);
-          this.height -= oldHeight - child.height;
-          if (sz == rm) { this.children.splice(i--, 1); child.parent = null; }
+          this$1.height -= oldHeight - child.height;
+          if (sz == rm) { this$1.children.splice(i--, 1); child.parent = null; }
           if ((n -= rm) == 0) { break }
           at = 0;
         } else { at -= sz; }
@@ -9926,14 +9954,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     },
 
     collapse: function(lines) {
-      for (var i = 0; i < this.children.length; ++i) { this.children[i].collapse(lines); }
+      var this$1 = this;
+
+      for (var i = 0; i < this.children.length; ++i) { this$1.children[i].collapse(lines); }
     },
 
     insertInner: function(at, lines, height) {
+      var this$1 = this;
+
       this.size += lines.length;
       this.height += height;
       for (var i = 0; i < this.children.length; ++i) {
-        var child = this.children[i], sz = child.chunkSize();
+        var child = this$1.children[i], sz = child.chunkSize();
         if (at <= sz) {
           child.insertInner(at, lines, height);
           if (child.lines && child.lines.length > 50) {
@@ -9943,11 +9975,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
             for (var pos = remaining; pos < child.lines.length;) {
               var leaf = new LeafChunk(child.lines.slice(pos, pos += 25));
               child.height -= leaf.height;
-              this.children.splice(++i, 0, leaf);
-              leaf.parent = this;
+              this$1.children.splice(++i, 0, leaf);
+              leaf.parent = this$1;
             }
             child.lines = child.lines.slice(0, remaining);
-            this.maybeSpill();
+            this$1.maybeSpill();
           }
           break
         }
@@ -9979,8 +10011,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     },
 
     iterN: function(at, n, op) {
+      var this$1 = this;
+
       for (var i = 0; i < this.children.length; ++i) {
-        var child = this.children[i], sz = child.chunkSize();
+        var child = this$1.children[i], sz = child.chunkSize();
         if (at < sz) {
           var used = Math.min(n, sz - at);
           if (child.iterN(at, used, op)) { return true }
@@ -9994,16 +10028,20 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   // Line widgets are block elements displayed above or below a line.
 
   var LineWidget = function(doc, node, options) {
+    var this$1 = this;
+
     if (options) { for (var opt in options) { if (options.hasOwnProperty(opt))
-      { this[opt] = options[opt]; } } }
+      { this$1[opt] = options[opt]; } } }
     this.doc = doc;
     this.node = node;
   };
 
   LineWidget.prototype.clear = function () {
+      var this$1 = this;
+
     var cm = this.doc.cm, ws = this.line.widgets, line = this.line, no = lineNo(line);
     if (no == null || !ws) { return }
-    for (var i = 0; i < ws.length; ++i) { if (ws[i] == this) { ws.splice(i--, 1); } }
+    for (var i = 0; i < ws.length; ++i) { if (ws[i] == this$1) { ws.splice(i--, 1); } }
     if (!ws.length) { line.widgets = null; }
     var height = widgetHeight(this);
     updateLineHeight(line, Math.max(0, line.height - height));
@@ -10086,6 +10124,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   // Clear the marker.
   TextMarker.prototype.clear = function () {
+      var this$1 = this;
+
     if (this.explicitlyCleared) { return }
     var cm = this.doc.cm, withOp = cm && !cm.curOp;
     if (withOp) { startOperation(cm); }
@@ -10095,19 +10135,19 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     }
     var min = null, max = null;
     for (var i = 0; i < this.lines.length; ++i) {
-      var line = this.lines[i];
-      var span = getMarkedSpanFor(line.markedSpans, this);
-      if (cm && !this.collapsed) { regLineChange(cm, lineNo(line), "text"); }
+      var line = this$1.lines[i];
+      var span = getMarkedSpanFor(line.markedSpans, this$1);
+      if (cm && !this$1.collapsed) { regLineChange(cm, lineNo(line), "text"); }
       else if (cm) {
         if (span.to != null) { max = lineNo(line); }
         if (span.from != null) { min = lineNo(line); }
       }
       line.markedSpans = removeMarkedSpan(line.markedSpans, span);
-      if (span.from == null && this.collapsed && !lineIsHidden(this.doc, line) && cm)
+      if (span.from == null && this$1.collapsed && !lineIsHidden(this$1.doc, line) && cm)
         { updateLineHeight(line, textHeight(cm.display)); }
     }
     if (cm && this.collapsed && !cm.options.lineWrapping) { for (var i$1 = 0; i$1 < this.lines.length; ++i$1) {
-      var visual = visualLine(this.lines[i$1]), len = lineLength(visual);
+      var visual = visualLine(this$1.lines[i$1]), len = lineLength(visual);
       if (len > cm.display.maxLineLength) {
         cm.display.maxLine = visual;
         cm.display.maxLineLength = len;
@@ -10133,11 +10173,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   // Pos objects returned contain a line object, rather than a line
   // number (used to prevent looking up the same line twice).
   TextMarker.prototype.find = function (side, lineObj) {
+      var this$1 = this;
+
     if (side == null && this.type == "bookmark") { side = 1; }
     var from, to;
     for (var i = 0; i < this.lines.length; ++i) {
-      var line = this.lines[i];
-      var span = getMarkedSpanFor(line.markedSpans, this);
+      var line = this$1.lines[i];
+      var span = getMarkedSpanFor(line.markedSpans, this$1);
       if (span.from != null) {
         from = Pos(lineObj ? line : lineNo(line), span.from);
         if (side == -1) { return from }
@@ -10271,17 +10313,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
   // implemented as a meta-marker-object controlling multiple normal
   // markers.
   var SharedTextMarker = function(markers, primary) {
+    var this$1 = this;
+
     this.markers = markers;
     this.primary = primary;
     for (var i = 0; i < markers.length; ++i)
-      { markers[i].parent = this; }
+      { markers[i].parent = this$1; }
   };
 
   SharedTextMarker.prototype.clear = function () {
+      var this$1 = this;
+
     if (this.explicitlyCleared) { return }
     this.explicitlyCleared = true;
     for (var i = 0; i < this.markers.length; ++i)
-      { this.markers[i].clear(); }
+      { this$1.markers[i].clear(); }
     signalLater(this, "clear");
   };
 
@@ -10424,11 +10470,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     clipPos: function(pos) {return clipPos(this, pos)},
 
     getCursor: function(start) {
-      var range = this.sel.primary(), pos;
-      if (start == null || start == "head") { pos = range.head; }
-      else if (start == "anchor") { pos = range.anchor; }
-      else if (start == "end" || start == "to" || start === false) { pos = range.to(); }
-      else { pos = range.from(); }
+      var range$$1 = this.sel.primary(), pos;
+      if (start == null || start == "head") { pos = range$$1.head; }
+      else if (start == "anchor") { pos = range$$1.anchor; }
+      else if (start == "end" || start == "to" || start === false) { pos = range$$1.to(); }
+      else { pos = range$$1.from(); }
       return pos
     },
     listSelections: function() { return this.sel.ranges },
@@ -10451,11 +10497,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       extendSelections(this, clipPosArray(this, heads), options);
     }),
     setSelections: docMethodOp(function(ranges, primary, options) {
+      var this$1 = this;
+
       if (!ranges.length) { return }
       var out = [];
       for (var i = 0; i < ranges.length; i++)
-        { out[i] = new Range(clipPos(this, ranges[i].anchor),
-                           clipPos(this, ranges[i].head)); }
+        { out[i] = new Range(clipPos(this$1, ranges[i].anchor),
+                           clipPos(this$1, ranges[i].head)); }
       if (primary == null) { primary = Math.min(ranges.length - 1, this.sel.primIndex); }
       setSelection(this, normalizeSelection(this.cm, out, primary), options);
     }),
@@ -10466,19 +10514,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     }),
 
     getSelection: function(lineSep) {
+      var this$1 = this;
+
       var ranges = this.sel.ranges, lines;
       for (var i = 0; i < ranges.length; i++) {
-        var sel = getBetween(this, ranges[i].from(), ranges[i].to());
+        var sel = getBetween(this$1, ranges[i].from(), ranges[i].to());
         lines = lines ? lines.concat(sel) : sel;
       }
       if (lineSep === false) { return lines }
       else { return lines.join(lineSep || this.lineSeparator()) }
     },
     getSelections: function(lineSep) {
+      var this$1 = this;
+
       var parts = [], ranges = this.sel.ranges;
       for (var i = 0; i < ranges.length; i++) {
-        var sel = getBetween(this, ranges[i].from(), ranges[i].to());
-        if (lineSep !== false) { sel = sel.join(lineSep || this.lineSeparator()); }
+        var sel = getBetween(this$1, ranges[i].from(), ranges[i].to());
+        if (lineSep !== false) { sel = sel.join(lineSep || this$1.lineSeparator()); }
         parts[i] = sel;
       }
       return parts
@@ -10490,14 +10542,16 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       this.replaceSelections(dup, collapse, origin || "+input");
     },
     replaceSelections: docMethodOp(function(code, collapse, origin) {
+      var this$1 = this;
+
       var changes = [], sel = this.sel;
       for (var i = 0; i < sel.ranges.length; i++) {
-        var range = sel.ranges[i];
-        changes[i] = {from: range.from(), to: range.to(), text: this.splitLines(code[i]), origin: origin};
+        var range$$1 = sel.ranges[i];
+        changes[i] = {from: range$$1.from(), to: range$$1.to(), text: this$1.splitLines(code[i]), origin: origin};
       }
       var newSel = collapse && collapse != "end" && computeReplacedSel(this, changes, collapse);
       for (var i$1 = changes.length - 1; i$1 >= 0; i$1--)
-        { makeChange(this, changes[i$1]); }
+        { makeChange(this$1, changes[i$1]); }
       if (newSel) { setSelectionReplaceHistory(this, newSel); }
       else if (this.cm) { ensureCursorVisible(this.cm); }
     }),
@@ -10515,12 +10569,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       for (var i$1 = 0; i$1 < hist.undone.length; i$1++) { if (!hist.undone[i$1].ranges) { ++undone; } }
       return {undo: done, redo: undone}
     },
-    clearHistory: function() {
-      var this$1 = this;
-
-      this.history = new History(this.history.maxGeneration);
-      linkedDocs(this, function (doc) { return doc.history = this$1.history; }, true);
-    },
+    clearHistory: function() {this.history = new History(this.history.maxGeneration);},
 
     markClean: function() {
       this.cleanGeneration = this.changeGeneration(true);
@@ -10641,18 +10690,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     },
     findMarks: function(from, to, filter) {
       from = clipPos(this, from); to = clipPos(this, to);
-      var found = [], lineNo = from.line;
+      var found = [], lineNo$$1 = from.line;
       this.iter(from.line, to.line + 1, function (line) {
         var spans = line.markedSpans;
         if (spans) { for (var i = 0; i < spans.length; i++) {
           var span = spans[i];
-          if (!(span.to != null && lineNo == from.line && from.ch >= span.to ||
-                span.from == null && lineNo != from.line ||
-                span.from != null && lineNo == to.line && span.from >= to.ch) &&
+          if (!(span.to != null && lineNo$$1 == from.line && from.ch >= span.to ||
+                span.from == null && lineNo$$1 != from.line ||
+                span.from != null && lineNo$$1 == to.line && span.from >= to.ch) &&
               (!filter || filter(span.marker)))
             { found.push(span.marker.parent || span.marker); }
         } }
-        ++lineNo;
+        ++lineNo$$1;
       });
       return found
     },
@@ -10667,14 +10716,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     },
 
     posFromIndex: function(off) {
-      var ch, lineNo = this.first, sepSize = this.lineSeparator().length;
+      var ch, lineNo$$1 = this.first, sepSize = this.lineSeparator().length;
       this.iter(function (line) {
         var sz = line.text.length + sepSize;
         if (sz > off) { ch = off; return true }
         off -= sz;
-        ++lineNo;
+        ++lineNo$$1;
       });
-      return clipPos(this, Pos(lineNo, ch))
+      return clipPos(this, Pos(lineNo$$1, ch))
     },
     indexFromPos: function (coords) {
       coords = clipPos(this, coords);
@@ -10713,13 +10762,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       return copy
     },
     unlinkDoc: function(other) {
+      var this$1 = this;
+
       if (other instanceof CodeMirror) { other = other.doc; }
       if (this.linked) { for (var i = 0; i < this.linked.length; ++i) {
-        var link = this.linked[i];
+        var link = this$1.linked[i];
         if (link.doc != other) { continue }
-        this.linked.splice(i, 1);
-        other.unlinkDoc(this);
-        detachSharedMarkers(findSharedMarkers(this));
+        this$1.linked.splice(i, 1);
+        other.unlinkDoc(this$1);
+        detachSharedMarkers(findSharedMarkers(this$1));
         break
       } }
       // If the histories were shared, split them again
@@ -10771,39 +10822,28 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     // and insert it.
     if (files && files.length && window.FileReader && window.File) {
       var n = files.length, text = Array(n), read = 0;
-      var markAsReadAndPasteIfAllFilesAreRead = function () {
-        if (++read == n) {
-          operation(cm, function () {
+      var loadFile = function (file, i) {
+        if (cm.options.allowDropFileTypes &&
+            indexOf(cm.options.allowDropFileTypes, file.type) == -1)
+          { return }
+
+        var reader = new FileReader;
+        reader.onload = operation(cm, function () {
+          var content = reader.result;
+          if (/[\x00-\x08\x0e-\x1f]{2}/.test(content)) { content = ""; }
+          text[i] = content;
+          if (++read == n) {
             pos = clipPos(cm.doc, pos);
             var change = {from: pos, to: pos,
-                          text: cm.doc.splitLines(
-                              text.filter(function (t) { return t != null; }).join(cm.doc.lineSeparator())),
+                          text: cm.doc.splitLines(text.join(cm.doc.lineSeparator())),
                           origin: "paste"};
             makeChange(cm.doc, change);
             setSelectionReplaceHistory(cm.doc, simpleSelection(pos, changeEnd(change)));
-          })();
-        }
-      };
-      var readTextFromFile = function (file, i) {
-        if (cm.options.allowDropFileTypes &&
-            indexOf(cm.options.allowDropFileTypes, file.type) == -1) {
-          markAsReadAndPasteIfAllFilesAreRead();
-          return
-        }
-        var reader = new FileReader;
-        reader.onerror = function () { return markAsReadAndPasteIfAllFilesAreRead(); };
-        reader.onload = function () {
-          var content = reader.result;
-          if (/[\x00-\x08\x0e-\x1f]{2}/.test(content)) {
-            markAsReadAndPasteIfAllFilesAreRead();
-            return
           }
-          text[i] = content;
-          markAsReadAndPasteIfAllFilesAreRead();
-        };
+        });
         reader.readAsText(file);
       };
-      for (var i = 0; i < files.length; i++) { readTextFromFile(files[i], i); }
+      for (var i = 0; i < n; ++i) { loadFile(files[i], i); }
     } else { // Normal drop
       // Don't do a replace if the drop happened inside of the selected text.
       if (cm.state.draggingText && cm.doc.sel.contains(pos) > -1) {
@@ -11028,18 +11068,18 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     return keymap
   }
 
-  function lookupKey(key, map, handle, context) {
-    map = getKeyMap(map);
-    var found = map.call ? map.call(key, context) : map[key];
+  function lookupKey(key, map$$1, handle, context) {
+    map$$1 = getKeyMap(map$$1);
+    var found = map$$1.call ? map$$1.call(key, context) : map$$1[key];
     if (found === false) { return "nothing" }
     if (found === "...") { return "multi" }
     if (found != null && handle(found)) { return "handled" }
 
-    if (map.fallthrough) {
-      if (Object.prototype.toString.call(map.fallthrough) != "[object Array]")
-        { return lookupKey(key, map.fallthrough, handle, context) }
-      for (var i = 0; i < map.fallthrough.length; i++) {
-        var result = lookupKey(key, map.fallthrough[i], handle, context);
+    if (map$$1.fallthrough) {
+      if (Object.prototype.toString.call(map$$1.fallthrough) != "[object Array]")
+        { return lookupKey(key, map$$1.fallthrough, handle, context) }
+      for (var i = 0; i < map$$1.fallthrough.length; i++) {
+        var result = lookupKey(key, map$$1.fallthrough[i], handle, context);
         if (result) { return result }
       }
     }
@@ -11113,7 +11153,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   function endOfLine(visually, cm, lineObj, lineNo, dir) {
     if (visually) {
-      if (cm.getOption("direction") == "rtl") { dir = -dir; }
       var order = getOrder(lineObj, cm.doc.direction);
       if (order) {
         var part = dir < 0 ? lst(order) : order[0];
@@ -11484,8 +11523,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       if (!handled && code == 88 && !hasCopyEvent && (mac ? e.metaKey : e.ctrlKey))
         { cm.replaceSelection("", null, "cut"); }
     }
-    if (gecko && !mac && !handled && code == 46 && e.shiftKey && !e.ctrlKey && document.execCommand)
-      { document.execCommand("cut"); }
 
     // Turn mouse into crosshair when Alt is held on Mac.
     if (code == 18 && !/\bCodeMirror-crosshair\b/.test(cm.display.lineDiv.className))
@@ -11717,11 +11754,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       start = posFromMouse(cm, event, true, true);
       ourIndex = -1;
     } else {
-      var range = rangeForUnit(cm, start, behavior.unit);
+      var range$$1 = rangeForUnit(cm, start, behavior.unit);
       if (behavior.extend)
-        { ourRange = extendRange(ourRange, range.anchor, range.head, behavior.extend); }
+        { ourRange = extendRange(ourRange, range$$1.anchor, range$$1.head, behavior.extend); }
       else
-        { ourRange = range; }
+        { ourRange = range$$1; }
     }
 
     if (!behavior.addNew) {
@@ -11764,14 +11801,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
         cm.scrollIntoView(pos);
       } else {
         var oldRange = ourRange;
-        var range = rangeForUnit(cm, pos, behavior.unit);
+        var range$$1 = rangeForUnit(cm, pos, behavior.unit);
         var anchor = oldRange.anchor, head;
-        if (cmp(range.anchor, anchor) > 0) {
-          head = range.head;
-          anchor = minPos(oldRange.from(), range.anchor);
+        if (cmp(range$$1.anchor, anchor) > 0) {
+          head = range$$1.head;
+          anchor = minPos(oldRange.from(), range$$1.anchor);
         } else {
-          head = range.anchor;
-          anchor = maxPos(oldRange.to(), range.head);
+          head = range$$1.anchor;
+          anchor = maxPos(oldRange.to(), range$$1.head);
         }
         var ranges$1 = startSel.ranges.slice(0);
         ranges$1[ourIndex] = bidiSimplify(cm, new Range(clipPos(doc, anchor), head));
@@ -11833,17 +11870,17 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   // Used when mouse-selecting to adjust the anchor to the proper side
   // of a bidi jump depending on the visual position of the head.
-  function bidiSimplify(cm, range) {
-    var anchor = range.anchor;
-    var head = range.head;
+  function bidiSimplify(cm, range$$1) {
+    var anchor = range$$1.anchor;
+    var head = range$$1.head;
     var anchorLine = getLine(cm.doc, anchor.line);
-    if (cmp(anchor, head) == 0 && anchor.sticky == head.sticky) { return range }
+    if (cmp(anchor, head) == 0 && anchor.sticky == head.sticky) { return range$$1 }
     var order = getOrder(anchorLine);
-    if (!order) { return range }
+    if (!order) { return range$$1 }
     var index = getBidiPartAt(order, anchor.ch, anchor.sticky), part = order[index];
-    if (part.from != anchor.ch && part.to != anchor.ch) { return range }
+    if (part.from != anchor.ch && part.to != anchor.ch) { return range$$1 }
     var boundary = index + ((part.from == anchor.ch) == (part.level != 1) ? 0 : 1);
-    if (boundary == 0 || boundary == order.length) { return range }
+    if (boundary == 0 || boundary == order.length) { return range$$1 }
 
     // Compute the relative visual position of the head compared to the
     // anchor (<0 is to the left, >0 to the right)
@@ -11862,7 +11899,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     var usePart = order[boundary + (leftSide ? -1 : 0)];
     var from = leftSide == (usePart.level == 1);
     var ch = from ? usePart.from : usePart.to, sticky = from ? "after" : "before";
-    return anchor.ch == ch && anchor.sticky == sticky ? range : new Range(new Pos(anchor.line, ch, sticky), head)
+    return anchor.ch == ch && anchor.sticky == sticky ? range$$1 : new Range(new Pos(anchor.line, ch, sticky), head)
   }
 
 
@@ -12154,10 +12191,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       { onBlur(this); }
 
     for (var opt in optionHandlers) { if (optionHandlers.hasOwnProperty(opt))
-      { optionHandlers[opt](this, options[opt], Init); } }
+      { optionHandlers[opt](this$1, options[opt], Init); } }
     maybeUpdateLineNumberWidth(this);
     if (options.finishInit) { options.finishInit(this); }
-    for (var i = 0; i < initHooks.length; ++i) { initHooks[i](this); }
+    for (var i = 0; i < initHooks.length; ++i) { initHooks[i](this$1); }
     endOperation(this);
     // Suppress optimizelegibility in Webkit, since it breaks text
     // measuring on line wrapping boundaries.
@@ -12191,9 +12228,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     // which point we can't mess with it anymore. Context menu is
     // handled in onMouseDown for these browsers.
     on(d.scroller, "contextmenu", function (e) { return onContextMenu(cm, e); });
-    on(d.input.getField(), "contextmenu", function (e) {
-      if (!d.scroller.contains(e.target)) { onContextMenu(cm, e); }
-    });
 
     // Used to suppress mouse event handling when a touch happens
     var touchFinished, prevTouch = {end: 0};
@@ -12382,9 +12416,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     var updateInput = cm.curOp.updateInput;
     // Normal behavior is to insert the new text into every selection
     for (var i$1 = sel.ranges.length - 1; i$1 >= 0; i$1--) {
-      var range = sel.ranges[i$1];
-      var from = range.from(), to = range.to();
-      if (range.empty()) {
+      var range$$1 = sel.ranges[i$1];
+      var from = range$$1.from(), to = range$$1.to();
+      if (range$$1.empty()) {
         if (deleted && deleted > 0) // Handle deletion
           { from = Pos(from.line, from.ch - deleted); }
         else if (cm.state.overwrite && !paste) // Handle overwrite
@@ -12422,21 +12456,21 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     var sel = cm.doc.sel;
 
     for (var i = sel.ranges.length - 1; i >= 0; i--) {
-      var range = sel.ranges[i];
-      if (range.head.ch > 100 || (i && sel.ranges[i - 1].head.line == range.head.line)) { continue }
-      var mode = cm.getModeAt(range.head);
+      var range$$1 = sel.ranges[i];
+      if (range$$1.head.ch > 100 || (i && sel.ranges[i - 1].head.line == range$$1.head.line)) { continue }
+      var mode = cm.getModeAt(range$$1.head);
       var indented = false;
       if (mode.electricChars) {
         for (var j = 0; j < mode.electricChars.length; j++)
           { if (inserted.indexOf(mode.electricChars.charAt(j)) > -1) {
-            indented = indentLine(cm, range.head.line, "smart");
+            indented = indentLine(cm, range$$1.head.line, "smart");
             break
           } }
       } else if (mode.electricInput) {
-        if (mode.electricInput.test(getLine(cm.doc, range.head.line).text.slice(0, range.head.ch)))
-          { indented = indentLine(cm, range.head.line, "smart"); }
+        if (mode.electricInput.test(getLine(cm.doc, range$$1.head.line).text.slice(0, range$$1.head.ch)))
+          { indented = indentLine(cm, range$$1.head.line, "smart"); }
       }
-      if (indented) { signalLater(cm, "electricInput", cm, range.head.line); }
+      if (indented) { signalLater(cm, "electricInput", cm, range$$1.head.line); }
     }
   }
 
@@ -12501,13 +12535,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       getOption: function(option) {return this.options[option]},
       getDoc: function() {return this.doc},
 
-      addKeyMap: function(map, bottom) {
-        this.state.keyMaps[bottom ? "push" : "unshift"](getKeyMap(map));
+      addKeyMap: function(map$$1, bottom) {
+        this.state.keyMaps[bottom ? "push" : "unshift"](getKeyMap(map$$1));
       },
-      removeKeyMap: function(map) {
+      removeKeyMap: function(map$$1) {
         var maps = this.state.keyMaps;
         for (var i = 0; i < maps.length; ++i)
-          { if (maps[i] == map || maps[i].name == map) {
+          { if (maps[i] == map$$1 || maps[i].name == map$$1) {
             maps.splice(i, 1);
             return true
           } }
@@ -12524,13 +12558,15 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
         regChange(this);
       }),
       removeOverlay: methodOp(function(spec) {
+        var this$1 = this;
+
         var overlays = this.state.overlays;
         for (var i = 0; i < overlays.length; ++i) {
           var cur = overlays[i].modeSpec;
           if (cur == spec || typeof spec == "string" && cur.name == spec) {
             overlays.splice(i, 1);
-            this.state.modeGen++;
-            regChange(this);
+            this$1.state.modeGen++;
+            regChange(this$1);
             return
           }
         }
@@ -12544,22 +12580,24 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
         if (isLine(this.doc, n)) { indentLine(this, n, dir, aggressive); }
       }),
       indentSelection: methodOp(function(how) {
+        var this$1 = this;
+
         var ranges = this.doc.sel.ranges, end = -1;
         for (var i = 0; i < ranges.length; i++) {
-          var range = ranges[i];
-          if (!range.empty()) {
-            var from = range.from(), to = range.to();
+          var range$$1 = ranges[i];
+          if (!range$$1.empty()) {
+            var from = range$$1.from(), to = range$$1.to();
             var start = Math.max(end, from.line);
-            end = Math.min(this.lastLine(), to.line - (to.ch ? 0 : 1)) + 1;
+            end = Math.min(this$1.lastLine(), to.line - (to.ch ? 0 : 1)) + 1;
             for (var j = start; j < end; ++j)
-              { indentLine(this, j, how); }
-            var newRanges = this.doc.sel.ranges;
+              { indentLine(this$1, j, how); }
+            var newRanges = this$1.doc.sel.ranges;
             if (from.ch == 0 && ranges.length == newRanges.length && newRanges[i].from().ch > 0)
-              { replaceOneSelection(this.doc, i, new Range(from, newRanges[i].to()), sel_dontScroll); }
-          } else if (range.head.line > end) {
-            indentLine(this, range.head.line, how, true);
-            end = range.head.line;
-            if (i == this.doc.sel.primIndex) { ensureCursorVisible(this); }
+              { replaceOneSelection(this$1.doc, i, new Range(from, newRanges[i].to()), sel_dontScroll); }
+          } else if (range$$1.head.line > end) {
+            indentLine(this$1, range$$1.head.line, how, true);
+            end = range$$1.head.line;
+            if (i == this$1.doc.sel.primIndex) { ensureCursorVisible(this$1); }
           }
         }
       }),
@@ -12601,6 +12639,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       },
 
       getHelpers: function(pos, type) {
+        var this$1 = this;
+
         var found = [];
         if (!helpers.hasOwnProperty(type)) { return found }
         var help = helpers[type], mode = this.getModeAt(pos);
@@ -12618,7 +12658,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
         }
         for (var i$1 = 0; i$1 < help._global.length; i$1++) {
           var cur = help._global[i$1];
-          if (cur.pred(mode, this) && indexOf(found, cur.val) == -1)
+          if (cur.pred(mode, this$1) && indexOf(found, cur.val) == -1)
             { found.push(cur.val); }
         }
         return found
@@ -12631,10 +12671,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       },
 
       cursorCoords: function(start, mode) {
-        var pos, range = this.doc.sel.primary();
-        if (start == null) { pos = range.head; }
+        var pos, range$$1 = this.doc.sel.primary();
+        if (start == null) { pos = range$$1.head; }
         else if (typeof start == "object") { pos = clipPos(this.doc, start); }
-        else { pos = start ? range.from() : range.to(); }
+        else { pos = start ? range$$1.from() : range$$1.to(); }
         return cursorCoords(this, pos, mode || "page")
       },
 
@@ -12718,11 +12758,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       triggerElectric: methodOp(function(text) { triggerElectric(this, text); }),
 
       findPosH: function(from, amount, unit, visually) {
+        var this$1 = this;
+
         var dir = 1;
         if (amount < 0) { dir = -1; amount = -amount; }
         var cur = clipPos(this.doc, from);
         for (var i = 0; i < amount; ++i) {
-          cur = findPosH(this.doc, cur, dir, unit, visually);
+          cur = findPosH(this$1.doc, cur, dir, unit, visually);
           if (cur.hitSide) { break }
         }
         return cur
@@ -12731,11 +12773,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       moveH: methodOp(function(dir, unit) {
         var this$1 = this;
 
-        this.extendSelectionsBy(function (range) {
-          if (this$1.display.shift || this$1.doc.extend || range.empty())
-            { return findPosH(this$1.doc, range.head, dir, unit, this$1.options.rtlMoveVisually) }
+        this.extendSelectionsBy(function (range$$1) {
+          if (this$1.display.shift || this$1.doc.extend || range$$1.empty())
+            { return findPosH(this$1.doc, range$$1.head, dir, unit, this$1.options.rtlMoveVisually) }
           else
-            { return dir < 0 ? range.from() : range.to() }
+            { return dir < 0 ? range$$1.from() : range$$1.to() }
         }, sel_move);
       }),
 
@@ -12744,21 +12786,23 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
         if (sel.somethingSelected())
           { doc.replaceSelection("", null, "+delete"); }
         else
-          { deleteNearSelection(this, function (range) {
-            var other = findPosH(doc, range.head, dir, unit, false);
-            return dir < 0 ? {from: other, to: range.head} : {from: range.head, to: other}
+          { deleteNearSelection(this, function (range$$1) {
+            var other = findPosH(doc, range$$1.head, dir, unit, false);
+            return dir < 0 ? {from: other, to: range$$1.head} : {from: range$$1.head, to: other}
           }); }
       }),
 
       findPosV: function(from, amount, unit, goalColumn) {
+        var this$1 = this;
+
         var dir = 1, x = goalColumn;
         if (amount < 0) { dir = -1; amount = -amount; }
         var cur = clipPos(this.doc, from);
         for (var i = 0; i < amount; ++i) {
-          var coords = cursorCoords(this, cur, "div");
+          var coords = cursorCoords(this$1, cur, "div");
           if (x == null) { x = coords.left; }
           else { coords.left = x; }
-          cur = findPosV(this, coords, dir, unit);
+          cur = findPosV(this$1, coords, dir, unit);
           if (cur.hitSide) { break }
         }
         return cur
@@ -12769,14 +12813,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
         var doc = this.doc, goals = [];
         var collapse = !this.display.shift && !doc.extend && doc.sel.somethingSelected();
-        doc.extendSelectionsBy(function (range) {
+        doc.extendSelectionsBy(function (range$$1) {
           if (collapse)
-            { return dir < 0 ? range.from() : range.to() }
-          var headPos = cursorCoords(this$1, range.head, "div");
-          if (range.goalColumn != null) { headPos.left = range.goalColumn; }
+            { return dir < 0 ? range$$1.from() : range$$1.to() }
+          var headPos = cursorCoords(this$1, range$$1.head, "div");
+          if (range$$1.goalColumn != null) { headPos.left = range$$1.goalColumn; }
           goals.push(headPos.left);
           var pos = findPosV(this$1, headPos, dir, unit);
-          if (unit == "page" && range == doc.sel.primary())
+          if (unit == "page" && range$$1 == doc.sel.primary())
             { addToScrollTop(this$1, charCoords(this$1, pos, "div").top - headPos.top); }
           return pos
         }, sel_move);
@@ -12823,22 +12867,22 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
                 clientHeight: displayHeight(this), clientWidth: displayWidth(this)}
       },
 
-      scrollIntoView: methodOp(function(range, margin) {
-        if (range == null) {
-          range = {from: this.doc.sel.primary().head, to: null};
+      scrollIntoView: methodOp(function(range$$1, margin) {
+        if (range$$1 == null) {
+          range$$1 = {from: this.doc.sel.primary().head, to: null};
           if (margin == null) { margin = this.options.cursorScrollMargin; }
-        } else if (typeof range == "number") {
-          range = {from: Pos(range, 0), to: null};
-        } else if (range.from == null) {
-          range = {from: range, to: null};
+        } else if (typeof range$$1 == "number") {
+          range$$1 = {from: Pos(range$$1, 0), to: null};
+        } else if (range$$1.from == null) {
+          range$$1 = {from: range$$1, to: null};
         }
-        if (!range.to) { range.to = range.from; }
-        range.margin = margin || 0;
+        if (!range$$1.to) { range$$1.to = range$$1.from; }
+        range$$1.margin = margin || 0;
 
-        if (range.from.line != null) {
-          scrollToRange(this, range);
+        if (range$$1.from.line != null) {
+          scrollToRange(this, range$$1);
         } else {
-          scrollToCoordsRange(this, range.from, range.to, range.margin);
+          scrollToCoordsRange(this, range$$1.from, range$$1.to, range$$1.margin);
         }
       }),
 
@@ -12849,11 +12893,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
         if (width != null) { this.display.wrapper.style.width = interpret(width); }
         if (height != null) { this.display.wrapper.style.height = interpret(height); }
         if (this.options.lineWrapping) { clearLineMeasurementCache(this); }
-        var lineNo = this.display.viewFrom;
-        this.doc.iter(lineNo, this.display.viewTo, function (line) {
+        var lineNo$$1 = this.display.viewFrom;
+        this.doc.iter(lineNo$$1, this.display.viewTo, function (line) {
           if (line.widgets) { for (var i = 0; i < line.widgets.length; i++)
-            { if (line.widgets[i].noHScroll) { regLineChange(this$1, lineNo, "widget"); break } } }
-          ++lineNo;
+            { if (line.widgets[i].noHScroll) { regLineChange(this$1, lineNo$$1, "widget"); break } } }
+          ++lineNo$$1;
         });
         this.curOp.forceUpdate = true;
         signal(this, "refresh", this);
@@ -12924,9 +12968,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     var oldPos = pos;
     var origDir = dir;
     var lineObj = getLine(doc, pos.line);
-    var lineDir = visually && doc.cm && doc.cm.getOption("direction") == "rtl" ? -dir : dir;
     function findNextLine() {
-      var l = pos.line + lineDir;
+      var l = pos.line + dir;
       if (l < doc.first || l >= doc.first + doc.size) { return false }
       pos = new Pos(l, pos.ch, pos.sticky);
       return lineObj = getLine(doc, l)
@@ -12940,7 +12983,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
       }
       if (next == null) {
         if (!boundToLine && findNextLine())
-          { pos = endOfLine(visually, doc.cm, lineObj, pos.line, lineDir); }
+          { pos = endOfLine(visually, doc.cm, lineObj, pos.line, dir); }
         else
           { return false }
       } else {
@@ -13125,8 +13168,8 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
     var end = to.line < cm.display.viewTo && posToDOM(cm, to);
     if (!end) {
       var measure = view[view.length - 1].measure;
-      var map = measure.maps ? measure.maps[measure.maps.length - 1] : measure.map;
-      end = {node: map[map.length - 1], offset: map[map.length - 2] - map[map.length - 3]};
+      var map$$1 = measure.maps ? measure.maps[measure.maps.length - 1] : measure.map;
+      end = {node: map$$1[map$$1.length - 1], offset: map$$1[map$$1.length - 2] - map$$1[map$$1.length - 3]};
     }
 
     if (!start || !end) {
@@ -13415,11 +13458,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
           addText(cmText);
           return
         }
-        var markerID = node.getAttribute("cm-marker"), range;
+        var markerID = node.getAttribute("cm-marker"), range$$1;
         if (markerID) {
           var found = cm.findMarks(Pos(fromLine, 0), Pos(toLine + 1, 0), recognizeMarker(+markerID));
-          if (found.length && (range = found[0].find(0)))
-            { addText(getBetween(cm.doc, range.from, range.to).join(lineSep)); }
+          if (found.length && (range$$1 = found[0].find(0)))
+            { addText(getBetween(cm.doc, range$$1.from, range$$1.to).join(lineSep)); }
           return
         }
         if (node.getAttribute("contenteditable") == "false") { return }
@@ -13487,13 +13530,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
     function find(textNode, topNode, offset) {
       for (var i = -1; i < (maps ? maps.length : 0); i++) {
-        var map = i < 0 ? measure.map : maps[i];
-        for (var j = 0; j < map.length; j += 3) {
-          var curNode = map[j + 2];
+        var map$$1 = i < 0 ? measure.map : maps[i];
+        for (var j = 0; j < map$$1.length; j += 3) {
+          var curNode = map$$1[j + 2];
           if (curNode == textNode || curNode == topNode) {
             var line = lineNo(i < 0 ? lineView.line : lineView.rest[i]);
-            var ch = map[j] + offset;
-            if (offset < 0 || curNode != textNode) { ch = map[j + (offset ? 1 : 0)]; }
+            var ch = map$$1[j] + offset;
+            if (offset < 0 || curNode != textNode) { ch = map$$1[j + (offset ? 1 : 0)]; }
             return Pos(line, ch)
           }
         }
@@ -14017,7 +14060,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
 
   addLegacyProps(CodeMirror);
 
-  CodeMirror.version = "5.51.0";
+  CodeMirror.version = "5.49.2";
 
   return CodeMirror;
 
@@ -17469,8 +17512,8 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.9.2
-//     https://underscorejs.org
+/* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.9.1
+//     http://underscorejs.org
 //     (c) 2009-2018 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
 
@@ -17531,7 +17574,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
   }
 
   // Current version.
-  _.VERSION = '1.9.2';
+  _.VERSION = '1.9.1';
 
   // Internal function that returns an efficient (for current engines) version
   // of the passed-in callback, to be repeatedly applied in other Underscore
@@ -17634,7 +17677,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
   // Helper for collection methods to determine whether a collection
   // should be iterated as an array or as an object.
-  // Related: https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
+  // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
   // Avoids a very nasty iOS 8 JIT bug on ARM-64. #2094
   var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
   var getLength = shallowProperty('length');
@@ -17862,7 +17905,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
   };
 
   // Sample **n** random values from a collection using the modern version of the
-  // [Fisher-Yates shuffle](https://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
+  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
   // If **n** is not specified, returns a single random element.
   // The internal `guard` argument allows it to work with `map`.
   _.sample = function(obj, n, guard) {
@@ -18192,7 +18235,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
   // Generate an integer Array containing an arithmetic progression. A port of
   // the native Python `range()` function. See
-  // [the Python documentation](https://docs.python.org/library/functions.html#range).
+  // [the Python documentation](http://docs.python.org/library/functions.html#range).
   _.range = function(start, stop, step) {
     if (stop == null) {
       stop = start || 0;
@@ -18661,7 +18704,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
   var eq, deepEq;
   eq = function(a, b, aStack, bStack) {
     // Identical objects are equal. `0 === -0`, but they aren't identical.
-    // See the [Harmony `egal` proposal](https://wiki.ecmascript.org/doku.php?id=harmony:egal).
+    // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
     if (a === b) return a !== 0 || 1 / a === 1 / b;
     // `null` or `undefined` only equal to itself (strict comparison).
     if (a == null || b == null) return false;
@@ -19748,7 +19791,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Asset__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -20595,7 +20638,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/block_manager/config/config.js)
@@ -21152,7 +21195,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -21447,6 +21490,8 @@ __webpack_require__.r(__webpack_exports__);
    * Be aware that these scripts will not be printed in the export code
    * @example
    * scripts: [ 'https://...1.js', 'https://...2.js' ]
+   * * // or passing objects as attributes
+   * scripts: [ { src: '/file.js', someattr: 'value' }, ... ]
    */
   scripts: [],
 
@@ -21455,6 +21500,8 @@ __webpack_require__.r(__webpack_exports__);
    * Be aware that these styles will not be printed in the export code
    * @example
    * styles: [ 'https://...1.css', 'https://...2.css' ]
+   * // or passing objects as attributes
+   * scripts: [ { href: '/style.css', someattr: 'value' }, ... ]
    */
   styles: [],
 
@@ -21491,13 +21538,13 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var utils_Droppable__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! utils/Droppable */ "./src/utils/Droppable.js");
 /* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./config/config */ "./src/canvas/config/config.js");
 /* harmony import */ var _model_Canvas__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./model/Canvas */ "./src/canvas/model/Canvas.js");
@@ -21505,10 +21552,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_2___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/canvas/config/config.js)
@@ -21546,6 +21592,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 
+
 var _window = window,
     requestAnimationFrame = _window.requestAnimationFrame;
 /* harmony default export */ __webpack_exports__["default"] = (function () {
@@ -21576,7 +21623,9 @@ var _window = window,
      */
     init: function init() {
       var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      c = _objectSpread({}, _config_config__WEBPACK_IMPORTED_MODULE_5__["default"], {}, config);
+      c = _objectSpread({}, _config_config__WEBPACK_IMPORTED_MODULE_5__["default"], {}, config, {
+        module: this
+      });
       this.em = c.em;
       var ppfx = c.pStylePrefix;
       if (ppfx) c.stylePrefix = ppfx + c.stylePrefix;
@@ -21587,10 +21636,9 @@ var _window = window,
       });
       var cm = c.em.get('DomComponents');
       if (cm) this.setWrapper(cm);
+      this.model = canvas;
       this.startAutoscroll = this.startAutoscroll.bind(this);
       this.stopAutoscroll = this.stopAutoscroll.bind(this);
-      this.autoscroll = this.autoscroll.bind(this);
-      this.updateClientY = this.updateClientY.bind(this);
       return this;
     },
 
@@ -21627,7 +21675,12 @@ var _window = window,
      * @return {HTMLIFrameElement}
      */
     getFrameEl: function getFrameEl() {
-      return CanvasView.frame.el;
+      var _CanvasView = CanvasView,
+          frame = _CanvasView.frame;
+      return frame && frame.el;
+    },
+    getFramesEl: function getFramesEl() {
+      return CanvasView.framesArea;
     },
 
     /**
@@ -21643,7 +21696,8 @@ var _window = window,
      * @return {HTMLDocument}
      */
     getDocument: function getDocument() {
-      return this.getFrameEl().contentDocument;
+      var frame = this.getFrameEl();
+      return frame && frame.contentDocument;
     },
 
     /**
@@ -21663,14 +21717,34 @@ var _window = window,
       var body = this.getBody();
       return body && body.querySelector('#wrapper');
     },
+    _getCompFrame: function _getCompFrame(compView) {
+      return compView && compView._getFrame();
+    },
+    _getLocalEl: function _getLocalEl(globalEl, compView, method) {
+      var result = globalEl;
+
+      var frameView = this._getCompFrame(compView);
+
+      result = frameView ? frameView[method]() : result;
+      return result;
+    },
+
+    /**
+     * Returns element containing all global canvas tools
+     * @return {HTMLElement}
+     * @private
+     */
+    getGlobalToolsEl: function getGlobalToolsEl() {
+      return CanvasView.toolsGlobEl;
+    },
 
     /**
      * Returns element containing all canvas tools
      * @return {HTMLElement}
      * @private
      */
-    getToolsEl: function getToolsEl() {
-      return CanvasView.toolsEl;
+    getToolsEl: function getToolsEl(compView) {
+      return this._getLocalEl(CanvasView.toolsEl, compView, 'getToolsEl');
     },
 
     /**
@@ -21678,8 +21752,8 @@ var _window = window,
      * @return {HTMLElement}
      * @private
      */
-    getHighlighter: function getHighlighter() {
-      return CanvasView.hlEl;
+    getHighlighter: function getHighlighter(compView) {
+      return this._getLocalEl(CanvasView.hlEl, compView, 'getHighlighter');
     },
 
     /**
@@ -21687,8 +21761,8 @@ var _window = window,
      * @return {HTMLElement}
      * @private
      */
-    getBadgeEl: function getBadgeEl() {
-      return CanvasView.badgeEl;
+    getBadgeEl: function getBadgeEl(compView) {
+      return this._getLocalEl(CanvasView.badgeEl, compView, 'getBadgeEl');
     },
 
     /**
@@ -21732,8 +21806,8 @@ var _window = window,
      * @return {HTMLElement}
      * @private
      */
-    getOffsetViewerEl: function getOffsetViewerEl() {
-      return CanvasView.offsetEl;
+    getOffsetViewerEl: function getOffsetViewerEl(compView) {
+      return this._getLocalEl(CanvasView.offsetEl, compView, 'getOffsetViewerEl');
     },
 
     /**
@@ -21878,6 +21952,88 @@ var _window = window,
 
       return result;
     },
+    canvasRectOffset: function canvasRectOffset(el, pos) {
+      var _this = this;
+
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var getFrameElFromDoc = function getFrameElFromDoc(doc) {
+        var defaultView = doc.defaultView;
+        return defaultView && defaultView.frameElement;
+      };
+
+      var rectOff = function rectOff(el) {
+        var top = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+        var pos = arguments.length > 2 ? arguments[2] : undefined;
+
+        var zoom = _this.em.getZoomDecimal();
+
+        var side = top ? 'top' : 'left';
+        var doc = el.ownerDocument;
+
+        var _ref = opts.offset ? getFrameElFromDoc(doc) : {},
+            _ref$offsetTop = _ref.offsetTop,
+            offsetTop = _ref$offsetTop === void 0 ? 0 : _ref$offsetTop,
+            _ref$offsetLeft = _ref.offsetLeft,
+            offsetLeft = _ref$offsetLeft === void 0 ? 0 : _ref$offsetLeft;
+
+        var _ref2 = doc.body || {},
+            _ref2$scrollTop = _ref2.scrollTop,
+            scrollTop = _ref2$scrollTop === void 0 ? 0 : _ref2$scrollTop,
+            _ref2$scrollLeft = _ref2.scrollLeft,
+            scrollLeft = _ref2$scrollLeft === void 0 ? 0 : _ref2$scrollLeft;
+
+        var scroll = top ? scrollTop : scrollLeft;
+        var offset = top ? offsetTop : offsetLeft; // if (!top) {
+        //   console.log('LEFT', { posLeft: pos[side], scroll, offset }, el);
+        // }
+
+        return pos[side] - (scroll - offset) * zoom;
+      };
+
+      return {
+        top: rectOff(el, 1, pos),
+        left: rectOff(el, 0, pos)
+      };
+    },
+    getTargetToElementFixed: function getTargetToElementFixed(el, elToMove) {
+      var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var pos = opts.pos || this.getElementPos(el);
+      var cvOff = opts.canvasOff || this.canvasRectOffset(el, pos);
+      var toolbarH = elToMove.offsetHeight || 0;
+      var toolbarW = elToMove.offsetWidth || 0;
+      var elRight = pos.left + pos.width;
+      var cv = this.getCanvasView();
+      var frCvOff = cv.getPosition();
+      var frameOffset = cv.getFrameOffset(el);
+      var event = opts.event;
+      var top = -toolbarH;
+      var left = pos.width - toolbarW;
+      left = pos.left < -left ? -pos.left : left;
+      left = elRight > frCvOff.width ? left - (elRight - frCvOff.width) : left; // Scroll with the window if the top edge is reached and the
+      // element is bigger than the canvas
+
+      var fullHeight = pos.height + toolbarH;
+      var elIsShort = fullHeight < frameOffset.height;
+
+      if (cvOff.top < toolbarH) {
+        if (elIsShort) {
+          top = top + fullHeight;
+        } else {
+          top = -cvOff.top < pos.height ? -cvOff.top : pos.height;
+        }
+      }
+
+      var result = {
+        top: top,
+        left: left,
+        canvasOffsetTop: cvOff.top,
+        canvasOffsetLeft: cvOff.left
+      }; // In this way I can catch data and also change the position strategy
+
+      event && this.em.trigger(event, result);
+      return result;
+    },
 
     /**
      * Instead of simply returning e.clientX and e.clientY this function
@@ -21917,10 +22073,10 @@ var _window = window,
      * @return {Object}
      * @private
      */
-    getMouseRelativeCanvas: function getMouseRelativeCanvas(ev) {
+    getMouseRelativeCanvas: function getMouseRelativeCanvas(ev, opts) {
       var zoom = this.getZoomDecimal();
 
-      var _CanvasView$getPositi2 = CanvasView.getPosition(),
+      var _CanvasView$getPositi2 = CanvasView.getPosition(opts),
           top = _CanvasView$getPositi2.top,
           left = _CanvasView$getPositi2.left;
 
@@ -21945,7 +22101,7 @@ var _window = window,
      */
     isInputFocused: function isInputFocused() {
       var doc = this.getDocument();
-      var toIgnore = ['body'].concat(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()(this.getConfig().notTextable));
+      var toIgnore = ['body'].concat(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(this.getConfig().notTextable));
       var focused = doc && doc.activeElement;
       return focused && !toIgnore.some(function (item) {
         return focused.matches(item);
@@ -21969,82 +22125,30 @@ var _window = window,
      */
     scrollTo: function scrollTo(el) {
       var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var elem = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["getElement"])(el);
-      var cv = this.getCanvasView();
-      if (!elem) return;
-
-      if (!cv.isElInViewport(elem) || opts.force) {
-        var opt = _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(opts) === 'object' ? opts : {
-          behavior: 'smooth',
-          block: 'nearest'
-        };
-        elem.scrollIntoView(opt);
-      }
+      var elem = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["getElement"])(el);
+      var view = elem && Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["getViewEl"])(elem);
+      view && view.scrollIntoView(opts);
     },
 
     /**
      * Start autoscroll
      * @private
      */
-    startAutoscroll: function startAutoscroll() {
-      var _this = this;
-
-      this.dragging = 1;
-      var toListen = this.getScrollListeners();
-      frameRect = CanvasView.getFrameOffset(1); // By detaching those from the stack avoid browsers lags
-      // Noticeable with "fast" drag of blocks
-
-      setTimeout(function () {
-        Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(toListen, 'mousemove dragover', _this.updateClientY);
-        Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(toListen, 'mouseup', _this.stopAutoscroll);
-        requestAnimationFrame(_this.autoscroll);
-      }, 0);
-    },
-    updateClientY: function updateClientY(ev) {
-      ev.preventDefault();
-      this.lastClientY = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["getPointerEvent"])(ev).clientY * this.getZoomDecimal();
-    },
-
-    /**
-     * @private
-     */
-    autoscroll: function autoscroll() {
-      if (this.dragging) {
-        var frameWindow = this.getFrameEl().contentWindow;
-        var actualTop = frameWindow.document.body.scrollTop;
-        var nextTop = actualTop;
-        var clientY = this.lastClientY;
-        var limitTop = this.getConfig().autoscrollLimit;
-        var limitBottom = frameRect.height - limitTop;
-
-        if (clientY < limitTop) {
-          nextTop -= limitTop - clientY;
-        }
-
-        if (clientY > limitBottom) {
-          nextTop += clientY - limitBottom;
-        }
-
-        frameWindow.scrollTo(0, nextTop);
-        requestAnimationFrame(this.autoscroll);
-      }
+    startAutoscroll: function startAutoscroll(frame) {
+      var fr = frame && frame.view || this.em.getCurrentFrame();
+      fr && fr.startAutoscroll();
     },
 
     /**
      * Stop autoscroll
      * @private
      */
-    stopAutoscroll: function stopAutoscroll() {
-      this.dragging = 0;
-      var toListen = this.getScrollListeners();
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(toListen, 'mousemove dragover', this.updateClientY);
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(toListen, 'mouseup', this.stopAutoscroll);
-    },
-    getScrollListeners: function getScrollListeners() {
-      return [this.getFrameEl().contentWindow];
+    stopAutoscroll: function stopAutoscroll(frame) {
+      var fr = frame && frame.view || this.em.getCurrentFrame();
+      fr && fr.stopAutoscroll();
     },
     postRender: function postRender() {
-      if (Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["hasDnd"])(c.em)) this.droppable = new utils_Droppable__WEBPACK_IMPORTED_MODULE_4__["default"](c.em);
+      if (Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["hasDnd"])(c.em)) this.droppable = new utils_Droppable__WEBPACK_IMPORTED_MODULE_4__["default"](c.em);
     },
 
     /**
@@ -22071,6 +22175,12 @@ var _window = window,
       var zoom = this.getZoomDecimal();
       return zoom ? 1 / zoom : 1;
     },
+    toggleFramesEvents: function toggleFramesEvents(on) {
+      var _this$getFramesEl = this.getFramesEl(),
+          style = _this$getFramesEl.style;
+
+      style.pointerEvents = on ? '' : 'none';
+    },
 
     /**
      * Returns wrapper element
@@ -22080,6 +22190,42 @@ var _window = window,
      */
     getFrameWrapperEl: function getFrameWrapperEl() {
       return CanvasView.frame.getWrapper();
+    },
+    getFrames: function getFrames() {
+      return canvas.get('frames').map(function (item) {
+        return item;
+      });
+    },
+
+    /**
+     * Add new frame to the canvas
+     * @param {Object} props Frame properties
+     * @returns {Frame}
+     * @example
+     *
+        editor.Canvas.addFrame({
+          name: 'Mobile home page',
+          x: 100, // Position in canvas
+          y: 100,
+          width: 500, // Frame dimensions
+          height: 600,
+          // device: 'DEVICE-ID',
+          components: [
+            '<h1 class="testh">Title frame</h1>',
+            '<p class="testp">Paragraph frame</p>',
+          ],
+          styles: `
+            .testh { color: red; }
+            .testp { color: blue; }
+          `,
+        });
+     */
+    addFrame: function addFrame() {
+      var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      return canvas.get('frames').add(_objectSpread({}, props), _objectSpread({}, opts, {
+        em: this.em
+      }));
     }
   };
 });
@@ -22098,11 +22244,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _Frame__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Frame */ "./src/canvas/model/Frame.js");
+/* harmony import */ var _Frames__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Frames */ "./src/canvas/model/Frames.js");
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model.extend({
   defaults: {
     frame: '',
+    frames: '',
     wrapper: '',
     rulers: false,
     zoom: 100,
@@ -22111,19 +22260,38 @@ __webpack_require__.r(__webpack_exports__);
   },
   initialize: function initialize() {
     var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var em = config.em;
     var _config$styles = config.styles,
         styles = _config$styles === void 0 ? [] : _config$styles,
         _config$scripts = config.scripts,
         scripts = _config$scripts === void 0 ? [] : _config$scripts;
-    var frame = new _Frame__WEBPACK_IMPORTED_MODULE_1__["default"]();
+    var frame = new _Frame__WEBPACK_IMPORTED_MODULE_1__["default"]({}, config);
     styles.forEach(function (style) {
       return frame.addLink(style);
     });
     scripts.forEach(function (script) {
       return frame.addScript(script);
     });
+    this.em = em;
     this.set('frame', frame);
+    this.set('frames', new _Frames__WEBPACK_IMPORTED_MODULE_2__["default"]([frame], config));
     this.listenTo(this, 'change:zoom', this.onZoomChange);
+    this.listenTo(em, 'change:device', this.updateDevice);
+  },
+  updateDevice: function updateDevice() {
+    var em = this.em;
+    var device = em.getDeviceModel();
+    var model = em.getCurrentFrameModel();
+
+    if (model && device) {
+      var _device$attributes = device.attributes,
+          width = _device$attributes.width,
+          height = _device$attributes.height;
+      model.set({
+        width: width,
+        height: height
+      });
+    }
   },
   onZoomChange: function onZoomChange() {
     var zoom = this.get('zoom');
@@ -22142,28 +22310,69 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
-/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var dom_components_model_Component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! dom_components/model/Component */ "./src/dom_components/model/Component.js");
+/* harmony import */ var css_composer_model_CssRules__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! css_composer/model/CssRules */ "./src/css_composer/model/CssRules.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_5__);
 
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Model.extend({
   defaults: {
     wrapper: '',
-    width: '',
-    height: '',
+    width: null,
+    height: null,
     head: '',
+    x: 0,
+    y: 0,
+    root: 0,
+    components: 0,
+    styles: 0,
     attributes: {}
   },
-  initialize: function initialize() {
+  initialize: function initialize(props) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var _this$attributes = this.attributes,
+        root = _this$attributes.root,
+        styles = _this$attributes.styles,
+        components = _this$attributes.components;
     this.set('head', []);
+    this.em = opts.em;
+    var modOpts = {
+      em: opts.em,
+      config: opts.em.get('DomComponents').getConfig(),
+      frame: this
+    };
+    !root && this.set('root', new dom_components_model_Component__WEBPACK_IMPORTED_MODULE_3__["default"]({
+      type: 'wrapper',
+      components: components || []
+    }, modOpts));
+    (!styles || Object(underscore__WEBPACK_IMPORTED_MODULE_5__["isString"])(styles)) && this.set('styles', new css_composer_model_CssRules__WEBPACK_IMPORTED_MODULE_4__["default"](styles, modOpts));
+  },
+  remove: function remove() {
+    this.view = 0;
+    var coll = this.collection;
+    return coll && coll.remove(this);
   },
   getHead: function getHead() {
-    return _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(this.get('head'));
+    return _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()(this.get('head'));
   },
   setHead: function setHead(value) {
-    return this.set('head', _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(value));
+    return this.set('head', _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_1___default()(value));
   },
   addHeadItem: function addHeadItem(item) {
     var head = this.getHead();
@@ -22210,6 +22419,58 @@ __webpack_require__.r(__webpack_exports__);
   },
   removeScript: function removeScript(src) {
     this.removeHeadByAttr('src', src, 'script');
+  },
+  _emitUpdated: function _emitUpdated() {
+    var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    this.em.trigger('frame:updated', _objectSpread({
+      frame: this
+    }, data));
+  }
+}));
+
+/***/ }),
+
+/***/ "./src/canvas/model/Frames.js":
+/*!************************************!*\
+  !*** ./src/canvas/model/Frames.js ***!
+  \************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Frame__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Frame */ "./src/canvas/model/Frame.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Collection.extend({
+  model: _Frame__WEBPACK_IMPORTED_MODULE_2__["default"],
+  initialize: function initialize() {
+    Object(underscore__WEBPACK_IMPORTED_MODULE_0__["bindAll"])(this, 'itemLoaded');
+  },
+  itemLoaded: function itemLoaded() {
+    this.loadedItems++;
+
+    if (this.loadedItems >= this.itemsToLoad) {
+      this.trigger('loaded:all');
+      this.listenToLoadItems(0);
+    }
+  },
+  listenToLoad: function listenToLoad() {
+    this.loadedItems = 0;
+    this.itemsToLoad = this.length;
+    this.listenToLoadItems(1);
+  },
+  listenToLoadItems: function listenToLoadItems(on) {
+    var _this = this;
+
+    this.forEach(function (item) {
+      return item[on ? 'on' : 'off']('loaded', _this.itemLoaded);
+    });
   }
 }));
 
@@ -22224,19 +22485,27 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
-/* harmony import */ var _FrameView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./FrameView */ "./src/canvas/view/FrameView.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var _FramesView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./FramesView */ "./src/canvas/view/FramesView.js");
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
 
-var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
+
+var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
 var timerZoom;
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
   events: {
     wheel: 'onWheel'
   },
@@ -22245,24 +22514,42 @@ var timerZoom;
     return "\n      <div class=\"".concat(pfx, "canvas__frames\" data-frames></div>\n      <div id=\"").concat(pfx, "tools\" class=\"").concat(pfx, "canvas__tools\" data-tools></div>\n    ");
   },
   initialize: function initialize(o) {
-    Object(underscore__WEBPACK_IMPORTED_MODULE_1__["bindAll"])(this, 'renderBody', 'onFrameScroll', 'clearOff', 'onKeyPress');
-    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"])(window, 'scroll resize', this.clearOff);
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'clearOff', 'onKeyPress');
+    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(window, 'scroll resize', this.clearOff);
     var model = this.model;
+    var frames = model.get('frames');
     this.config = o.config || {};
     this.em = this.config.em || {};
     this.pfx = this.config.stylePrefix || '';
     this.ppfx = this.config.pStylePrefix || '';
     this.className = this.config.stylePrefix + 'canvas';
-    this.listenTo(this.em, 'change:canvasOffset', this.clearOff);
+    var em = this.em,
+        config = this.config;
+    this.frames = new _FramesView__WEBPACK_IMPORTED_MODULE_4__["default"]({
+      collection: frames,
+      config: _objectSpread({}, config, {
+        canvasView: this,
+        renderContent: 1
+      })
+    });
+    this.listenTo(em, 'change:canvasOffset', this.clearOff);
+    this.listenTo(em, 'component:selected', this.checkSelected);
     this.listenTo(model, 'change:zoom change:x change:y', this.updateFrames);
+    this.listenTo(frames, 'loaded:all', function () {
+      return em.trigger('loaded');
+    });
     this.toggleListeners(1);
-    this.frame = new _FrameView__WEBPACK_IMPORTED_MODULE_3__["default"]({
-      model: this.model.get('frame'),
-      config: this.config
+  },
+  checkSelected: function checkSelected(component) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var scroll = opts.scroll;
+    var currFrame = this.em.get('currentFrame');
+    scroll && component.views.forEach(function (view) {
+      view._getFrame() !== currFrame && view.scrollIntoView(scroll);
     });
   },
   remove: function remove() {
-    backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.prototype.remove.apply(this, arguments);
+    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
     this.toggleListeners();
   },
   preventDefault: function preventDefault(ev) {
@@ -22274,14 +22561,14 @@ var timerZoom;
   toggleListeners: function toggleListeners(enable) {
     var method = enable ? 'on' : 'off';
     var methods = {
-      on: utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"],
-      off: utils_mixins__WEBPACK_IMPORTED_MODULE_2__["off"]
+      on: utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"],
+      off: utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"]
     };
     methods[method](document, 'keypress', this.onKeyPress);
   },
   onKeyPress: function onKeyPress(ev) {
     var em = this.em;
-    var key = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["getKeyChar"])(ev);
+    var key = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["getKeyChar"])(ev);
 
     if (key === ' ' && em.getZoomDecimal() !== 1) {
       this.preventDefault(ev);
@@ -22310,13 +22597,12 @@ var timerZoom;
     var mpl = zoom ? 1 / zoom : 1;
     this.framesArea.style.transform = "scale(".concat(zoom, ") translate(").concat(x * mpl, "px, ").concat(y * mpl, "px)");
     this.clearOff();
-    this.onFrameScroll();
     em.stopDefault(defOpts);
     em.trigger('canvas:update', ev);
     timerZoom && clearTimeout(timerZoom);
     timerZoom = setTimeout(function () {
       return em.runDefault(defOpts);
-    });
+    }, 300);
   },
   getZoom: function getZoom() {
     return this.em.getZoomDecimal();
@@ -22328,151 +22614,12 @@ var timerZoom;
    * @return {Boolean}
    */
   isElInViewport: function isElInViewport(el) {
-    var rect = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["getElRect"])(Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["getElement"])(el));
-    var frameRect = this.getFrameOffset();
+    var elem = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["getElement"])(el);
+    var rect = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["getElRect"])(elem);
+    var frameRect = this.getFrameOffset(elem);
     var rTop = rect.top;
     var rLeft = rect.left;
     return rTop >= 0 && rLeft >= 0 && rTop <= frameRect.height && rLeft <= frameRect.width;
-  },
-
-  /**
-   * Update tools position
-   * @private
-   */
-  onFrameScroll: function onFrameScroll() {
-    var u = 'px';
-    var body = this.frame.el.contentDocument.body;
-    var zoom = this.getZoom();
-    this.toolsEl.style.top = '-' + body.scrollTop * zoom + u;
-    this.toolsEl.style.left = '-' + body.scrollLeft * zoom + u;
-    this.em.trigger('canvasScroll');
-  },
-
-  /**
-   * Insert scripts into head, it will call renderBody after all scripts loaded or failed
-   * @private
-   */
-  renderScripts: function renderScripts() {
-    var frame = this.frame;
-    var that = this;
-
-    frame.el.onload = function () {
-      var scripts = that.config.scripts.slice(0),
-          // clone
-      counter = 0;
-
-      function appendScript(scripts) {
-        if (scripts.length > 0) {
-          var script = document.createElement('script');
-          script.type = 'text/javascript';
-          script.src = scripts.shift();
-          script.onerror = script.onload = appendScript.bind(null, scripts);
-          frame.el.contentDocument.head.appendChild(script);
-        } else {
-          that.renderBody();
-        }
-      }
-
-      appendScript(scripts);
-    };
-  },
-
-  /**
-   * Render inside frame's body
-   * @private
-   */
-  renderBody: function renderBody() {
-    var _this = this;
-
-    var config = this.config,
-        model = this.model;
-    var wrap = this.model.get('frame').get('wrapper');
-    var em = config.em;
-
-    if (wrap) {
-      var Canvas = em.get('Canvas');
-      var ppfx = this.ppfx;
-      var body = $(Canvas.getBody());
-      var head = $(Canvas.getDocument().head);
-      var cssc = em.get('CssComposer');
-      var conf = em.get('Config');
-      var externalStyles = '';
-      config.styles.forEach(function (style) {
-        externalStyles += "<link rel=\"stylesheet\" href=\"".concat(style, "\"/>");
-      });
-      var colorWarn = '#ffca6f'; // I need all this styles to make the editor work properly
-      // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
-      // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
-      // With `body {height: auto;}` jumps in CKEditor are removed but in
-      // Firefox is impossible to drag stuff in empty canvas, so bring back
-      // `body {height: 100%;}`.
-      // For the moment I give the priority to Firefox as it might be
-      // CKEditor's issue
-
-      var frameCss = "\n        ".concat(em.config.baseCss || '', "\n\n        .").concat(ppfx, "dashed *[data-highlightable] {\n          outline: 1px dashed rgba(170,170,170,0.7);\n          outline-offset: -2px;\n        }\n\n        .").concat(ppfx, "comp-selected {\n          outline: 3px solid #3b97e3 !important;\n          outline-offset: -3px;\n        }\n\n        .").concat(ppfx, "comp-selected-parent {\n          outline: 2px solid ").concat(colorWarn, " !important\n        }\n\n        .").concat(ppfx, "no-select {\n          user-select: none;\n          -webkit-user-select:none;\n          -moz-user-select: none;\n        }\n\n        .").concat(ppfx, "freezed {\n          opacity: 0.5;\n          pointer-events: none;\n        }\n\n        .").concat(ppfx, "no-pointer {\n          pointer-events: none;\n        }\n\n        .").concat(ppfx, "plh-image {\n          background: #f5f5f5;\n          border: none;\n          height: 100px;\n          width: 100px;\n          display: block;\n          outline: 3px solid #ffca6f;\n          cursor: pointer;\n          outline-offset: -2px\n        }\n\n        .").concat(ppfx, "grabbing {\n          cursor: grabbing;\n          cursor: -webkit-grabbing;\n        }\n\n        .").concat(ppfx, "is__grabbing {\n          overflow-x: hidden;\n        }\n\n        .").concat(ppfx, "is__grabbing,\n        .").concat(ppfx, "is__grabbing * {\n          cursor: grabbing !important;\n        }\n\n        ").concat(conf.canvasCss || '', "\n        ").concat(conf.protectedCss || '', "\n      ");
-
-      if (externalStyles) {
-        head.append(externalStyles);
-      }
-
-      body.append('<style>' + frameCss + '</style>');
-      body.append(wrap.render()).append(cssc.render());
-      body.append(this.getJsContainer());
-      em.trigger('loaded');
-      this.frame.el.contentWindow.onscroll = this.onFrameScroll;
-      this.frame.updateOffset(); // Avoid the default link behaviour in the canvas
-
-      body.on('click', function (ev) {
-        return ev && ev.target.tagName == 'A' && ev.preventDefault();
-      }); // Avoid the default form behaviour
-
-      body.on('submit', function (ev) {
-        return ev && ev.preventDefault();
-      }); // When the iframe is focused the event dispatcher is not the same so
-      // I need to delegate all events to the parent document
-
-      var doc = document;
-      var fdoc = this.frame.el.contentDocument; // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
-      // the keyCode/which will be always `0`. Even if it's an old/deprecated
-      // property keymaster (and many others) still use it... using `defineProperty`
-      // hack seems the only way
-
-      var createCustomEvent = function createCustomEvent(e, cls) {
-        var oEvent;
-
-        try {
-          oEvent = new window[cls](e.type, e);
-        } catch (e) {
-          oEvent = document.createEvent(cls);
-          oEvent.initEvent(e.type, true, true);
-        }
-
-        oEvent.keyCodeVal = e.keyCode;
-        oEvent._parentEvent = e;
-        ['keyCode', 'which'].forEach(function (prop) {
-          Object.defineProperty(oEvent, prop, {
-            get: function get() {
-              return this.keyCodeVal;
-            }
-          });
-        });
-        return oEvent;
-      };
-
-      [{
-        event: 'keydown keyup keypress',
-        class: 'KeyboardEvent'
-      }, {
-        event: 'wheel',
-        class: 'WheelEvent'
-      }].forEach(function (obj) {
-        return obj.event.split(' ').forEach(function (event) {
-          fdoc.addEventListener(event, function (e) {
-            return _this.el.dispatchEvent(createCustomEvent(e, obj.class));
-          });
-        });
-      });
-    }
   },
 
   /**
@@ -22481,11 +22628,13 @@ var timerZoom;
    * @return {Object}
    */
   offset: function offset(el) {
-    var rect = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["getElRect"])(el);
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var rect = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["getElRect"])(el);
     var docBody = el.ownerDocument.body;
+    var noScroll = opts.noScroll;
     return {
-      top: rect.top + docBody.scrollTop,
-      left: rect.left + docBody.scrollLeft,
+      top: rect.top + (noScroll ? 0 : docBody.scrollTop),
+      left: rect.left + (noScroll ? 0 : docBody.scrollLeft),
       width: rect.width,
       height: rect.height
     };
@@ -22505,9 +22654,12 @@ var timerZoom;
    * @return {Object}
    * @private
    */
-  getFrameOffset: function getFrameOffset() {
-    var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-    if (!this.frmOff || force) this.frmOff = this.offset(this.frame.el);
+  getFrameOffset: function getFrameOffset(el) {
+    if (!this.frmOff || el) {
+      var frEl = el ? el.ownerDocument.defaultView.frameElement : this.frame.el;
+      this.frmOff = this.offset(frEl);
+    }
+
     return this.frmOff;
   },
 
@@ -22522,7 +22674,7 @@ var timerZoom;
   },
 
   /**
-   * Returns element's data info
+   * Returns element's rect info
    * @param {HTMLElement} el
    * @return {Object}
    * @private
@@ -22530,9 +22682,9 @@ var timerZoom;
   getElementPos: function getElementPos(el, opts) {
     var zoom = this.getZoom();
     var opt = opts || {};
-    var frmOff = this.getFrameOffset();
+    var frmOff = this.getFrameOffset(el);
     var cvsOff = this.getCanvasOffset();
-    var eo = this.offset(el);
+    var eo = this.offset(el, opts);
     var frmTop = opt.avoidFrameOffset ? 0 : frmOff.top;
     var frmLeft = opt.avoidFrameOffset ? 0 : frmOff.left;
     var top = eo.top * zoom + frmTop - cvsOff.top;
@@ -22556,13 +22708,13 @@ var timerZoom;
    * @private
    */
   getElementOffsets: function getElementOffsets(el) {
-    var _this2 = this;
+    var _this = this;
 
-    if (!el || Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["isTextNode"])(el)) return {};
+    if (!el || Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["isTextNode"])(el)) return {};
     var result = {};
     var styles = window.getComputedStyle(el);
     ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'].forEach(function (offset) {
-      result[offset] = parseFloat(styles[offset]) * _this2.getZoom();
+      result[offset] = parseFloat(styles[offset]) * _this.getZoom();
     });
     return result;
   },
@@ -22573,15 +22725,17 @@ var timerZoom;
    * @private
    */
   getPosition: function getPosition() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var doc = this.frame.el.contentDocument;
     if (!doc) return;
     var bEl = doc.body;
     var zoom = this.getZoom();
     var fo = this.getFrameOffset();
     var co = this.getCanvasOffset();
+    var noScroll = opts.noScroll;
     return {
-      top: fo.top + bEl.scrollTop * zoom - co.top,
-      left: fo.left + bEl.scrollLeft * zoom - co.left,
+      top: fo.top + (noScroll ? 0 : bEl.scrollTop) * zoom - co.top,
+      left: fo.left + (noScroll ? 0 : bEl.scrollLeft) * zoom - co.left,
       width: co.width,
       height: co.height
     };
@@ -22629,25 +22783,27 @@ var timerZoom;
     var el = this.el,
         $el = this.$el,
         ppfx = this.ppfx,
-        model = this.model;
-    this.wrapper = model.get('wrapper');
+        model = this.model,
+        em = this.em,
+        frames = this.frames;
+    var cssc = em.get('CssComposer');
+    var wrapper = model.get('wrapper');
     $el.html(this.template());
     var $frames = $el.find('[data-frames]');
     this.framesArea = $frames.get(0);
+    this.wrapper = wrapper;
 
-    if (this.wrapper && typeof this.wrapper.render == 'function') {
-      model.get('frame').set('wrapper', this.wrapper);
-      $frames.append(this.frame.render().el);
-      var frame = this.frame;
-
-      if (this.config.scripts.length === 0) {
-        frame.el.onload = this.renderBody;
-      } else {
-        this.renderScripts(); // will call renderBody later
-      }
+    if (wrapper && typeof wrapper.render == 'function') {
+      model.get('frame').set({
+        wrapper: wrapper,
+        root: wrapper.getWrapper(),
+        styles: cssc.getAll()
+      });
     }
 
-    $el.find('[data-tools]').append("\n      <div id=\"".concat(ppfx, "tools\" style=\"pointer-events:none\">\n        <div class=\"").concat(ppfx, "highlighter\"></div>\n        <div class=\"").concat(ppfx, "badge\"></div>\n        <div class=\"").concat(ppfx, "placeholder\">\n          <div class=\"").concat(ppfx, "placeholder-int\"></div>\n        </div>\n        <div class=\"").concat(ppfx, "ghost\"></div>\n        <div class=\"").concat(ppfx, "toolbar\" style=\"pointer-events:all\"></div>\n        <div class=\"").concat(ppfx, "resizer\"></div>\n        <div class=\"").concat(ppfx, "offset-v\"></div>\n        <div class=\"").concat(ppfx, "offset-fixed-v\"></div>\n      </div>\n    "));
+    var toolsWrp = $el.find('[data-tools]');
+    this.toolsWrapper = toolsWrp.get(0);
+    toolsWrp.append("\n      <div class=\"".concat(ppfx, "tools ").concat(ppfx, "tools-gl\" style=\"pointer-events:none\">\n        <div class=\"").concat(ppfx, "placeholder\">\n          <div class=\"").concat(ppfx, "placeholder-int\"></div>\n        </div>\n      </div>\n      <div id=\"").concat(ppfx, "tools\" style=\"pointer-events:none\">\n        <div class=\"").concat(ppfx, "badge\"></div>\n        <div class=\"").concat(ppfx, "ghost\"></div>\n        <div class=\"").concat(ppfx, "toolbar\" style=\"pointer-events:all\"></div>\n        <div class=\"").concat(ppfx, "resizer\"></div>\n        <div class=\"").concat(ppfx, "offset-v\"></div>\n        <div class=\"").concat(ppfx, "offset-fixed-v\"></div>\n      </div>\n    "));
     var toolsEl = el.querySelector("#".concat(ppfx, "tools"));
     this.hlEl = el.querySelector(".".concat(ppfx, "highlighter"));
     this.badgeEl = el.querySelector(".".concat(ppfx, "badge"));
@@ -22657,8 +22813,16 @@ var timerZoom;
     this.resizerEl = el.querySelector(".".concat(ppfx, "resizer"));
     this.offsetEl = el.querySelector(".".concat(ppfx, "offset-v"));
     this.fixedOffsetEl = el.querySelector(".".concat(ppfx, "offset-fixed-v"));
+    this.toolsGlobEl = el.querySelector(".".concat(ppfx, "tools-gl"));
     this.toolsEl = toolsEl;
-    this.el.className = this.className;
+    this.el.className = this.className; // Render all frames
+
+    var frms = model.get('frames');
+    frms.listenToLoad();
+    frames.render();
+    em.setCurrentFrame(frms.at(0).view);
+    $frames.append(frames.el);
+    this.frame = frms.at(0).view;
     return this;
   }
 }));
@@ -22674,27 +22838,49 @@ var timerZoom;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var utils_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! utils/dom */ "./src/utils/dom.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ "./node_modules/@babel/runtime/helpers/toConsumableArray.js");
+/* harmony import */ var _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var css_composer_view_CssRulesView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! css_composer/view/CssRulesView */ "./src/css_composer/view/CssRulesView.js");
+/* harmony import */ var dom_components_view_ComponentView__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! dom_components/view/ComponentView */ "./src/dom_components/view/ComponentView.js");
+/* harmony import */ var utils_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! utils/dom */ "./src/utils/dom.js");
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
 
 
 
-var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.View.extend({
   tagName: 'iframe',
   attributes: {
-    allowfullscreen: 'allowfullscreen'
+    allowfullscreen: 'allowfullscreen',
+    'data-frame-el': true
   },
   initialize: function initialize(o) {
-    Object(underscore__WEBPACK_IMPORTED_MODULE_1__["bindAll"])(this, 'updateOffset');
-    this.config = o.config || {};
+    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'updateClientY', 'stopAutoscroll', 'autoscroll', '_emitUpdate');
+    var model = this.model,
+        el = this.el;
+    this.config = _objectSpread({}, o.config || {}, {
+      frameView: this
+    });
     this.ppfx = this.config.pStylePrefix || '';
     this.em = this.config.em;
-    this.listenTo(this.model, 'change:head', this.updateHead);
-    this.listenTo(this.em, 'change:device', this.updateDim);
+    this.listenTo(model, 'change:head', this.updateHead);
+    model.view = this;
+    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_7__["setViewEl"])(el, this);
   },
 
   /**
@@ -22702,46 +22888,17 @@ var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd'
    */
   updateHead: function updateHead() {
     var headEl = this.getHead();
-    Object(utils_dom__WEBPACK_IMPORTED_MODULE_2__["empty"])(headEl);
-    Object(utils_dom__WEBPACK_IMPORTED_MODULE_2__["appendVNodes"])(headEl, this.model.getHead());
+    Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["empty"])(headEl);
+    Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["appendVNodes"])(headEl, this.model.getHead());
   },
-
-  /**
-   * Update dimensions of the frame
-   * @private
-   */
-  updateDim: function updateDim() {
-    var em = this.em,
-        el = this.el,
-        $el = this.$el;
-    var style = el.style;
-    var device = em.getDeviceModel();
-    var currW = style.width || '';
-    var currH = style.height || '';
-    var newW = device ? device.get('width') : '';
-    var newH = device ? device.get('height') : '';
-    var noChanges = currW == newW && currH == newH;
-    style.width = newW;
-    style.height = newH;
-    this.updateOffset(); // Prevent fixed highlighting box which appears when on
-    // component hover during the animation
-
-    em.stopDefault({
-      preserveSelected: 1
-    });
-    noChanges ? this.updateOffset() : $el.on(motionsEv, this.updateOffset);
+  getEl: function getEl() {
+    return this.el;
   },
-  updateOffset: function updateOffset() {
-    var em = this.em;
-    var offset = em.get('Canvas').getOffset();
-    em.set('canvasOffset', offset);
-    em.runDefault({
-      preserveSelected: 1
-    });
-    this.$el.off(motionsEv, this.updateOffset);
+  getWindow: function getWindow() {
+    return this.getEl().contentWindow;
   },
   getDoc: function getDoc() {
-    return this.$el.get(0).contentDocument;
+    return this.getEl().contentDocument;
   },
   getHead: function getHead() {
     return this.getDoc().querySelector('head');
@@ -22750,13 +22907,531 @@ var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd'
     return this.getDoc().querySelector('body');
   },
   getWrapper: function getWrapper() {
-    return this.$el.contents().find('body > div');
+    return this.getBody().querySelector('[data-gjs-type=wrapper]');
+  },
+  getJsContainer: function getJsContainer() {
+    if (!this.jsContainer) {
+      this.jsContainer = Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["createEl"])('div', {
+        class: "".concat(this.ppfx, "js-cont")
+      });
+    }
+
+    return this.jsContainer;
+  },
+  getToolsEl: function getToolsEl() {
+    var frameWrapView = this.config.frameWrapView;
+    return frameWrapView && frameWrapView.elTools;
+  },
+  getGlobalToolsEl: function getGlobalToolsEl() {
+    return this.em.get('Canvas').getGlobalToolsEl();
+  },
+  getHighlighter: function getHighlighter() {
+    return this._getTool('[data-hl]');
+  },
+  getBadgeEl: function getBadgeEl() {
+    return this._getTool('[data-badge]');
+  },
+  getOffsetViewerEl: function getOffsetViewerEl() {
+    return this._getTool('[data-offset]');
+  },
+  getRect: function getRect() {
+    if (!this.rect) {
+      this.rect = this.el.getBoundingClientRect();
+    }
+
+    return this.rect;
+  },
+
+  /**
+   * Get rect data, not affected by the canvas zoom
+   */
+  getOffsetRect: function getOffsetRect() {
+    var el = this.el;
+
+    var _this$getBody = this.getBody(),
+        scrollTop = _this$getBody.scrollTop,
+        scrollLeft = _this$getBody.scrollLeft;
+
+    var height = el.offsetHeight;
+    var width = el.offsetWidth;
+    return {
+      top: el.offsetTop,
+      left: el.offsetLeft,
+      height: height,
+      width: width,
+      scrollTop: scrollTop,
+      scrollLeft: scrollLeft,
+      scrollBottom: scrollTop + height,
+      scrollRight: scrollLeft + width
+    };
+  },
+  _getTool: function _getTool(name) {
+    var toolsEl = this.getToolsEl();
+
+    if (!this[name]) {
+      this[name] = toolsEl.querySelector(name);
+    }
+
+    return this[name];
+  },
+  remove: function remove() {
+    var root = this.root,
+        model = this.model;
+
+    this._toggleEffects();
+
+    backbone__WEBPACK_IMPORTED_MODULE_2___default.a.View.prototype.remove.apply(this, arguments);
+    root.remove();
+    model.remove();
+  },
+  startAutoscroll: function startAutoscroll() {
+    var _this = this;
+
+    this.lastMaxHeight = this.getWrapper().offsetHeight - this.el.offsetHeight; // By detaching those from the stack avoid browsers lags
+    // Noticeable with "fast" drag of blocks
+
+    setTimeout(function () {
+      _this._toggleAutoscrollFx(1);
+
+      requestAnimationFrame(_this.autoscroll);
+    }, 0);
+  },
+  autoscroll: function autoscroll() {
+    if (this.dragging) {
+      var canvas = this.em.get('Canvas');
+      var win = this.getWindow();
+      var body = this.getBody();
+      var actualTop = body.scrollTop;
+      var clientY = this.lastClientY || 0;
+      var limitTop = canvas.getConfig().autoscrollLimit;
+      var limitBottom = this.getRect().height - limitTop;
+      var nextTop = actualTop;
+
+      if (clientY < limitTop) {
+        nextTop -= limitTop - clientY;
+      }
+
+      if (clientY > limitBottom) {
+        nextTop += clientY - limitBottom;
+      }
+
+      if (nextTop !== actualTop && nextTop > 0 && nextTop < this.lastMaxHeight) {
+        var toolsEl = this.getGlobalToolsEl();
+        toolsEl.style.opacity = 0;
+        this.showGlobalTools();
+        win.scrollTo(0, nextTop);
+      }
+
+      requestAnimationFrame(this.autoscroll);
+    }
+  },
+  updateClientY: function updateClientY(ev) {
+    ev.preventDefault();
+    this.lastClientY = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_7__["getPointerEvent"])(ev).clientY * this.em.getZoomDecimal();
+  },
+  showGlobalTools: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
+    this.getGlobalToolsEl().style.opacity = '';
+  }, 50),
+  stopAutoscroll: function stopAutoscroll() {
+    this.dragging && this._toggleAutoscrollFx();
+  },
+  _toggleAutoscrollFx: function _toggleAutoscrollFx(enable) {
+    this.dragging = enable;
+    var win = this.getWindow();
+    var method = enable ? 'on' : 'off';
+    var mt = {
+      on: utils_mixins__WEBPACK_IMPORTED_MODULE_7__["on"],
+      off: utils_mixins__WEBPACK_IMPORTED_MODULE_7__["off"]
+    };
+    mt[method](win, 'mousemove dragover', this.updateClientY);
+    mt[method](win, 'mouseup', this.stopAutoscroll);
   },
   render: function render() {
-    this.$el.attr({
-      class: this.ppfx + 'frame'
+    var el = this.el,
+        $el = this.$el,
+        ppfx = this.ppfx,
+        config = this.config;
+    $el.attr({
+      class: ppfx + 'frame'
+    });
+
+    if (config.scripts.length) {
+      this.renderScripts();
+    } else if (config.renderContent) {
+      el.onload = this.renderBody.bind(this);
+    }
+
+    return this;
+  },
+  renderScripts: function renderScripts() {
+    var _this2 = this;
+
+    var el = this.el,
+        config = this.config;
+
+    var appendScript = function appendScript(scripts) {
+      if (scripts.length > 0) {
+        var src = scripts.shift();
+        var scriptEl = Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["createEl"])('script', _objectSpread({
+          type: 'text/javascript'
+        }, Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(src) ? {
+          src: src
+        } : src));
+        scriptEl.onerror = scriptEl.onload = appendScript.bind(null, scripts);
+        el.contentDocument.head.appendChild(scriptEl);
+      } else {
+        _this2.renderBody();
+      }
+    };
+
+    el.onload = function () {
+      return appendScript(_babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(config.scripts));
+    };
+  },
+  renderBody: function renderBody() {
+    var _this3 = this;
+
+    var config = this.config,
+        model = this.model,
+        ppfx = this.ppfx;
+    var root = model.get('root');
+    var styles = model.get('styles');
+    var em = config.em;
+    var doc = this.getDoc();
+    var head = this.getHead();
+    var body = this.getBody();
+    var win = this.getWindow();
+    var conf = em.get('Config');
+    var extStyles = [];
+    config.styles.forEach(function (href) {
+      return extStyles.push(Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(href) ? {
+        tag: 'link',
+        attributes: {
+          href: href,
+          rel: 'stylesheet'
+        }
+      } : {
+        tag: 'link',
+        attributes: _objectSpread({
+          rel: 'stylesheet'
+        }, href)
+      });
+    });
+    extStyles.length && Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["appendVNodes"])(head, extStyles);
+    var colorWarn = '#ffca6f'; // I need all this styles to make the editor work properly
+    // Remove `html { height: 100%;}` from the baseCss as it gives jumpings
+    // effects (on ENTER) with RTE like CKEditor (maybe some bug there?!?)
+    // With `body {height: auto;}` jumps in CKEditor are removed but in
+    // Firefox is impossible to drag stuff in empty canvas, so bring back
+    // `body {height: 100%;}`.
+    // For the moment I give the priority to Firefox as it might be
+    // CKEditor's issue
+
+    Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["append"])(body, "<style>\n      ".concat(conf.baseCss || '', "\n\n      .").concat(ppfx, "dashed *[data-highlightable] {\n        outline: 1px dashed rgba(170,170,170,0.7);\n        outline-offset: -2px;\n      }\n\n      .").concat(ppfx, "selected {\n        outline: 3px solid #3b97e3 !important;\n        outline-offset: -3px;\n      }\n\n      .").concat(ppfx, "selected-parent {\n        outline: 2px solid ").concat(colorWarn, " !important\n      }\n\n      .").concat(ppfx, "no-select {\n        user-select: none;\n        -webkit-user-select:none;\n        -moz-user-select: none;\n      }\n\n      .").concat(ppfx, "freezed {\n        opacity: 0.5;\n        pointer-events: none;\n      }\n\n      .").concat(ppfx, "no-pointer {\n        pointer-events: none;\n      }\n\n      .").concat(ppfx, "plh-image {\n        background: #f5f5f5;\n        border: none;\n        height: 100px;\n        width: 100px;\n        display: block;\n        outline: 3px solid #ffca6f;\n        cursor: pointer;\n        outline-offset: -2px\n      }\n\n      .").concat(ppfx, "grabbing {\n        cursor: grabbing;\n        cursor: -webkit-grabbing;\n      }\n\n      .").concat(ppfx, "is__grabbing {\n        overflow-x: hidden;\n      }\n\n      .").concat(ppfx, "is__grabbing,\n      .").concat(ppfx, "is__grabbing * {\n        cursor: grabbing !important;\n      }\n\n      ").concat(conf.canvasCss || '', "\n      ").concat(conf.protectedCss || '', "\n    </style>"));
+    this.root = new dom_components_view_ComponentView__WEBPACK_IMPORTED_MODULE_5__["default"]({
+      model: root,
+      config: _objectSpread({}, root.config, {
+        frameView: this
+      })
+    }).render();
+    Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["append"])(body, this.root.el);
+    Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["append"])(body, new css_composer_view_CssRulesView__WEBPACK_IMPORTED_MODULE_4__["default"]({
+      collection: styles,
+      config: _objectSpread({}, em.get('CssComposer').getConfig(), {
+        frameView: this
+      })
+    }).render().el);
+    Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["append"])(body, this.getJsContainer()); // em.trigger('loaded'); // I need to manage only the first one maybe
+    //this.updateOffset(); // TOFIX (check if I need it)
+    // Avoid some default behaviours
+
+    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_7__["on"])(body, 'click', function (ev) {
+      return ev && ev.target.tagName == 'A' && ev.preventDefault();
+    });
+    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_7__["on"])(body, 'submit', function (ev) {
+      return ev && ev.preventDefault();
+    }); // When the iframe is focused the event dispatcher is not the same so
+    // I need to delegate all events to the parent document
+
+    [{
+      event: 'keydown keyup keypress',
+      class: 'KeyboardEvent'
+    }, {
+      event: 'wheel',
+      class: 'WheelEvent'
+    }].forEach(function (obj) {
+      return obj.event.split(' ').forEach(function (event) {
+        doc.addEventListener(event, function (ev) {
+          return _this3.el.dispatchEvent(Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["createCustomEvent"])(ev, obj.class));
+        });
+      });
+    });
+
+    this._toggleEffects(1);
+
+    model.trigger('loaded');
+  },
+  _toggleEffects: function _toggleEffects(enable) {
+    var method = enable ? utils_mixins__WEBPACK_IMPORTED_MODULE_7__["on"] : utils_mixins__WEBPACK_IMPORTED_MODULE_7__["off"];
+    var win = this.getWindow();
+    method(win, "".concat(utils_dom__WEBPACK_IMPORTED_MODULE_6__["motionsEv"], " resize"), this._emitUpdate);
+  },
+  _emitUpdate: function _emitUpdate() {
+    this.model._emitUpdated();
+  }
+}));
+
+/***/ }),
+
+/***/ "./src/canvas/view/FrameWrapView.js":
+/*!******************************************!*\
+  !*** ./src/canvas/view/FrameWrapView.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _FrameView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FrameView */ "./src/canvas/view/FrameView.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var utils_dom__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! utils/dom */ "./src/utils/dom.js");
+/* harmony import */ var utils_Dragger__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! utils/Dragger */ "./src/utils/Dragger.js");
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
+  events: {
+    'click [data-action-remove]': 'remove',
+    'mousedown [data-action-move]': 'startDrag'
+  },
+  initialize: function initialize() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var conf = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'onScroll', 'frameLoaded', 'updateOffset', 'remove', 'startDrag');
+    var model = this.model;
+
+    var config = _objectSpread({}, opts.config || conf, {
+      frameWrapView: this
+    });
+
+    var canvasView = config.canvasView,
+        em = config.em;
+    this.cv = canvasView;
+    this.config = config;
+    this.em = em;
+    this.canvas = em && em.get('Canvas');
+    this.ppfx = config.pStylePrefix || '';
+    this.frame = new _FrameView__WEBPACK_IMPORTED_MODULE_2__["default"]({
+      model: model,
+      config: config
+    });
+    this.classAnim = "".concat(this.ppfx, "frame-wrapper--anim");
+    this.listenTo(model, 'loaded', this.frameLoaded);
+    this.listenTo(model, 'change:x change:y', this.updatePos);
+    this.listenTo(model, 'change:width change:height', this.updateSize);
+    this.updatePos();
+    this.setupDragger();
+  },
+  setupDragger: function setupDragger() {
+    var _this = this;
+
+    var canvas = this.canvas,
+        model = this.model;
+    var dragX, dragY, zoom;
+
+    var toggleEffects = function toggleEffects(on) {
+      canvas.toggleFramesEvents(on);
+    };
+
+    this.dragger = new utils_Dragger__WEBPACK_IMPORTED_MODULE_5__["default"]({
+      onStart: function onStart() {
+        var _model$attributes = model.attributes,
+            x = _model$attributes.x,
+            y = _model$attributes.y;
+        zoom = _this.em.getZoomMultiplier();
+        dragX = x;
+        dragY = y;
+        toggleEffects();
+      },
+      onEnd: function onEnd() {
+        return toggleEffects(1);
+      },
+      setPosition: function setPosition(posOpts) {
+        model.set({
+          x: dragX + posOpts.x * zoom,
+          y: dragY + posOpts.y * zoom
+        });
+      }
+    });
+  },
+  startDrag: function startDrag(ev) {
+    ev && this.dragger.start(ev);
+  },
+  remove: function remove() {
+    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
+    this.frame.remove();
+    return this;
+  },
+  updateOffset: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
+    var em = this.em,
+        $el = this.$el,
+        frame = this.frame;
+    em.runDefault({
+      preserveSelected: 1
+    });
+    $el.removeClass(this.classAnim);
+
+    frame.model._emitUpdated();
+  }),
+  updatePos: function updatePos(md) {
+    var model = this.model,
+        el = this.el;
+    var _model$attributes2 = model.attributes,
+        x = _model$attributes2.x,
+        y = _model$attributes2.y;
+    var style = el.style;
+    this.frame.rect = 0;
+    style.left = isNaN(x) ? x : "".concat(x, "px");
+    style.top = isNaN(y) ? y : "".concat(y, "px");
+    md && this.updateOffset();
+  },
+  updateSize: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
+    this.updateDim();
+  }),
+
+  /**
+   * Update dimensions of the frame
+   * @private
+   */
+  updateDim: function updateDim() {
+    var em = this.em,
+        el = this.el,
+        $el = this.$el,
+        model = this.model,
+        classAnim = this.classAnim;
+    var _model$attributes3 = model.attributes,
+        width = _model$attributes3.width,
+        height = _model$attributes3.height;
+    var style = el.style;
+    var currW = style.width || '';
+    var currH = style.height || '';
+    var newW = width || '';
+    var newH = height || '';
+    var noChanges = currW == newW && currH == newH;
+    var un = 'px';
+    this.frame.rect = 0;
+    $el.addClass(classAnim);
+    style.width = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isNumber"])(newW) ? "".concat(newW).concat(un) : newW;
+    style.height = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isNumber"])(newH) ? "".concat(newH).concat(un) : newH; // Set width and height from DOM (should be done only once)
+
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isNull"])(width) || Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isNull"])(height)) {
+      var newDims = _objectSpread({}, !width ? {
+        width: el.offsetWidth
+      } : {}, {}, !height ? {
+        height: el.offsetHeight
+      } : {});
+
+      model.set(newDims, {
+        silent: 1
+      });
+    } // Prevent fixed highlighting box which appears when on
+    // component hover during the animation
+
+
+    em.stopDefault({
+      preserveSelected: 1
+    });
+    noChanges ? this.updateOffset() : $el.one(utils_dom__WEBPACK_IMPORTED_MODULE_4__["motionsEv"], this.updateOffset);
+  },
+  onScroll: function onScroll() {
+    var frame = this.frame,
+        em = this.em;
+    em.trigger('frame:scroll', {
+      frame: frame,
+      body: frame.getBody(),
+      target: frame.getWindow()
+    });
+  },
+  frameLoaded: function frameLoaded() {
+    var frame = this.frame;
+    frame.getWindow().onscroll = this.onScroll;
+    this.updateDim();
+  },
+  render: function render() {
+    var frame = this.frame,
+        $el = this.$el,
+        ppfx = this.ppfx,
+        cv = this.cv,
+        model = this.model,
+        el = this.el;
+    var onRender = model.attributes.onRender;
+    frame.render();
+    $el.empty().attr({
+      class: "".concat(ppfx, "frame-wrapper")
+    }).append("\n      <div class=\"".concat(ppfx, "frame-wrapper__top gjs-two-color\" data-frame-top>\n        <div class=\"").concat(ppfx, "frame-wrapper__name\" data-action-move>\n          ").concat(model.get('name') || '', "\n        </div>\n        <div class=\"").concat(ppfx, "frame-wrapper__top-r\">\n          <div class=\"").concat(ppfx, "frame-wrapper__icon\" data-action-remove style=\"display: none\">\n            <svg viewBox=\"0 0 24 24\"><path d=\"M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z\"></path></svg>\n          </div>\n        </div>\n      </div>\n      <div class=\"").concat(ppfx, "frame-wrapper__right\" data-frame-right></div>\n      <div class=\"").concat(ppfx, "frame-wrapper__left\" data-frame-left></div>\n      <div class=\"").concat(ppfx, "frame-wrapper__bottom\" data-frame-bottom></div>\n      ")).append(frame.el);
+    var elTools = Object(utils_dom__WEBPACK_IMPORTED_MODULE_4__["createEl"])('div', {
+      class: "".concat(ppfx, "tools"),
+      style: 'pointer-events:none; opacity: 0'
+    }, "\n      <div class=\"".concat(ppfx, "highlighter\" data-hl></div>\n      <div class=\"").concat(ppfx, "badge\" data-badge></div>\n      <div class=\"").concat(ppfx, "placeholder\">\n        <div class=\"").concat(ppfx, "placeholder-int\"></div>\n      </div>\n      <div class=\"").concat(ppfx, "ghost\"></div>\n      <div class=\"").concat(ppfx, "toolbar\" style=\"pointer-events:all\"></div>\n      <div class=\"").concat(ppfx, "resizer\"></div>\n      <div class=\"").concat(ppfx, "offset-v\" data-offset>\n        <div class=\"gjs-marginName\" data-offset-m>\n          <div class=\"gjs-margin-v-el gjs-margin-v-top\" data-offset-m-t></div>\n          <div class=\"gjs-margin-v-el gjs-margin-v-bottom\" data-offset-m-b></div>\n          <div class=\"gjs-margin-v-el gjs-margin-v-left\" data-offset-m-l></div>\n          <div class=\"gjs-margin-v-el gjs-margin-v-right\" data-offset-m-r></div>\n        </div>\n        <div class=\"gjs-paddingName\" data-offset-m>\n          <div class=\"gjs-padding-v-el gjs-padding-v-top\" data-offset-p-t></div>\n          <div class=\"gjs-padding-v-el gjs-padding-v-bottom\" data-offset-p-b></div>\n          <div class=\"gjs-padding-v-el gjs-padding-v-left\" data-offset-p-l></div>\n          <div class=\"gjs-padding-v-el gjs-padding-v-right\" data-offset-p-r></div>\n        </div>\n      </div>\n      <div class=\"").concat(ppfx, "offset-fixed-v\"></div>\n    "));
+    this.elTools = elTools;
+    cv.toolsWrapper.appendChild(elTools); // TODO remove on frame remove
+
+    onRender && onRender({
+      el: el,
+      elTop: el.querySelector('[data-frame-top]'),
+      elRight: el.querySelector('[data-frame-right]'),
+      elBottom: el.querySelector('[data-frame-bottom]'),
+      elLeft: el.querySelector('[data-frame-left]'),
+      frame: model,
+      frameWrapperView: this,
+      remove: this.remove,
+      startDrag: this.startDrag
     });
     return this;
+  }
+}));
+
+/***/ }),
+
+/***/ "./src/canvas/view/FramesView.js":
+/*!***************************************!*\
+  !*** ./src/canvas/view/FramesView.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var domain_abstract_view_DomainViews__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! domain_abstract/view/DomainViews */ "./src/domain_abstract/view/DomainViews.js");
+/* harmony import */ var _FrameWrapView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FrameWrapView */ "./src/canvas/view/FrameWrapView.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = (domain_abstract_view_DomainViews__WEBPACK_IMPORTED_MODULE_0__["default"].extend({
+  itemView: _FrameWrapView__WEBPACK_IMPORTED_MODULE_1__["default"],
+  autoAdd: 1,
+  init: function init() {
+    this.listenTo(this.collection, 'reset', this.render);
+  },
+  onRender: function onRender() {
+    var config = this.config,
+        $el = this.$el;
+    var em = config.em;
+    em && $el.attr({
+      class: "".concat(em.getConfig('stylePrefix'), "frames")
+    });
   }
 }));
 
@@ -23049,7 +23724,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -23356,7 +24031,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
@@ -23578,12 +24253,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _view_CommandAbstract__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./view/CommandAbstract */ "./src/commands/view/CommandAbstract.js");
 /* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./config/config */ "./src/commands/config/config.js");
+/* harmony import */ var dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! dom_components/model/Component */ "./src/dom_components/model/Component.js");
 
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/commands/config/config.js)
@@ -23613,6 +24289,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  *
  * @module Commands
  */
+
 
 
 
@@ -23687,6 +24364,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
             preserveSelected: 1
           };
           var modes = ['absolute', 'translate'];
+          var mode = sel.get('dmode') || em.get('dmode');
 
           var hideTlb = function hideTlb() {
             return em.stopDefault(defComOptions);
@@ -23694,34 +24372,43 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
           selAll.forEach(function (sel) {
             return sel.trigger('disable');
-          }); // Dirty patch to prevent parent selection on drop (in absolute mode)
-
-          em.set('_cmpDrag', 1);
+          });
 
           if (!sel || !sel.get('draggable')) {
-            console.warn('The element is not draggable');
-            return;
-          }
+            return em.logWarning('The element is not draggable');
+          } // Without setTimeout the ghost image disappears
 
-          var mode = sel.get('dmode') || em.get('dmode'); // Without setTimeout the ghost image disappears
 
           nativeDrag ? setTimeout(hideTlb, 0) : hideTlb();
 
-          var onEnd = function onEnd(e, opts) {
+          var onStart = function onStart(data) {
+            em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], ":start"), data);
+          };
+
+          var onDrag = function onDrag(data) {
+            em.trigger(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], data);
+          };
+
+          var onEnd = function onEnd(e, opts, data) {
             em.runDefault(defComOptions);
             selAll.forEach(function (sel) {
               return sel.set('status', 'selected');
             });
             ed.select(selAll);
             sel.emitUpdate();
+            em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], ":end"), data);
           };
 
           if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(modes, mode)) {
-            // TODO move grabbing func in editor/canvas from the Sorter
+            // Dirty patch to prevent parent selection on drop
+            em.set('_cmpDrag', 1); // TODO move grabbing func in editor/canvas from the Sorter
+
             dragger = ed.runCommand('core:component-drag', {
               guidesInfo: 1,
               mode: mode,
               target: sel,
+              onStart: onStart,
+              onDrag: onDrag,
               onEnd: onEnd,
               event: event
             });
@@ -23731,6 +24418,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
             }
 
             var cmdMove = ed.Commands.get('move-comp');
+            cmdMove.onStart = onStart;
+            cmdMove.onDrag = onDrag;
             cmdMove.onEndMoveFromModel = onEnd;
             cmdMove.initSorterFromModels(selAll);
           }
@@ -24236,11 +24925,10 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     if (this.em.get) this.setElement(this.getCanvas());
 
     if (this.canvas) {
-      this.$canvas = this.$el;
-      this.$wrapper = $(this.getCanvasWrapper());
-      this.frameEl = this.canvas.getFrameEl();
-      this.canvasTool = this.getCanvasTools();
-      this.bodyEl = this.getCanvasBody();
+      this.$canvas = this.$el; // this.$wrapper = $(this.getCanvasWrapper());
+      // this.frameEl = this.canvas.getFrameEl();
+
+      this.canvasTool = this.getCanvasTools(); // this.bodyEl = this.getCanvasBody();
     }
 
     this.init(this.config);
@@ -24388,6 +25076,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   run: function run(ed, sender) {
+    var _this = this;
+
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var components = opts.component || ed.getSelectedAll();
     components = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isArray"])(components) ? _babel_runtime_helpers_toConsumableArray__WEBPACK_IMPORTED_MODULE_0___default()(components) : [components]; // It's important to deselect components first otherwise,
@@ -24396,15 +25086,12 @@ __webpack_require__.r(__webpack_exports__);
     ed.select(null);
     components.forEach(function (component) {
       if (!component || !component.get('removable')) {
-        console.warn('The element is not removable', component);
-        return;
+        return _this.em.logWarning('The element is not removable', {
+          component: component
+        });
       }
 
-      if (component) {
-        var coll = component.collection;
-        component.trigger('component:destroy');
-        coll && coll.remove(component);
-      }
+      component.remove();
     });
     return components;
   }
@@ -24430,10 +25117,11 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
+var evName = 'dmode';
 /* harmony default export */ __webpack_exports__["default"] = ({
   run: function run(editor, sender) {
     var _this = this;
@@ -24471,7 +25159,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     this.guidesContainer = this.getGuidesContainer();
     this.guidesTarget = this.getGuidesTarget();
     this.guidesStatic = this.getGuidesStatic();
-    window.guidesTarget = this.guidesTarget;
     var drg = this.dragger;
 
     if (!drg) {
@@ -24483,7 +25170,16 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
     event && drg.start(event);
     this.toggleDrag(1);
+    this.em.trigger("".concat(evName, ":start"), this.getEventOpts());
     return drg;
+  },
+  getEventOpts: function getEventOpts() {
+    return {
+      mode: this.opts.mode,
+      target: this.target,
+      guidesTarget: this.guidesTarget,
+      guidesStatic: this.guidesStatic
+    };
   },
   stop: function stop() {
     this.toggleDrag();
@@ -24516,19 +25212,19 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       elInfoY.innerHTML = guideContent;
       guidesEl.appendChild(elInfoX);
       guidesEl.appendChild(elInfoY);
-      editor.Canvas.getToolsEl().appendChild(guidesEl);
+      editor.Canvas.getGlobalToolsEl().appendChild(guidesEl);
       this.guidesEl = guidesEl;
       this.elGuideInfoX = elInfoX;
       this.elGuideInfoY = elInfoY;
       this.elGuideInfoContentX = elInfoX.querySelector(".".concat(pfx, "guide-info__content"));
       this.elGuideInfoContentY = elInfoY.querySelector(".".concat(pfx, "guide-info__content"));
-      em.on('canvas:update', function () {
+      em.on('canvas:update frame:scroll', Object(underscore__WEBPACK_IMPORTED_MODULE_1__["debounce"])(function () {
         _this2.updateGuides();
 
         opts.debug && _this2.guides.forEach(function (item) {
           return _this2.renderGuide(item);
         });
-      });
+      }, 200));
     }
 
     return guidesEl;
@@ -24549,35 +25245,18 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     return this.getElementGuides(this.target.getEl());
   },
   updateGuides: function updateGuides(guides) {
-    var editor = this.editor;
+    var _this4 = this;
+
+    var lastEl, lastPos;
     (guides || this.guides).forEach(function (item) {
       var origin = item.origin;
-
-      var _editor$Canvas$getEle = editor.Canvas.getElementPos(origin),
-          top = _editor$Canvas$getEle.top,
-          height = _editor$Canvas$getEle.height,
-          left = _editor$Canvas$getEle.left,
-          width = _editor$Canvas$getEle.width;
-
-      switch (item.type) {
-        case 't':
-          return item.y = top;
-
-        case 'b':
-          return item.y = top + height;
-
-        case 'l':
-          return item.x = left;
-
-        case 'r':
-          return item.x = left + width;
-
-        case 'x':
-          return item.x = left + width / 2;
-
-        case 'y':
-          return item.y = top + height / 2;
-      }
+      var pos = lastEl === origin ? lastPos : _this4.getElementPos(origin);
+      lastEl = origin;
+      lastPos = pos;
+      Object(underscore__WEBPACK_IMPORTED_MODULE_1__["each"])(_this4.getGuidePosUpdate(item, pos), function (val, key) {
+        return item[key] = val;
+      });
+      item.originRect = pos;
     });
   },
   getGuidePosUpdate: function getGuidePosUpdate(item, rect) {
@@ -24618,13 +25297,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   renderGuide: function renderGuide() {
     var item = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var el = item.guide || document.createElement('div');
-    var Canvas = this.editor.Canvas;
-
-    var _Canvas$getRect = Canvas.getRect(),
-        topScroll = _Canvas$getRect.topScroll,
-        top = _Canvas$getRect.top;
-
-    var frameTop = Canvas.getCanvasView().getFrameOffset().top;
     var un = 'px';
     var guideSize = item.active ? 2 : 1;
     var numEl = el.children[0];
@@ -24645,24 +25317,26 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       el.style.width = "".concat(guideSize).concat(un);
       el.style.height = '100%';
       el.style.left = "".concat(item.x).concat(un);
-      el.style.top = "".concat(topScroll - frameTop + top).concat(un);
+      el.style.top = "0".concat(un);
     }
 
     !item.guide && this.guidesContainer.appendChild(el);
     return el;
   },
+  getElementPos: function getElementPos(el) {
+    return this.editor.Canvas.getElementPos(el, {
+      noScroll: 1
+    });
+  },
   getElementGuides: function getElementGuides(el) {
-    var _this4 = this;
+    var _this5 = this;
 
-    var editor = this.editor,
-        opts = this.opts;
-
-    var _editor$Canvas$getEle2 = editor.Canvas.getElementPos(el),
-        top = _editor$Canvas$getEle2.top,
-        height = _editor$Canvas$getEle2.height,
-        left = _editor$Canvas$getEle2.left,
-        width = _editor$Canvas$getEle2.width;
-
+    var opts = this.opts;
+    var originRect = this.getElementPos(el);
+    var top = originRect.top,
+        height = originRect.height,
+        left = originRect.left,
+        width = originRect.width;
     var guides = [{
       type: 't',
       y: top
@@ -24690,12 +25364,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     ].map(function (item) {
       return _objectSpread({}, item, {
         origin: el,
-        originRect: editor.Canvas.getElementPos(el),
-        guide: opts.debug && _this4.renderGuide(item)
+        originRect: originRect,
+        guide: opts.debug && _this5.renderGuide(item)
       });
     });
     guides.forEach(function (item) {
-      return _this4.guides.push(item);
+      return _this5.guides.push(item);
     });
     return guides;
   },
@@ -24790,15 +25464,25 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       avoidStore: !end
     });
   },
+  _getDragData: function _getDragData() {
+    var target = this.target;
+    return {
+      target: target,
+      parent: target.parent(),
+      index: target.index()
+    };
+  },
   onStart: function onStart() {
     var target = this.target,
         editor = this.editor,
         isTran = this.isTran,
         opts = this.opts;
-    var center = opts.center;
+    var center = opts.center,
+        onStart = opts.onStart;
     var Canvas = editor.Canvas;
     var style = target.getStyle();
     var position = 'absolute';
+    onStart && onStart(this._getDragData());
     if (isTran) return;
 
     if (style.position !== position) {
@@ -24828,34 +25512,38 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     }
   },
   onDrag: function onDrag() {
-    var _this5 = this;
+    var _this6 = this;
 
     var guidesTarget = this.guidesTarget,
         opts = this.opts;
     var onDrag = opts.onDrag;
     this.updateGuides(guidesTarget);
     opts.debug && guidesTarget.forEach(function (item) {
-      return _this5.renderGuide(item);
+      return _this6.renderGuide(item);
     });
     opts.guidesInfo && this.renderGuideInfo(guidesTarget.filter(function (item) {
       return item.active;
     }));
-    onDrag && onDrag.apply(void 0, arguments);
+    onDrag && onDrag(this._getDragData());
   },
-  onEnd: function onEnd() {
+  onEnd: function onEnd(ev, dragger) {
+    var opt = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var editor = this.editor,
         opts = this.opts,
         id = this.id;
     var onEnd = opts.onEnd;
-    onEnd && onEnd.apply(void 0, arguments);
+    onEnd && onEnd(ev, opt, _objectSpread({
+      event: ev
+    }, opt, {}, this._getDragData()));
     editor.stopCommand(id);
     this.hideGuidesInfo();
+    this.em.trigger("".concat(evName, ":end"), this.getEventOpts());
   },
   hideGuidesInfo: function hideGuidesInfo() {
-    var _this6 = this;
+    var _this7 = this;
 
     ['X', 'Y'].forEach(function (item) {
-      var guide = _this6["elGuideInfo".concat(item)];
+      var guide = _this7["elGuideInfo".concat(item)];
 
       if (guide) guide.style.display = 'none';
     });
@@ -24865,16 +25553,17 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
    * Render guides with spacing information
    */
   renderGuideInfo: function renderGuideInfo() {
-    var _this7 = this;
+    var _this8 = this;
 
     var guides = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    var guidesStatic = this.guidesStatic,
-        editor = this.editor;
+    var guidesStatic = this.guidesStatic;
     this.hideGuidesInfo();
     guides.forEach(function (item) {
       var origin = item.origin,
           x = item.x;
-      var rectOrigin = editor.Canvas.getElementPos(origin);
+
+      var rectOrigin = _this8.getElementPos(origin);
+
       var axis = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isUndefined"])(x) ? 'y' : 'x';
       var isY = axis === 'y';
       var origEdge1 = rectOrigin[isY ? 'left' : 'top'];
@@ -24882,14 +25571,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       var origEdge2 = isY ? origEdge1 + rectOrigin.width : origEdge1 + rectOrigin.height;
       var origEdge2Raw = isY ? origEdge1Raw + rectOrigin.rect.width : origEdge1Raw + rectOrigin.rect.height;
 
-      var elGuideInfo = _this7["elGuideInfo".concat(axis.toUpperCase())];
+      var elGuideInfo = _this8["elGuideInfo".concat(axis.toUpperCase())];
 
-      var elGuideInfoCnt = _this7["elGuideInfoContent".concat(axis.toUpperCase())];
+      var elGuideInfoCnt = _this8["elGuideInfoContent".concat(axis.toUpperCase())];
 
       var guideInfoStyle = elGuideInfo.style; // Find the nearest element
 
       var res = guidesStatic.filter(function (stat) {
-        return stat[axis] === item[axis];
+        return stat.type === item.type;
       }).map(function (stat) {
         var _stat$originRect = stat.originRect,
             left = _stat$originRect.left,
@@ -24922,14 +25611,28 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         var statEdge1Raw = isY ? rect.left : rect.top;
         var statEdge2 = isY ? left + width : top + height;
         var statEdge2Raw = isY ? rect.left + rect.width : rect.top + rect.height;
-        var pos2 = "".concat(isY ? item.y : item.x, "px");
+        var posFirst = isY ? item.y : item.x;
+        var posSecond = isEdge1 ? statEdge2 : origEdge2;
+        var pos2 = "".concat(posFirst, "px");
         var size = isEdge1 ? origEdge1 - statEdge2 : statEdge1 - origEdge2;
         var sizeRaw = isEdge1 ? origEdge1Raw - statEdge2Raw : statEdge1Raw - origEdge2Raw;
         guideInfoStyle.display = '';
         guideInfoStyle[isY ? 'top' : 'left'] = pos2;
-        guideInfoStyle[isY ? 'left' : 'top'] = "".concat(isEdge1 ? statEdge2 : origEdge2, "px");
+        guideInfoStyle[isY ? 'left' : 'top'] = "".concat(posSecond, "px");
         guideInfoStyle[isY ? 'width' : 'height'] = "".concat(size, "px");
         elGuideInfoCnt.innerHTML = "".concat(Math.round(sizeRaw), "px");
+
+        _this8.em.trigger("".concat(evName, ":active"), _objectSpread({}, _this8.getEventOpts(), {
+          guide: item,
+          guidesStatic: guidesStatic,
+          matched: res,
+          posFirst: posFirst,
+          posSecond: posSecond,
+          size: size,
+          sizeRaw: sizeRaw,
+          elGuideInfo: elGuideInfo,
+          elGuideInfoCnt: elGuideInfoCnt
+        }));
       }
     });
   },
@@ -25466,10 +26169,15 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     // Avoid badge showing on move
     this.cacheEl = null;
     var lastModel = models[models.length - 1];
-    var doc = this.frameEl.contentDocument;
-    this.startSelectPosition(lastModel.view.el, doc);
+    var frame = (this.em.get('currentFrame') || {}).model;
+    var el = lastModel.getEl(frame);
+    var doc = el.ownerDocument;
+    this.startSelectPosition(el, doc, {
+      onStart: this.onStart
+    });
     this.sorter.draggable = lastModel.get('draggable');
     this.sorter.toMove = models;
+    this.sorter.onMoveClb = this.onDrag;
     this.sorter.onEndMove = this.onEndMoveFromModel.bind(this);
     this.stopSelectComponent();
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"])(this.getContentWindow(), 'keydown', this.rollback);
@@ -26029,10 +26737,10 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
+/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
@@ -26045,7 +26753,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -26054,17 +26762,35 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 var $ = backbone__WEBPACK_IMPORTED_MODULE_2___default.a.$;
 var showOffsets;
+/**
+ * This command is responsible for show selecting components and displaying
+ * all the necessary tools around (component toolbar, badge, highlight box, etc.)
+ *
+ * The command manages different boxes to display tools and when something in
+ * the canvas is updated, the command triggers the appropriate method to update
+ * their position (across multiple frames/components):
+ * - Global Tools (updateToolsGlobal/updateGlobalPos)
+ * This box contains tools intended to be displayed only on ONE component per time,
+ * like Component Toolbar (updated by updateToolbar/updateToolbarPos), this means
+ * you won't be able to see more than one Component Toolbar (even with multiple
+ * frames or multiple selected components)
+ * - Local Tools (updateToolsLocal/updateLocalPos)
+ * Each frame in the canvas has its own local box, so we're able to see more than
+ * one active container at the same time. When you put a mouse over an element
+ * you can see stuff like the highlight box, badge, margins/paddings offsets, etc.
+ * so those elements are inside the Local Tools box
+ *
+ *
+ */
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   init: function init(o) {
-    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'onHover', 'onOut', 'onClick', 'onFrameScroll', 'onFrameUpdated');
   },
   enable: function enable() {
     this.frameOff = this.canvasOff = this.adjScroll = null;
     this.startSelectComponent();
-    var em = this.config.em;
     showOffsets = 1;
-    em.on('component:update', this.updateAttached, this);
-    em.on('change:canvasOffset', this.updateAttached, this);
   },
 
   /**
@@ -26073,6 +26799,7 @@ var showOffsets;
    * */
   startSelectComponent: function startSelectComponent() {
     this.toggleSelectComponent(1);
+    this.em.getSelected() && this.onSelect();
   },
 
   /**
@@ -26088,20 +26815,33 @@ var showOffsets;
    * @private
    * */
   toggleSelectComponent: function toggleSelectComponent(enable) {
+    var _this = this;
+
     var em = this.em;
     var method = enable ? 'on' : 'off';
     var methods = {
       on: utils_mixins__WEBPACK_IMPORTED_MODULE_4__["on"],
       off: utils_mixins__WEBPACK_IMPORTED_MODULE_4__["off"]
     };
-    var body = this.getCanvasBody();
-    var win = this.getContentWindow();
-    methods[method](body, 'mouseover', this.onHover);
-    methods[method](body, 'mouseout', this.onOut);
-    methods[method](body, 'click touchend', this.onClick);
-    methods[method](win, 'scroll resize', this.onFrameScroll);
+
+    var trigger = function trigger(win, body) {
+      methods[method](body, 'mouseover', _this.onHover);
+      methods[method](body, 'mouseleave', _this.onOut);
+      methods[method](body, 'click touchend', _this.onClick);
+      methods[method](win, 'scroll', _this.onFrameScroll);
+    };
+
+    methods[method](window, 'resize', this.onFrameUpdated);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
+    em[method]('component:update', this.onComponentUpdate, this);
+    em[method]('component:resize', this.updateGlobalPos, this);
+    em[method]('change:canvasOffset', this.updateAttached, this);
+    em[method]('frame:updated', this.onFrameUpdated, this);
+    em.get('Canvas').getFrames().forEach(function (frame) {
+      var view = frame.view;
+      trigger(view.getWindow(), view.getBody());
+    });
   },
 
   /**
@@ -26112,8 +26852,12 @@ var showOffsets;
   onHover: function onHover(e) {
     e.stopPropagation();
     var trg = e.target;
+    var view = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["getViewEl"])(trg);
+
+    var frameView = view && view._getFrame();
+
     var $el = $(trg);
-    var model = $el.data('model');
+    var model = $el.data('model'); // Get first valid model
 
     if (!model) {
       var parent = $el.parent();
@@ -26122,13 +26866,8 @@ var showOffsets;
         model = parent.data('model');
         parent = parent.parent();
       }
-    } // Adjust tools scroll top
+    } // Get first valid hoverable model
 
-
-    if (!this.adjScroll) {
-      this.adjScroll = 1;
-      this.updateAttached();
-    }
 
     if (model && !model.get('hoverable')) {
       var _parent = model && model.parent();
@@ -26140,31 +26879,111 @@ var showOffsets;
       model = _parent;
     }
 
-    this.em.setHovered(model, {
-      forceChange: 1
-    });
+    this.currentDoc = trg.ownerDocument;
+    this.em.setHovered(model);
+    frameView && this.em.set('currentFrame', frameView);
+  },
+  onFrameUpdated: function onFrameUpdated() {
+    this.updateLocalPos();
+    this.updateGlobalPos();
   },
   onHovered: function onHovered(em, component) {
-    var trg = component && component.getEl();
+    var _this2 = this;
 
-    if (trg) {
-      var pos = this.getElementPos(trg);
-      this.updateBadge(trg, pos);
-      this.updateHighlighter(trg, pos);
-      this.showElementOffset(trg, pos);
+    var result = {};
+
+    if (component) {
+      component.views.forEach(function (view) {
+        var el = view.el;
+
+        var pos = _this2.getElementPos(el);
+
+        result = {
+          el: el,
+          pos: pos,
+          component: component,
+          view: Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["getViewEl"])(el)
+        };
+
+        _this2.updateToolsLocal(result);
+
+        if (el.ownerDocument === _this2.currentDoc) _this2.elHovered = result;
+      });
     }
   },
 
   /**
-   * Out command
+   * Say what to do after the component was selected
    * @param {Object}  e
+   * @param {Object}  el
    * @private
-   */
-  onOut: function onOut(ev) {
-    ev && ev.stopPropagation();
-    this.hideBadge();
-    this.hideHighlighter();
-    this.hideElementOffset();
+   * */
+  onSelect: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
+    var em = this.em;
+    var component = em.getSelected();
+    var currentFrame = em.get('currentFrame') || {};
+    var view = component && component.getView(currentFrame.model);
+    var el = view && view.el;
+    var result = {};
+
+    if (el) {
+      var pos = this.getElementPos(el);
+      result = {
+        el: el,
+        pos: pos,
+        component: component,
+        view: Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["getViewEl"])(el)
+      };
+    }
+
+    this.elSelected = result;
+    this.updateToolsGlobal(); // This will hide some elements from the select component
+
+    this.updateToolsLocal(result); // if (el) {
+    //   this.showFixedElementOffset(el);
+    //   this.hideElementOffset();
+    //   this.hideHighlighter();
+    //   this.initResize(el);
+    // } else {
+    //   this.editor.stopCommand('resize');
+    // }
+  }),
+  updateGlobalPos: function updateGlobalPos() {
+    var sel = this.getElSelected();
+    if (!sel.el) return;
+    sel.pos = this.getElementPos(sel.el);
+    this.updateToolsGlobal();
+  },
+  updateLocalPos: function updateLocalPos() {
+    var sel = this.getElHovered();
+    if (!sel.el) return;
+    sel.pos = this.getElementPos(sel.el);
+    this.updateToolsLocal();
+  },
+  getElHovered: function getElHovered() {
+    return this.elHovered || {};
+  },
+  getElSelected: function getElSelected() {
+    return this.elSelected || {};
+  },
+  onOut: function onOut() {
+    var _this3 = this;
+
+    this.currentDoc = null;
+    this.em.setHovered(0);
+    this.canvas.getFrames().forEach(function (frame) {
+      var el = frame.view.getToolsEl();
+
+      _this3.toggleToolsEl(0, 0, {
+        el: el
+      });
+    });
+  },
+  toggleToolsEl: function toggleToolsEl(on, view) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var el = opts.el || this.canvas.getToolsEl(view);
+    el.style.opacity = on ? 1 : 0;
+    return el;
   },
 
   /**
@@ -26173,17 +26992,15 @@ var showOffsets;
    * @param {Object} pos
    */
   showElementOffset: function showElementOffset(el, pos) {
-    var $el = $(el);
-    var model = $el.data('model');
-
-    if (model && model.get('status') == 'selected' || !showOffsets) {
-      return;
-    }
-
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    if (!showOffsets) return;
     this.editor.runCommand('show-offset', {
       el: el,
       elPos: pos,
-      force: 1
+      view: opts.view,
+      force: 1,
+      top: 0,
+      left: 0
     });
   },
 
@@ -26192,9 +27009,10 @@ var showOffsets;
    * @param {HTMLElement}  el
    * @param {Object} pos
    */
-  hideElementOffset: function hideElementOffset(el, pos) {
-    var editor = this.editor;
-    editor && editor.stopCommand('show-offset');
+  hideElementOffset: function hideElementOffset(view) {
+    this.editor.stopCommand('show-offset', {
+      view: view
+    });
   },
 
   /**
@@ -26224,8 +27042,8 @@ var showOffsets;
   /**
    * Hide Highlighter element
    */
-  hideHighlighter: function hideHighlighter() {
-    this.canvas.getHighlighter().style.display = 'none';
+  hideHighlighter: function hideHighlighter(view) {
+    this.canvas.getHighlighter(view).style.opacity = 0;
   },
 
   /**
@@ -26233,12 +27051,12 @@ var showOffsets;
    * @param {Event}  e
    * @private
    */
-  onClick: function onClick(e) {
+  onClick: function onClick(ev) {
+    ev.stopPropagation();
+    ev.preventDefault();
     var em = this.em;
-    e.stopPropagation();
-    e.preventDefault();
     if (em.get('_cmpDrag')) return em.set('_cmpDrag');
-    var $el = $(e.target);
+    var $el = $(ev.target);
     var model = $el.data('model');
 
     if (!model) {
@@ -26252,7 +27070,7 @@ var showOffsets;
 
     if (model) {
       if (model.get('selectable')) {
-        this.select(model, e);
+        this.select(model, ev);
       } else {
         var _parent2 = model.parent();
 
@@ -26260,7 +27078,7 @@ var showOffsets;
           _parent2 = _parent2.parent();
         }
 
-        this.select(_parent2, e);
+        this.select(_parent2, ev);
       }
     }
   },
@@ -26275,9 +27093,9 @@ var showOffsets;
     if (!model) return;
     var ctrlKey = event.ctrlKey || event.metaKey;
     var shiftKey = event.shiftKey;
-    var editor = this.editor;
+    var editor = this.editor,
+        em = this.em;
     var multiple = editor.getConfig('multipleSelection');
-    var em = this.em;
 
     if (ctrlKey && multiple) {
       editor.selectToggle(model);
@@ -26319,7 +27137,9 @@ var showOffsets;
 
       editor.selectAdd(model);
     } else {
-      editor.select(model);
+      editor.select(model, {
+        scroll: {}
+      });
     }
 
     this.initResize(model);
@@ -26332,35 +27152,30 @@ var showOffsets;
    * @private
    * */
   updateBadge: function updateBadge(el, pos) {
-    var $el = $(el);
-    var canvas = this.canvas;
-    var config = canvas.getConfig();
-    var ppfx = config.pStylePrefix || '';
-    var customeLabel = config.customBadgeLabel;
-    this.cacheEl = el;
-    var model = $el.data('model');
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var model = $(el).data('model');
     if (!model || !model.get('badgable')) return;
-    var badge = this.getBadge();
-    var icon = model.getIcon();
-    var clsBadge = "".concat(ppfx, "badge");
-    var badgeLabel = "".concat(icon ? "<div class=\"".concat(clsBadge, "__icon\">").concat(icon, "</div>") : '', "\n      <div class=\"").concat(clsBadge, "__name\">").concat(model.getName(), "</div>");
-    badgeLabel = customeLabel ? customeLabel(model) : badgeLabel;
-    badge.innerHTML = badgeLabel;
-    var bStyle = badge.style;
-    var u = 'px';
-    bStyle.display = 'block';
-    var canvasPos = this.getCanvasPosition();
+    var badge = this.getBadge(opts);
 
-    if (canvasPos) {
-      var canvasTop = canvasPos.top;
-      var canvasLeft = canvasPos.left;
-      var posTop = pos.top - (badge ? badge.offsetHeight : 0);
-      var badgeW = badge ? badge.offsetWidth : 0;
-      var top = posTop < canvasTop ? canvasTop : posTop;
-      var left = pos.left + badgeW < canvasLeft ? canvasLeft : pos.left;
-      bStyle.top = top + u;
-      bStyle.left = left + u;
+    if (!opts.posOnly) {
+      var config = this.canvas.getConfig();
+      var icon = model.getIcon();
+      var ppfx = config.pStylePrefix || '';
+      var clsBadge = "".concat(ppfx, "badge");
+      var customeLabel = config.customBadgeLabel;
+      var badgeLabel = "".concat(icon ? "<div class=\"".concat(clsBadge, "__icon\">").concat(icon, "</div>") : '', "\n        <div class=\"").concat(clsBadge, "__name\">").concat(model.getName(), "</div>");
+      badge.innerHTML = customeLabel ? customeLabel(model) : badgeLabel;
     }
+
+    var un = 'px';
+    var bStyle = badge.style;
+    bStyle.display = 'block';
+    var badgeH = badge ? badge.offsetHeight : 0;
+    var posTop = 0 - badgeH;
+    var top = opts.topOff - badgeH < 0 ? -opts.topOff : posTop;
+    var left = opts.leftOff < 0 ? -opts.leftOff : 0;
+    bStyle.top = top + un;
+    bStyle.left = left + un;
   },
 
   /**
@@ -26369,46 +27184,8 @@ var showOffsets;
    * @param {Object} pos Position object
    * @private
    */
-  updateHighlighter: function updateHighlighter(el, pos) {
-    var $el = $(el);
-    var model = $el.data('model');
-
-    if (!model || !model.get('hoverable') || model.get('status') == 'selected') {
-      return;
-    }
-
-    var hlEl = this.canvas.getHighlighter();
-    var hlStyle = hlEl.style;
-    var unit = 'px';
-    hlStyle.left = pos.left + unit;
-    hlStyle.top = pos.top + unit;
-    hlStyle.height = pos.height + unit;
-    hlStyle.width = pos.width + unit;
-    hlStyle.display = 'block';
-  },
-
-  /**
-   * Say what to do after the component was selected
-   * @param {Object}  e
-   * @param {Object}  el
-   * @private
-   * */
-  onSelect: function onSelect() {
-    // Get the selected model directly from the Editor as the event might
-    // be triggered manually without the model
-    var model = this.em.getSelected();
-    var view = model && model.view;
-    this.updateToolbar(model);
-
-    if (view) {
-      var el = view.el;
-      this.showFixedElementOffset(el);
-      this.hideElementOffset();
-      this.hideHighlighter();
-      this.initResize(el);
-    } else {
-      this.editor.stopCommand('resize');
-    }
+  showHighlighter: function showHighlighter(view) {
+    this.canvas.getHighlighter(view).style.opacity = '';
   },
 
   /**
@@ -26453,6 +27230,7 @@ var showOffsets;
               keepAutoWidth = config.keepAutoWidth;
           toggleBodyClass('add', e, opts);
           modelToStyle = em.get('StyleManager').getModelToStyle(model);
+          canvas.toggleFramesEvents();
           var computedStyle = getComputedStyle(el);
           var modelStyle = modelToStyle.getStyle();
           var currentWidth = modelStyle[keyWidth];
@@ -26480,11 +27258,12 @@ var showOffsets;
         },
         // Update all positioned elements (eg. component toolbar)
         onMove: function onMove() {
-          editor.trigger('change:canvasOffset');
+          editor.trigger('component:resize');
         },
         onEnd: function onEnd(e, opts) {
           toggleBodyClass('remove', e, opts);
-          editor.trigger('change:canvasOffset');
+          editor.trigger('component:resize');
+          canvas.toggleFramesEvents(1);
           showOffsets = 1;
         },
         updateTarget: function updateTarget(el, rect) {
@@ -26505,7 +27284,8 @@ var showOffsets;
               unitHeight = config.unitHeight;
           var onlyHeight = ['tc', 'bc'].indexOf(selectedHandler) >= 0;
           var onlyWidth = ['cl', 'cr'].indexOf(selectedHandler) >= 0;
-          var style = modelToStyle.getStyle();
+          var style = {};
+          var en = !store ? 1 : ''; // this will trigger the final change
 
           if (!onlyHeight) {
             var bodyw = canvas.getBody().offsetWidth;
@@ -26517,19 +27297,20 @@ var showOffsets;
             style[keyHeight] = autoHeight ? 'auto' : "".concat(rect.h).concat(unitHeight);
           }
 
-          modelToStyle.setStyle(style, {
-            avoidStore: 1
+          modelToStyle.addStyle(_objectSpread({}, style, {
+            en: en
+          }), {
+            avoidStore: !store
           });
           var updateEvent = "update:component:style";
-          em && em.trigger("".concat(updateEvent, ":").concat(keyHeight, " ").concat(updateEvent, ":").concat(keyWidth));
-
-          if (store) {
-            modelToStyle.trigger('change:style', modelToStyle, style, {});
-          }
+          var eventToListen = "".concat(updateEvent, ":").concat(keyHeight, " ").concat(updateEvent, ":").concat(keyWidth);
+          em && em.trigger(eventToListen, null, null, {
+            noEmit: 1
+          });
         }
       };
 
-      if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_1___default()(resizable) == 'object') {
+      if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()(resizable) == 'object') {
         options = _objectSpread({}, options, {}, resizable);
       }
 
@@ -26549,8 +27330,6 @@ var showOffsets;
    * @param {Object} mod
    */
   updateToolbar: function updateToolbar(mod) {
-    var _this = this;
-
     var em = this.config.em;
     var model = mod == em ? em.getSelected() : mod;
     var toolbarEl = this.canvas.getToolbarEl();
@@ -26565,7 +27344,6 @@ var showOffsets;
     }
 
     var toolbar = model.get('toolbar');
-    var ppfx = this.ppfx;
     var showToolbar = em.get('Config').showToolbar;
 
     if (showToolbar && toolbar && toolbar.length) {
@@ -26584,12 +27362,8 @@ var showOffsets;
       }
 
       this.toolbar.reset(toolbar);
-      var view = model.view;
       toolbarStyle.top = '-100px';
       toolbarStyle.left = 0;
-      setTimeout(function () {
-        return view && _this.updateToolbarPos(view.el);
-      }, 0);
     } else {
       toolbarStyle.display = 'none';
     }
@@ -26600,38 +27374,15 @@ var showOffsets;
    * @param {HTMLElement} el
    * @param {Object} pos
    */
-  updateToolbarPos: function updateToolbarPos(el, elPos) {
-    var canvas = this.canvas;
+  updateToolbarPos: function updateToolbarPos(pos) {
     var unit = 'px';
-    var toolbarEl = canvas.getToolbarEl();
-    var toolbarStyle = toolbarEl.style;
-    toolbarStyle.opacity = 0;
-    var pos = canvas.getTargetToElementDim(toolbarEl, el, {
-      elPos: elPos,
-      event: 'toolbarPosUpdate'
-    });
 
-    if (pos) {
-      var frameOffset = canvas.getCanvasView().getFrameOffset(); // Scroll with the window if the top edge is reached and the
-      // element is bigger than the canvas
+    var _this$canvas$getToolb = this.canvas.getToolbarEl(),
+        style = _this$canvas$getToolb.style;
 
-      if (pos.top <= pos.canvasTop && !(pos.elementHeight + pos.targetHeight >= frameOffset.height)) {
-        pos.top = pos.elementTop + pos.elementHeight;
-      } // Check left position of the toolbar
-
-
-      var elRight = pos.elementLeft + pos.elementWidth;
-      var left = elRight - pos.targetWidth;
-
-      if (elRight > pos.canvasWidth) {
-        left -= elRight - pos.canvasWidth;
-      }
-
-      left = left < 0 ? 0 : left;
-      toolbarStyle.top = "".concat(pos.top).concat(unit);
-      toolbarStyle.left = "".concat(left).concat(unit);
-      toolbarStyle.opacity = '';
-    }
+    style.top = "".concat(pos.top).concat(unit);
+    style.left = "".concat(pos.left).concat(unit);
+    style.opacity = '';
   },
 
   /**
@@ -26643,20 +27394,13 @@ var showOffsets;
   },
 
   /**
-   * Removes all highlighting effects on components
-   * @private
-   * */
-  clean: function clean() {
-    if (this.selEl) this.selEl.removeClass(this.hoverClass);
-  },
-
-  /**
    * Returns badge element
    * @return {HTMLElement}
    * @private
    */
   getBadge: function getBadge() {
-    return this.canvas.getBadgeEl();
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return this.canvas.getBadgeEl(opts.view);
   },
 
   /**
@@ -26664,33 +27408,130 @@ var showOffsets;
    * @private
    */
   onFrameScroll: function onFrameScroll() {
-    var el = this.cacheEl;
+    this.updateTools();
+  },
+  updateTools: function updateTools() {
+    this.updateToolsLocal();
+    this.updateGlobalPos();
+  },
+  isCompSelected: function isCompSelected(comp) {
+    return comp && comp.get('status') === 'selected';
+  },
 
-    if (el) {
-      var elPos = this.getElementPos(el);
-      this.updateBadge(el, elPos);
-      var model = this.em.getSelected();
-      var viewEl = model && model.getEl();
-      viewEl && this.updateToolbarPos(viewEl);
+  /**
+   * Update tools visible on hover
+   * @param {HTMLElement} el
+   * @param {Object} pos
+   */
+  updateToolsLocal: function updateToolsLocal(data) {
+    var _ref = data || this.getElHovered(),
+        el = _ref.el,
+        pos = _ref.pos,
+        view = _ref.view,
+        component = _ref.component;
+
+    if (!el) {
+      this.lastHovered = 0;
+      return;
     }
+
+    var isHoverEn = component.get('hoverable');
+    var isNewEl = this.lastHovered !== el;
+    var badgeOpts = isNewEl ? {} : {
+      posOnly: 1
+    };
+
+    if (isNewEl && isHoverEn) {
+      this.lastHovered = el;
+      this.showHighlighter(view);
+      this.showElementOffset(el, pos, {
+        view: view
+      });
+    }
+
+    if (this.isCompSelected(component)) {
+      this.hideHighlighter(view);
+      this.hideElementOffset(view);
+    }
+
+    var unit = 'px';
+
+    var _this$toggleToolsEl = this.toggleToolsEl(1, view),
+        style = _this$toggleToolsEl.style;
+
+    var frameOff = this.canvas.canvasRectOffset(el, pos);
+    var topOff = frameOff.top;
+    var leftOff = frameOff.left;
+    this.updateBadge(el, pos, _objectSpread({}, badgeOpts, {
+      view: view,
+      topOff: topOff,
+      leftOff: leftOff
+    }));
+    style.top = topOff + unit;
+    style.left = leftOff + unit;
+    style.width = pos.width + unit;
+    style.height = pos.height + unit;
+  },
+  updateToolsGlobal: function updateToolsGlobal() {
+    var _this$getElSelected = this.getElSelected(),
+        el = _this$getElSelected.el,
+        pos = _this$getElSelected.pos,
+        component = _this$getElSelected.component;
+
+    if (!el) {
+      this.toggleToolsEl(); // Hides toolbar
+
+      this.lastSelected = 0;
+      return;
+    }
+
+    var canvas = this.canvas;
+    var isNewEl = this.lastSelected !== el;
+
+    if (isNewEl) {
+      this.lastSelected = el;
+      this.updateToolbar(component);
+    }
+
+    var unit = 'px';
+
+    var _this$toggleToolsEl2 = this.toggleToolsEl(1),
+        style = _this$toggleToolsEl2.style;
+
+    var targetToElem = canvas.getTargetToElementFixed(el, canvas.getToolbarEl(), {
+      pos: pos
+    });
+    var topOff = targetToElem.canvasOffsetTop;
+    var leftOff = targetToElem.canvasOffsetLeft;
+    style.top = topOff + unit;
+    style.left = leftOff + unit;
+    style.width = pos.width + unit;
+    style.height = pos.height + unit;
+    this.updateToolbarPos({
+      top: targetToElem.top,
+      left: targetToElem.left
+    }); // const { resizer, em } = this;
+    // const model = em.getSelected();
+    // const el = model && model.getEl();
+    // if (!el) return;
+    // if (el && this.elSelected !== el) {
+    //   this.elSelected = el;
+    //   const pos = this.getElementPos(el);
+    //   this.updateToolbarPos(el, pos);
+    //   this.showFixedElementOffset(el, pos);
+    //   resizer && resizer.updateContainer();
+    // }
   },
 
   /**
    * Update attached elements, eg. component toolbar
    */
-  updateAttached: function updateAttached() {
-    var resizer = this.resizer,
-        em = this.em;
-    var model = em.getSelected();
-    var view = model && model.view;
-
-    if (view) {
-      var el = view.el;
-      this.updateToolbarPos(el);
-      this.showFixedElementOffset(el);
-      resizer && resizer.updateContainer();
-    }
-  },
+  updateAttached: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
+    this.updateToolsGlobal();
+  }),
+  onComponentUpdate: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
+    this.onSelect();
+  }),
 
   /**
    * Returns element's data info
@@ -26698,7 +27539,7 @@ var showOffsets;
    * @return {Object}
    * @private
    */
-  getElementPos: function getElementPos(el, badge) {
+  getElementPos: function getElementPos(el) {
     return this.canvas.getCanvasView().getElementPos(el);
   },
 
@@ -26727,12 +27568,11 @@ var showOffsets;
    * @private
    */
   getContentWindow: function getContentWindow() {
-    return this.frameEl.contentWindow;
+    return this.canvas.getWindow();
   },
   run: function run(editor) {
     this.editor = editor && editor.get('Editor');
     this.enable();
-    this.onSelect();
   },
   stop: function stop(ed, sender) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -26740,13 +27580,9 @@ var showOffsets;
         editor = this.editor;
     this.stopSelectComponent();
     !opts.preserveSelected && em.setSelected(null);
-    this.clean();
     this.onOut();
-    this.hideFixedElementOffset();
-    this.canvas.getToolbarEl().style.display = 'none';
+    this.toggleToolsEl();
     editor && editor.stopCommand('resize');
-    em.off('component:update', this.updateAttached, this);
-    em.off('change:canvasOffset', this.updateAttached, this);
   }
 });
 
@@ -26774,10 +27610,12 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
   startSelectPosition: function startSelectPosition(trg, doc) {
     var _this = this;
 
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     this.isPointed = false;
     var utils = this.editorModel.get('Utils');
+    var container = trg.ownerDocument.body;
     if (utils && !this.sorter) this.sorter = new utils.Sorter({
-      container: this.getCanvasBody(),
+      container: container,
       placer: this.canvas.getPlacerEl(),
       containerSel: '*',
       itemSel: '*',
@@ -26792,7 +27630,10 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
         return _this.em.getZoomDecimal();
       }
     });
-    trg && this.sorter.startSort(trg);
+    if (opts.onStart) this.sorter.onStart = opts.onStart;
+    trg && this.sorter.startSort(trg, {
+      container: container
+    });
   },
 
   /**
@@ -26877,12 +27718,23 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
 
 
-var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+
+
+var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
 /* harmony default export */ __webpack_exports__["default"] = ({
   getOffsetMethod: function getOffsetMethod(state) {
     var method = state || '';
@@ -26895,19 +27747,29 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     var zoom = this.em.getZoomDecimal();
     var el = opt.el || '';
 
-    if (!config.showOffsets || Object(utils_mixins__WEBPACK_IMPORTED_MODULE_1__["isTextNode"])(el) || !config.showOffsetsSelected && state == 'Fixed') {
+    if (!config.showOffsets || Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["isTextNode"])(el) || !config.showOffsetsSelected && state == 'Fixed') {
       editor.stopCommand(this.id, opts);
       return;
     }
 
     var canvas = editor.Canvas;
-    var pos = opt.elPos || canvas.getElementPos(el);
+
+    var pos = _objectSpread({}, opt.elPos || canvas.getElementPos(el));
+
+    if (!Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(opt.top)) {
+      pos.top = opt.top;
+    }
+
+    if (!Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(opt.left)) {
+      pos.left = opt.left;
+    }
+
     var style = window.getComputedStyle(el);
     var ppfx = this.ppfx;
     var stateVar = state + 'State';
     var method = this.getOffsetMethod(state);
-    var offsetViewer = canvas[method]();
-    offsetViewer.style.display = 'block';
+    var offsetViewer = canvas[method](opts.view);
+    offsetViewer.style.opacity = '';
     var marginT = this['marginT' + state];
     var marginB = this['marginB' + state];
     var marginL = this['marginL' + state];
@@ -26916,6 +27778,18 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     var padB = this['padB' + state];
     var padL = this['padL' + state];
     var padR = this['padR' + state];
+
+    if (offsetViewer.childNodes.length) {
+      this[stateVar] = '1';
+      marginT = offsetViewer.querySelector('[data-offset-m-t]');
+      marginB = offsetViewer.querySelector('[data-offset-m-b]');
+      marginL = offsetViewer.querySelector('[data-offset-m-l]');
+      marginR = offsetViewer.querySelector('[data-offset-m-r]');
+      padT = offsetViewer.querySelector('[data-offset-p-t]');
+      padB = offsetViewer.querySelector('[data-offset-p-b]');
+      padL = offsetViewer.querySelector('[data-offset-p-l]');
+      padR = offsetViewer.querySelector('[data-offset-p-r]');
+    }
 
     if (!this[stateVar]) {
       var stateLow = state.toLowerCase();
@@ -26992,34 +27866,36 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     mrStyle.left = posLeft + pos.width + unit; // Padding style
 
     var padTop = parseFloat(style.paddingTop) * zoom;
-    ptStyle.height = padTop + unit;
-    ptStyle.width = widthEl;
-    ptStyle.top = pos.top + unit;
-    ptStyle.left = posLeft + unit;
+    ptStyle.height = padTop + unit; // ptStyle.width = widthEl;
+    // ptStyle.top = pos.top + unit;
+    // ptStyle.left = posLeft + unit;
+
     var padBot = parseFloat(style.paddingBottom) * zoom;
-    pbStyle.height = padBot + unit;
-    pbStyle.width = widthEl;
-    pbStyle.top = pos.top + pos.height - padBot + unit;
-    pbStyle.left = posLeft + unit;
+    pbStyle.height = padBot + unit; // pbStyle.width = widthEl;
+    // pbStyle.top = pos.top + pos.height - padBot + unit;
+    // pbStyle.left = posLeft + unit;
+
     var padSideH = pos.height - padBot - padTop + unit;
     var padSideT = pos.top + padTop + unit;
     plStyle.height = padSideH;
     plStyle.width = parseFloat(style.paddingLeft) * zoom + unit;
-    plStyle.top = padSideT;
-    plStyle.left = pos.left + unit;
+    plStyle.top = padSideT; // plStyle.left = pos.left + unit;
+    //  plStyle.right = 0;
+
     var padRight = parseFloat(style.paddingRight) * zoom;
     prStyle.height = padSideH;
     prStyle.width = padRight + unit;
-    prStyle.top = padSideT;
-    prStyle.left = pos.left + pos.width - padRight + unit;
+    prStyle.top = padSideT; // prStyle.left = pos.left + pos.width - padRight + unit;
+    //  prStyle.left = 0;
   },
-  stop: function stop(editor, sender, opts) {
+  stop: function stop(editor, sender) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var opt = opts || {};
     var state = opt.state || '';
     var method = this.getOffsetMethod(state);
     var canvas = editor.Canvas;
-    var offsetViewer = canvas[method]();
-    offsetViewer.style.display = 'none';
+    var offsetViewer = canvas[method](opts.view);
+    offsetViewer.style.opacity = 0;
   }
 });
 
@@ -27036,10 +27912,19 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
 __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   run: function run(ed) {
-    ed.Canvas.getBody().className = this.ppfx + 'dashed';
+    this.toggleVis(ed);
   },
   stop: function stop(ed) {
-    ed.Canvas.getBody().className = '';
+    this.toggleVis(ed, 0);
+  },
+  toggleVis: function toggleVis(ed) {
+    var _this = this;
+
+    var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+    var method = active ? 'add' : 'remove';
+    ed.Canvas.getFrames().forEach(function (frame) {
+      frame.view.getBody().classList[method]("".concat(_this.ppfx, "dashed"));
+    });
   }
 });
 
@@ -27088,7 +27973,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * This module contains and manage CSS rules for the template inside the canvas.
@@ -27138,6 +28023,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * @private
      */
     name: 'CssComposer',
+    getConfig: function getConfig() {
+      return c;
+    },
 
     /**
      * Mandatory for the storage manager
@@ -28066,7 +28954,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/device_manager/config/config.js)
@@ -28498,7 +29386,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * With this module is possible to manage components inside the canvas. You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/dom_components/config/config.js)
@@ -29197,11 +30085,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 /*!***********************************************!*\
   !*** ./src/dom_components/model/Component.js ***!
   \***********************************************/
-/*! exports provided: default */
+/*! exports provided: eventDrag, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "eventDrag", function() { return eventDrag; });
 /* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/typeof */ "./node_modules/@babel/runtime/helpers/typeof.js");
 /* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
@@ -29221,7 +30110,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -29241,6 +30130,8 @@ var escapeRegExp = function escapeRegExp(str) {
 var avoidInline = function avoidInline(em) {
   return em && em.getConfig('avoidInlineStyle');
 };
+
+var eventDrag = 'component:drag';
 /**
  * The Component object represents a single node of our template structure, so when you update its properties the changes are
  * immediately reflected on the canvas and in the code to export (indeed, when you ask to export the code we just go through all
@@ -29297,7 +30188,6 @@ var avoidInline = function avoidInline(em) {
  * By default, when `toolbar` property is falsy the editor will add automatically commands like `move`, `delete`, etc. based on its properties.
  * @property {Collection<Component>} [components=null] Children components. Default: `null`
  */
-
 
 var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(domain_abstract_model_Styleable__WEBPACK_IMPORTED_MODULE_4__["default"]).extend({
   defaults: {
@@ -29387,6 +30277,7 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     opt.em = em;
     this.opt = opt;
     this.em = em;
+    this.frame = opt.frame;
     this.config = opt.config || {};
     this.set('attributes', _objectSpread({}, this.defaults.attributes || {}, {}, this.get('attributes') || {}));
     this.ccid = Component.createId(this);
@@ -29398,7 +30289,8 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     this.listenTo(this, 'change:tagName', this.tagUpdated);
     this.listenTo(this, 'change:attributes', this.attrUpdated);
     this.listenTo(this, 'change:attributes:id', this._idUpdated);
-    this.set('status', ''); // Register global updates for collection properties
+    this.set('status', '');
+    this.views = []; // Register global updates for collection properties
 
     ['classes', 'traits', 'components'].forEach(function (name) {
       var events = "add remove ".concat(name !== 'components' ? 'change' : '');
@@ -30122,14 +31014,20 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
     var _this$attributes = this.attributes,
         type = _this$attributes.type,
         tagName = _this$attributes.tagName;
-    var customName = this.get('name') || this.get('custom-name');
-    var tag = tagName;
-    tag = tag == 'div' ? 'box' : tag;
-    var name = type || tag;
-    name = name.charAt(0).toUpperCase() + name.slice(1);
+    var cName = this.get('name');
+    var isDiv = tagName == 'div';
+    var tag = isDiv ? 'box' : tagName;
+    var defName = type || tag;
+    var nameTag = !type && tagName && !isDiv && tagName;
     var i18nPfx = 'domComponents.names.';
-    var i18nStr = em && (em.t("".concat(i18nPfx).concat(type)) || em.t("".concat(i18nPfx).concat(tagName)));
-    return i18nStr || customName || name;
+    var i18nName = cName && em && em.t("".concat(i18nPfx).concat(cName));
+    var i18nNameTag = nameTag && em && em.t("".concat(i18nPfx).concat(nameTag));
+    var i18nDefName = em && (em.t("".concat(i18nPfx).concat(type)) || em.t("".concat(i18nPfx).concat(tagName)));
+    return this.get('custom-name') || // Used in Layers (when the user changes the name)
+    i18nName || cName || // Component name (check if there is a i18n string for it)
+    i18nNameTag || Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["capitalize"])(nameTag) || // Try name by tag if there is no valid type
+    i18nDefName || Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["capitalize"])(defName) // Use the default name
+    ;
   },
 
   /**
@@ -30291,19 +31189,35 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   /**
    * Get the DOM element of the component.
    * This works only if the component is already rendered
+   * @param {Frame} frame Specific frame from which taking the element
    * @return {HTMLElement}
    */
-  getEl: function getEl() {
-    return this.view && this.view.el;
+  getEl: function getEl(frame) {
+    var view = this.getView(frame);
+    return view && view.el;
   },
 
   /**
    * Get the View of the component.
    * This works only if the component is already rendered
+   * @param {Frame} frame Get View of a specific frame
    * @return {ComponentView}
    */
-  getView: function getView() {
-    return this.view;
+  getView: function getView(frame) {
+    var view = this.view,
+        views = this.views;
+
+    if (frame) {
+      view = views.filter(function (view) {
+        return view._getFrame() === frame.view;
+      })[0];
+    }
+
+    return view;
+  },
+  getCurrentView: function getCurrentView() {
+    var frame = (this.em.get('currentFrame') || {}).model;
+    return this.getView(frame);
   },
 
   /**
@@ -30573,7 +31487,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_ComponentTextNode__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -30613,7 +31527,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -30776,7 +31690,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_ComponentText__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -30812,7 +31726,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_ComponentText__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -30885,7 +31799,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -31009,7 +31923,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31054,7 +31968,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31101,7 +32015,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31149,7 +32063,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31223,7 +32137,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31266,7 +32180,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_ComponentTableBody__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31306,7 +32220,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_ComponentTableBody__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31346,7 +32260,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31398,7 +32312,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31433,7 +32347,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -31479,7 +32393,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -31900,7 +32814,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -31916,7 +32830,7 @@ var Component;
 
     this.model = function (attrs, options) {
       var model;
-      var df = opt.componentTypes;
+      var df = opt.em.get('DomComponents').componentTypes;
       options.em = opt.em;
       options.config = opt.config;
       options.componentTypes = df;
@@ -31946,11 +32860,12 @@ var Component;
   parseString: function parseString(value) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var em = this.em;
+    var domc = this.opt.domc;
     var cssc = em.get('CssComposer');
     var parsed = em.get('Parser').parseHtml(value); // We need this to avoid duplicate IDs
 
     if (!Component) Component = __webpack_require__(/*! ./Component */ "./src/dom_components/model/Component.js").default;
-    Component.checkId(parsed.html, parsed.css, this.opt.domc.componentsById);
+    Component.checkId(parsed.html, parsed.css, domc.componentsById);
 
     if (parsed.css && cssc && !opt.temporary) {
       cssc.addCollection(parsed.css, _objectSpread({}, opt, {
@@ -32540,7 +33455,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -32577,13 +33492,14 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
     }
 
     e && e.stopPropagation && e.stopPropagation();
-    var rte = this.rte;
+    var rte = this.rte,
+        em = this.em;
 
     if (rte) {
       try {
         this.activeRte = rte.enable(this, this.activeRte);
       } catch (err) {
-        console.error(err);
+        em.logError(err);
       }
     }
 
@@ -32600,14 +33516,15 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
   disableEditing: function disableEditing() {
     var model = this.model,
         rte = this.rte,
-        activeRte = this.activeRte;
+        activeRte = this.activeRte,
+        em = this.em;
     var editable = model.get('editable');
 
     if (rte && editable) {
       try {
         rte.disable(this, activeRte);
       } catch (err) {
-        console.error(err);
+        em.logError(err);
       }
 
       this.syncContent();
@@ -32666,6 +33583,7 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
           return model.is(type);
         }) || textable;
         model.set(_objectSpread({
+          _innertext: !selectable,
           editable: selectable && model.get('editable'),
           selectable: selectable,
           hoverable: selectable,
@@ -32698,7 +33616,7 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
   onInput: function onInput() {
     var em = this.em; // Update toolbars
 
-    em && em.trigger('change:canvasOffset');
+    em && em.trigger('component:update', this.model);
   },
 
   /**
@@ -32766,9 +33684,14 @@ __webpack_require__.r(__webpack_exports__);
   events: {},
   initialize: function initialize(o) {
     _ComponentView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.initialize.apply(this, arguments);
-    this.listenTo(this.model, 'change:src', this.updateSrc);
-    this.listenTo(this.model, 'change:loop change:autoplay change:controls change:color change:rel change:modestbranding change:poster', this.updateVideo);
-    this.listenTo(this.model, 'change:provider', this.updateProvider);
+    var model = this.model;
+    var props = ['loop', 'autoplay', 'controls', 'color', 'rel', 'modestbranding', 'poster'];
+    var events = props.map(function (p) {
+      return "change:".concat(p);
+    }).join(' ');
+    this.listenTo(model, 'change:provider', this.updateProvider);
+    this.listenTo(model, 'change:src', this.updateSrc);
+    this.listenTo(model, events, this.updateVideo);
   },
 
   /**
@@ -32899,6 +33822,7 @@ __webpack_require__.r(__webpack_exports__);
     this.updateClasses();
     var prov = this.model.get('provider');
     this.el.appendChild(this.renderByProvider(prov));
+    this.updateVideo();
     return this;
   }
 }));
@@ -32924,11 +33848,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ComponentsView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ComponentsView */ "./src/dom_components/view/ComponentsView.js");
 /* harmony import */ var selector_manager_model_Selectors__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! selector_manager/model/Selectors */ "./src/selector_manager/model/Selectors.js");
 /* harmony import */ var utils_dom__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! utils/dom */ "./src/utils/dom.js");
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
 
 
 
@@ -32949,7 +33875,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     var config = opt.config || {};
     var em = config.em;
     var modelOpt = model.opt || {};
-    var $el = this.$el;
+    var $el = this.$el,
+        el = this.el;
     var draggableComponents = config.draggableComponents;
     this.opts = opt;
     this.modelOpt = modelOpt;
@@ -32960,7 +33887,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     this.attr = model.get('attributes');
     this.classe = this.attr.class || [];
     this.listenTo(model, 'change:style', this.updateStyle);
-    this.listenTo(model, 'change:attributes', this.renderAttributes);
+    this.listenTo(model, 'change:attributes change:_innertext', this.renderAttributes);
     this.listenTo(model, 'change:highlightable', this.updateHighlight);
     this.listenTo(model, 'change:status', this.updateStatus);
     this.listenTo(model, 'change:script', this.reset);
@@ -32969,7 +33896,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     this.listenTo(model, 'active', this.onActive);
     this.listenTo(model, 'disable', this.onDisable);
     $el.data('model', model);
+    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_7__["setViewEl"])(el, this);
     model.view = this;
+    this._getFrame() && model.views.push(this);
     this.initClasses();
     this.initComponents({
       avoidRender: 1
@@ -33012,6 +33941,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   onDisable: function onDisable() {},
   remove: function remove() {
     backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
+    var model = this.model;
+    var frame = this._getFrame() || {};
+    var frameM = frame.model;
+    model.components().forEach(function (comp) {
+      var view = comp.getView(frameM);
+      view && view.remove();
+    });
+    var views = model.views;
+    views.splice(views.indexOf(this), 1);
     this.removed(this._clbObj());
     return this;
   },
@@ -33059,6 +33997,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
    */
   handleChange: function handleChange() {
     var model = this.model;
+    var chgArr = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["keys"])(model.changed);
+    if (chgArr.length === 1 && chgArr[0] === 'status') return;
     model.emitUpdate();
 
     for (var prop in model.changed) {
@@ -33092,7 +34032,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     var status = this.model.get('status');
     var pfx = this.pfx;
     var ppfx = this.ppfx;
-    var selectedCls = "".concat(pfx, "selected");
+    var selectedCls = "".concat(ppfx, "selected");
     var selectedParentCls = "".concat(selectedCls, "-parent");
     var freezedCls = "".concat(ppfx, "freezed");
     var hoveredCls = "".concat(ppfx, "hovered");
@@ -33141,11 +34081,17 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
    * @private
    * */
   updateStyle: function updateStyle() {
-    var em = this.em;
-    var model = this.model;
+    var model = this.model,
+        em = this.em,
+        el = this.el;
 
     if (em && em.getConfig('avoidInlineStyle')) {
-      this.el.id = model.getId();
+      if (model.get('_innertext')) {
+        el.removeAttribute('id');
+      } else {
+        el.id = model.getId();
+      }
+
       var style = model.getStyle();
       !Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(style) && model.setStyle(style);
     } else {
@@ -33198,12 +34144,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     var _model$attributes = model.attributes,
         highlightable = _model$attributes.highlightable,
         textable = _model$attributes.textable,
-        type = _model$attributes.type;
+        type = _model$attributes.type,
+        _innertext = _model$attributes._innertext;
     var draggableComponents = config.draggableComponents;
 
     var defaultAttr = _objectSpread({
       'data-gjs-type': type || 'default'
-    }, draggableComponents ? {
+    }, draggableComponents && !_innertext ? {
       draggable: true
     } : {}, {}, highlightable ? {
       'data-highlightable': 1
@@ -33294,22 +34241,98 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   },
 
   /**
+   * This returns rect informations not affected by the canvas zoom.
+   * The method `getBoundingClientRect` doesn't work here and we
+   * have to take in account offsetParent
+   */
+  getOffsetRect: function getOffsetRect() {
+    var rect = {};
+    var target = this.el;
+    var gtop = 0;
+    var gleft = 0;
+
+    var assignRect = function assignRect(el) {
+      var offsetParent = el.offsetParent;
+
+      if (offsetParent) {
+        gtop += offsetParent.offsetTop;
+        gleft += offsetParent.offsetLeft;
+        assignRect(offsetParent);
+      } else {
+        rect.top = target.offsetTop + gtop;
+        rect.left = target.offsetLeft + gleft;
+        rect.bottom = rect.top + target.offsetHeight;
+        rect.right = rect.left + target.offsetWidth;
+      }
+    };
+
+    assignRect(target);
+    return rect;
+  },
+  isInViewport: function isInViewport() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        rect = _ref.rect;
+
+    var el = this.el;
+    var elDoc = el.ownerDocument;
+    var body = elDoc.body;
+    var frameElement = elDoc.defaultView.frameElement;
+
+    var _ref2 = rect || this.getOffsetRect(),
+        top = _ref2.top,
+        left = _ref2.left;
+
+    var frame = this._getFrame().getOffsetRect();
+
+    return top >= frame.scrollTop && left >= frame.scrollLeft && top <= frame.scrollBottom && left <= frameElement.offsetWidth + body.scrollLeft;
+  },
+  scrollIntoView: function scrollIntoView() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var rect = this.getOffsetRect();
+    var isInViewport = this.isInViewport({
+      rect: rect
+    });
+
+    if (!isInViewport || opts.force) {
+      var el = this.el; // PATCH: scrollIntoView won't work with multiple requests from iframes
+
+      if (opts.behavior !== 'smooth') {
+        el.ownerDocument.defaultView.scrollTo(0, rect.top);
+      } else {
+        el.scrollIntoView(_objectSpread({
+          behavior: 'smooth',
+          block: 'nearest'
+        }, opts));
+      }
+    }
+  },
+
+  /**
    * Recreate the element of the view
    */
   reset: function reset() {
-    var el = this.el,
-        model = this.model;
-    var collection = model.components();
+    var el = this.el;
     this.el = '';
 
     this._ensureElement();
 
-    this.$el.data({
-      model: model,
-      collection: collection
-    });
+    this._setData();
+
     Object(utils_dom__WEBPACK_IMPORTED_MODULE_6__["replaceWith"])(el, this.el);
     this.render();
+  },
+  _setData: function _setData() {
+    var model = this.model;
+    var collection = model.components();
+    var view = this;
+    this.$el.data({
+      model: model,
+      collection: collection,
+      view: view
+    });
+  },
+  _getFrame: function _getFrame() {
+    return this.config.frameView;
   },
 
   /**
@@ -33378,6 +34401,7 @@ __webpack_require__.r(__webpack_exports__);
   initialize: function initialize(o) {
     this.opts = o || {};
     this.config = o.config || {};
+    this.em = this.config.em;
     var coll = this.collection;
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.resetChildren);
@@ -33388,15 +34412,15 @@ __webpack_require__.r(__webpack_exports__);
 
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var em = this.config.em;
-    var view = removed.view;
-    var tempComp = removed.opt.temporary;
     var tempRemove = opts.temporary;
-    if (!view) return;
-    view.remove.apply(view);
-    var childrenView = view.childrenView,
-        scriptContainer = view.scriptContainer;
-    childrenView && childrenView.stopListening();
-    scriptContainer && scriptContainer.remove();
+    removed.views.forEach(function (view) {
+      if (!view) return;
+      view.remove.apply(view);
+      var childrenView = view.childrenView,
+          scriptContainer = view.scriptContainer;
+      childrenView && childrenView.stopListening();
+      scriptContainer && scriptContainer.remove();
+    });
     removed.components().forEach(function (it) {
       return _this.removeChildren(it, coll, opts);
     });
@@ -33406,13 +34430,14 @@ __webpack_require__.r(__webpack_exports__);
       var id = removed.getId();
       var domc = em.get('DomComponents');
       delete domc.componentsById[id]; // Remove all related CSS rules
+      // TODO: remove from the frame container
 
       var allRules = em.get('CssComposer').getAll();
       allRules.remove(allRules.filter(function (rule) {
         return rule.getSelectors().getFullString() === "#".concat(id);
       }));
 
-      if (!tempComp) {
+      if (!removed.opt.temporary) {
         var cm = em.get('Commands');
         var hasSign = removed.get('style-signature');
         var optStyle = {
@@ -33463,9 +34488,10 @@ __webpack_require__.r(__webpack_exports__);
   addToCollection: function addToCollection(model, fragmentEl, index) {
     if (!this.compView) this.compView = __webpack_require__(/*! ./ComponentView */ "./src/dom_components/view/ComponentView.js").default;
     var config = this.config,
-        opts = this.opts;
+        opts = this.opts,
+        em = this.em;
     var fragment = fragmentEl || null;
-    var dt = opts.componentTypes;
+    var dt = opts.componentTypes || em && em.get('DomComponents').getTypes();
     var type = model.get('type');
     var viewObject = this.compView;
 
@@ -33552,7 +34578,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
@@ -33680,7 +34706,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -34087,7 +35113,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -34514,9 +35540,15 @@ __webpack_require__.r(__webpack_exports__);
   // Defines the View per type
   itemsView: '',
   itemType: 'type',
-  initialize: function initialize(opts, config) {
-    this.config = config || {};
+  autoAdd: 0,
+  initialize: function initialize() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var config = arguments.length > 1 ? arguments[1] : undefined;
+    this.config = config || opts.config || {};
+    this.autoAdd && this.listenTo(this.collection, 'add', this.addTo);
+    this.init();
   },
+  init: function init() {},
 
   /**
    * Add new model to the collection
@@ -34575,8 +35607,10 @@ __webpack_require__.r(__webpack_exports__);
       this.add(model, frag);
     }, this);
     this.$el.append(frag);
+    this.onRender();
     return this;
-  }
+  },
+  onRender: function onRender() {}
 }));
 
 /***/ }),
@@ -34620,7 +35654,7 @@ __webpack_require__.r(__webpack_exports__);
   // and sets a default background color of white. This CSS is desired in most cases.
   // use this property if you wish to overwrite the base CSS to your own CSS. This is most
   // useful if for example your template is not based off a document with 0 as body margin.
-  baseCss: "\n    * {\n      box-sizing: border-box;\n    }\n    html, body, #wrapper {\n      min-height: 100%;\n    }\n    body {\n      margin: 0;\n      height: 100%;\n      background-color: #fff\n    }\n    #wrapper {\n      overflow: auto;\n      overflow-x: hidden;\n    }\n\n    * ::-webkit-scrollbar-track {\n      background: rgba(0, 0, 0, 0.1)\n    }\n\n    * ::-webkit-scrollbar-thumb {\n      background: rgba(255, 255, 255, 0.2)\n    }\n\n    * ::-webkit-scrollbar {\n      width: 10px\n    }\n  ",
+  baseCss: "\n    * {\n      box-sizing: border-box;\n    }\n    html, body, [data-gjs-type=wrapper] {\n      min-height: 100%;\n    }\n    body {\n      margin: 0;\n      height: 100%;\n      background-color: #fff\n    }\n    [data-gjs-type=wrapper] {\n      overflow: auto;\n      overflow-x: hidden;\n    }\n\n    * ::-webkit-scrollbar-track {\n      background: rgba(0, 0, 0, 0.1)\n    }\n\n    * ::-webkit-scrollbar-thumb {\n      background: rgba(255, 255, 255, 0.2)\n    }\n\n    * ::-webkit-scrollbar {\n      width: 10px\n    }\n  ",
   // CSS that could only be seen (for instance, inside the code viewer)
   protectedCss: '* { box-sizing: border-box; } body {margin: 0;}',
   // CSS for the iframe which containing the canvas, useful if you need to custom something inside
@@ -34813,7 +35847,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * Editor contains the top level API which you'll probably use to customize the editor or extend it with plugins.
@@ -34849,6 +35883,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  * * `component:toggled` - Component selection changed, toggled model is passed as an argument to the callback
  * * `component:type:add` - New component type added, the new type is passed as an argument to the callback
  * * `component:type:update` - Component type updated, the updated type is passed as an argument to the callback
+ * * `component:drag:start` - Component drag started. Passed an object, to the callback, containing the `target` (component to drag), `parent` (parent of the component) and `index` (component index in the parent)
+ * * `component:drag` - During component drag. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the current pointer
+ * * `component:drag:end` - Component drag ended. Passed the same object as in `component:drag:start` event, but in this case, `parent` and `index` are updated by the final pointer
  * ### Blocks
  * * `block:add` - New block added
  * * `block:remove` - Block removed
@@ -35080,7 +36117,18 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * @private
      */
     init: function init() {
-      em.init(this);
+      var _this = this;
+
+      em.init(this); // Do post render stuff after the iframe is loaded otherwise it'll
+      // be empty during tests
+
+      em.on('loaded', function () {
+        _this.UndoManager.clear();
+
+        em.get('modules').forEach(function (module) {
+          module.postRender && module.postRender(editorView);
+        });
+      });
       return this;
     },
 
@@ -35566,17 +36614,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * @return {HTMLElement}
      */
     render: function render() {
-      var _this = this;
-
-      // Do post render stuff after the iframe is loaded otherwise it'll
-      // be empty during tests
-      em.on('loaded', function () {
-        _this.UndoManager.clear();
-
-        em.get('modules').forEach(function (module) {
-          module.postRender && module.postRender(editorView);
-        });
-      });
       editorView.render();
       return editorView.el;
     }
@@ -35606,7 +36643,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -35882,7 +36919,6 @@ var logs = {
     var _this5 = this;
 
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var scroll = opts.scroll;
     var multiple = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isArray"])(el);
     var els = multiple ? el : [el];
     var selected = this.get('selected');
@@ -35903,7 +36939,6 @@ var logs = {
 
       added = model;
     });
-    scroll && added && this.get('Canvas').scrollTo(added, scroll);
   },
 
   /**
@@ -35972,6 +37007,9 @@ var logs = {
     if (model && !model.get('hoverable')) return;
     opts.forceChange && this.set('componentHovered', '');
     this.set('componentHovered', model, opts);
+  },
+  getHovered: function getHovered() {
+    return this.get('componentHovered');
   },
 
   /**
@@ -36248,6 +37286,15 @@ var logs = {
   getWrapper: function getWrapper() {
     return this.get('DomComponents').getWrapper();
   },
+  setCurrentFrame: function setCurrentFrame(frameView) {
+    return this.set('currentFrame', frameView);
+  },
+  getCurrentFrame: function getCurrentFrame() {
+    return this.get('currentFrame');
+  },
+  getCurrentFrameModel: function getCurrentFrameModel() {
+    return (this.getCurrentFrame() || {}).model;
+  },
 
   /**
    * Return the count of changes made to the content and not yet stored.
@@ -36259,6 +37306,9 @@ var logs = {
   },
   getZoomDecimal: function getZoomDecimal() {
     return this.get('Canvas').getZoomDecimal();
+  },
+  getZoomMultiplier: function getZoomMultiplier() {
+    return this.get('Canvas').getZoomMultiplier();
   },
   setDragMode: function setDragMode(value) {
     return this.set('dmode', value);
@@ -36385,14 +37435,15 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     model.view = this;
     this.conf = model.config;
     this.pn = model.get('Panels');
+    this.cv = model.get('Canvas');
     model.on('loaded', function () {
       _this.pn.active();
 
       _this.pn.disableButtons();
 
-      model.runDefault();
       setTimeout(function () {
-        return model.trigger('load', model.get('Editor'));
+        model.runDefault();
+        model.trigger('load', model.get('Editor'));
       });
     });
   },
@@ -36409,7 +37460,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     $el.empty();
     if (conf.width) contEl.css('width', conf.width);
     if (conf.height) contEl.css('height', conf.height);
-    $el.append(model.get('Canvas').render());
+    $el.append(this.cv.render());
     $el.append(this.pn.render());
     $el.attr('class', "".concat(pfx, "editor ").concat(pfx, "one-bg ").concat(pfx, "two-color"));
     contEl.addClass("".concat(pfx, "editor-cont")).empty().append($el);
@@ -36468,7 +37519,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/i18n/config.js)
@@ -36866,7 +37917,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -36889,7 +37940,7 @@ var defaultConfig = {
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.13',
+  version: '0.15.15',
 
   /**
    * Initialize the editor with passed options
@@ -36965,7 +38016,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * You can customize the initial state of the module from the editor initialization
@@ -37230,7 +38281,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/modal_dialog/config/config.js)
@@ -37658,7 +38709,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -37776,6 +38827,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var dom_components_view_ComponentView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! dom_components/view/ComponentView */ "./src/dom_components/view/ComponentView.js");
+/* harmony import */ var dom_components_model_Component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! dom_components/model/Component */ "./src/dom_components/model/Component.js");
+
 
 
 
@@ -37918,7 +38971,7 @@ var ItemsView;
     inputEl.scrollLeft = 0;
     inputEl[inputProp] = false;
     this.model.set({
-      name: name
+      'custom-name': name
     });
     em && em.setEditing(0);
     $el.find(".".concat(this.inputNameCls)).addClass(clsNoEdit).removeClass(clsEdit);
@@ -37983,7 +39036,9 @@ var ItemsView;
         fromLayers: 1
       });
       var scroll = config.scrollCanvas;
-      scroll && em.get('Canvas').scrollTo(model, scroll);
+      scroll && model.views.forEach(function (view) {
+        return view.scrollIntoView(scroll);
+      });
     }
   },
 
@@ -38006,10 +39061,22 @@ var ItemsView;
    * */
   startSort: function startSort(e) {
     e.stopPropagation();
-    var sorter = this.sorter; // Right or middel click
+    var em = this.em,
+        sorter = this.sorter; // Right or middel click
 
     if (e.button && e.button !== 0) return;
-    sorter && sorter.startSort(e.target);
+
+    if (sorter) {
+      sorter.onStart = function (data) {
+        return em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_4__["eventDrag"], ":start"), data);
+      };
+
+      sorter.onMoveClb = function (data) {
+        return em.trigger(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_4__["eventDrag"], data);
+      };
+
+      sorter.startSort(e.target);
+    }
   },
 
   /**
@@ -38172,6 +39239,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _ItemView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ItemView */ "./src/navigator/view/ItemView.js");
+/* harmony import */ var dom_components_model_Component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! dom_components/model/Component */ "./src/dom_components/model/Component.js");
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
@@ -38203,11 +39272,12 @@ __webpack_require__.r(__webpack_exports__);
         containerSel: ".".concat(this.className),
         itemSel: ".".concat(pfx, "layer"),
         ignoreViewChildren: 1,
-        onEndMove: function onEndMove(created, sorter) {
+        onEndMove: function onEndMove(created, sorter, data) {
           var srcModel = sorter.getSourceModel();
           em.setSelected(srcModel, {
             forceChange: 1
           });
+          em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_2__["eventDrag"], ":end"), data);
         },
         avoidSelectOnEnd: 1,
         nested: 1,
@@ -38876,7 +39946,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -39153,7 +40223,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -39415,7 +40485,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -40239,7 +41309,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * This module allows to customize the built-in toolbar of the Rich Text Editor and use commands from the [HTML Editing APIs](https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand).
@@ -40273,7 +41343,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 /* harmony default export */ __webpack_exports__["default"] = (function () {
   var config = {};
-  var toolbar, actions, lastEl, globalRte;
+  var toolbar, actions, lastEl, lastElPos, globalRte;
 
   var hideToolbar = function hideToolbar() {
     var style = toolbar.style;
@@ -40515,23 +41585,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     updatePosition: function updatePosition() {
       var un = 'px';
       var canvas = config.em.get('Canvas');
-      var pos = canvas.getTargetToElementDim(toolbar, lastEl, {
+      var _toolbar = toolbar,
+          style = _toolbar.style;
+      var pos = canvas.getTargetToElementFixed(lastEl, toolbar, {
         event: 'rteToolbarPosUpdate'
       });
-
-      if (pos) {
-        if (config.adjustToolbar) {
-          var frameOffset = canvas.getCanvasView().getFrameOffset(); // Move the toolbar down when the top canvas edge is reached
-
-          if (pos.top <= pos.canvasTop && !(pos.elementHeight + pos.targetHeight >= frameOffset.height)) {
-            pos.top = pos.elementTop + pos.elementHeight;
-          }
-        }
-
-        var toolbarStyle = toolbar.style;
-        toolbarStyle.top = pos.top + un;
-        toolbarStyle.left = pos.left + un;
-      }
+      style.top = pos.top + un;
+      style.left = 0 + un;
     },
 
     /**
@@ -40542,15 +41602,17 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * */
     enable: function enable(view, rte) {
       lastEl = view.el;
+      var canvas = config.em.get('Canvas');
       var em = config.em;
       var el = view.getChildrenContainer();
       var customRte = this.customRte;
+      lastElPos = canvas.getElementPos(lastEl);
       toolbar.style.display = '';
       rte = customRte ? customRte.enable(el, rte) : this.initRte(el).enable();
 
       if (em) {
         setTimeout(this.updatePosition.bind(this), 0);
-        var event = 'change:canvasOffset canvasScroll';
+        var event = 'change:canvasOffset canvasScroll frame:scroll component:update';
         em.off(event, this.updatePosition, this);
         em.on(event, this.updatePosition, this);
         em.trigger('rte:enable', view, rte);
@@ -40607,7 +41669,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 // The initial version of this RTE was borrowed from https://github.com/jaredreich/pell
 // and adapted to the GrapesJS's need
@@ -41101,7 +42163,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * Selectors in GrapesJS are used in CSS Composer inside Rules and in Components as classes. To illustrate this concept let's take
@@ -42269,7 +43331,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * You can customize the initial state of the module from the editor initialization, by passing the following [Configuration Object](https://github.com/artf/grapesjs/blob/master/src/storage_manager/config/config.js)
@@ -42701,7 +43763,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -42905,7 +43967,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * With Style Manager you build categories (called sectors) of CSS properties which could be used to customize the style of components.
@@ -43410,7 +44472,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -43571,7 +44633,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -43735,7 +44797,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -43794,7 +44856,8 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
   clearValue: function clearValue() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     this.set({
-      value: undefined
+      value: undefined,
+      status: ''
     }, opts);
     return this;
   },
@@ -43904,7 +44967,7 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
   getFullValue: function getFullValue(val) {
     var fn = this.get('functionName');
     var value = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(val) ? this.get('value') : val;
-    var hasValue = !Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(value);
+    var hasValue = !Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(value) && value !== '';
 
     if (fn && hasValue) {
       value = "".concat(fn, "(").concat(value, ")");
@@ -43948,7 +45011,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Property__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -44234,7 +45297,6 @@ __webpack_require__.r(__webpack_exports__);
         switch (prop) {
           case 'float':
           case 'background-color':
-          case 'background-image':
           case 'text-shadow':
             obj.defaults = 'none';
             break;
@@ -44974,7 +46036,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -45060,7 +46122,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_Property__WEBPACK_IMPORTED_MODULE_2__["default"].extend({
@@ -45121,7 +46183,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_PropertyRadio__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -45150,7 +46212,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_PropertyInteger__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -45178,7 +46240,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -45212,6 +46274,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   },
   getFullValue: function getFullValue() {
     return this.get('detached') ? '' : this.get('layers').getFullValue();
+  },
+  getValueFromStyle: function getValueFromStyle() {
+    var styles = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var layers = this.getLayers().getLayersFromStyle(styles);
+    return new _Layers__WEBPACK_IMPORTED_MODULE_2__["default"](layers).getFullValue();
+  },
+  clearValue: function clearValue() {
+    this.getLayers().reset();
+    return _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.clearValue.apply(this, arguments);
   },
 
   /**
@@ -45709,6 +46780,7 @@ __webpack_require__.r(__webpack_exports__);
     view.render();
     var rendered = view.el;
     this.properties.push(view);
+    view.updateVisibility();
     Object(utils_dom__WEBPACK_IMPORTED_MODULE_1__["appendAtIndex"])(appendTo, rendered, opts.at);
   },
   render: function render() {
@@ -45744,7 +46816,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -46266,7 +47338,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 /* harmony default export */ __webpack_exports__["default"] = (_PropertyIntegerView__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
@@ -46334,11 +47406,14 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PropertyCompositeView */ "./src/style_manager/view/PropertyCompositeView.js");
-/* harmony import */ var _LayersView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LayersView */ "./src/style_manager/view/LayersView.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertyCompositeView */ "./src/style_manager/view/PropertyCompositeView.js");
+/* harmony import */ var _LayersView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./LayersView */ "./src/style_manager/view/LayersView.js");
 
 
-/* harmony default export */ __webpack_exports__["default"] = (_PropertyCompositeView__WEBPACK_IMPORTED_MODULE_0__["default"].extend({
+
+/* harmony default export */ __webpack_exports__["default"] = (_PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
   templateInput: function templateInput() {
     var pfx = this.pfx;
     var ppfx = this.ppfx;
@@ -46353,12 +47428,6 @@ __webpack_require__.r(__webpack_exports__);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
   },
-  clear: function clear(e) {
-    e && e.stopPropagation();
-    this.model.get('layers').reset();
-    this.model.clearValue();
-    this.targetUpdated();
-  },
 
   /**
    * Fired when the target is updated.
@@ -46371,7 +47440,7 @@ __webpack_require__.r(__webpack_exports__);
         args[_key] = arguments[_key];
       }
 
-      _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_0__["default"].prototype.targetUpdated.apply(this, args);
+      _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.targetUpdated.apply(this, args);
     } else {
       this.checkVisibility();
     }
@@ -46458,7 +47527,10 @@ __webpack_require__.r(__webpack_exports__);
       var style = target ? target.getStyle() : {};
       layersObj = layers.getLayersFromStyle(style);
     } else {
-      var value = this.getTargetValue();
+      var value = this.getTargetValue({
+        ignoreDefault: 1
+      });
+      if (!value) value = this.getComputedValue();
       value = value == model.getDefaultValue() ? '' : value;
       layersObj = layers.getLayersFromValue(value);
     }
@@ -46471,6 +47543,17 @@ __webpack_require__.r(__webpack_exports__);
     }, {
       silent: true
     });
+  },
+  getTargetValue: function getTargetValue() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var result = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.getTargetValue.call(this, opts);
+    var detached = this.model.attributes.detached; // It might happen that the browser split properties on CSSOM parse
+
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isUndefined"])(result) && !detached) {
+      result = this.model.getValueFromStyle(this.getTarget().getStyle());
+    }
+
+    return result;
   },
   onRender: function onRender() {
     var self = this;
@@ -46491,11 +47574,18 @@ __webpack_require__.r(__webpack_exports__);
           var values = self.getLayers().getPropertyValues(subProp);
           view.updateTargetStyle(values, null, opt);
         } else {
-          model.set('value', model.getFullValue(), opt);
+          // Update only if there is an actual update (to avoid changes for computed styles)
+          // ps: status is calculated in `targetUpdated` method
+          if (model.get('status') == 'updated') {
+            var value = model.getFullValue();
+            model.set('value', value, opt); // Try to remove detached properties
+
+            !value && view.updateTargetStyle(value, null, opt);
+          }
         }
       }
     };
-    var layers = new _LayersView__WEBPACK_IMPORTED_MODULE_1__["default"]({
+    var layers = new _LayersView__WEBPACK_IMPORTED_MODULE_2__["default"]({
       collection: this.getLayers(),
       stackModel: model,
       preview: model.get('preview'),
@@ -46509,8 +47599,7 @@ __webpack_require__.r(__webpack_exports__);
       stackModel: model,
       config: this.config,
       onChange: propsConfig.onChange,
-      propTarget: propsConfig.propTarget,
-      customValue: propsConfig.customValue
+      propTarget: propsConfig.propTarget
     }).render(); //model.get('properties')
 
     fieldEl.appendChild(layers);
@@ -46539,7 +47628,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -46612,6 +47701,7 @@ var clearProp = 'data-clear-style';
     this.listenTo(model, 'targetUpdated', this.targetUpdated);
     this.listenTo(model, 'change:visible', this.updateVisibility);
     this.listenTo(model, 'change:status', this.updateStatus);
+    this.listenTo(model, 'change:name change:className change:full', this.render);
     var init = this.init && this.init.bind(this);
     init && init();
   },
@@ -46655,11 +47745,11 @@ var clearProp = 'data-clear-style';
   /**
    * Clear the property from the target
    */
-  clear: function clear(e) {
+  clear: function clear(ev) {
     var _this2 = this;
 
-    e && e.stopPropagation();
-    this.model.clearValue(); // Skip one stack with setTimeout to avoid inconsistencies
+    ev && ev.stopPropagation();
+    this.model.clearValue(); // Skip one stack with setTimeout to avoid inconsistencies (eg. visible on padding composite clear)
 
     setTimeout(function () {
       return _this2.targetUpdated();
@@ -46727,7 +47817,7 @@ var clearProp = 'data-clear-style';
   setStatus: function setStatus(value) {
     this.model.set('status', value);
     var parent = this.model.parent;
-    parent && value && parent.set('status', value);
+    parent && value == 'updated' && parent.set('status', value);
   },
   emitUpdateTarget: Object(underscore__WEBPACK_IMPORTED_MODULE_2__["debounce"])(function () {
     var em = this.config.em;
@@ -46737,7 +47827,8 @@ var clearProp = 'data-clear-style';
   /**
    * Fired when the target is changed
    * */
-  targetUpdated: function targetUpdated() {
+  targetUpdated: function targetUpdated(mod, val) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     this.emitUpdateTarget();
 
     if (!this.checkVisibility()) {
@@ -46773,15 +47864,49 @@ var clearProp = 'data-clear-style';
       status = '';
     }
 
-    model.setValue(value, 0, {
-      fromTarget: 1
-    });
     this.setStatus(status);
+    model.setValue(value, 0, _objectSpread({
+      fromTarget: 1
+    }, opts));
 
     if (em) {
-      em.trigger('styleManager:change', this, property, value);
-      em.trigger("styleManager:change:".concat(property), this, value);
+      var data = {
+        status: status,
+        targetValue: targetValue,
+        defaultValue: defaultValue,
+        computedValue: computedValue,
+        value: value
+      };
+      em.trigger('styleManager:change', this, property, value, data);
+      em.trigger("styleManager:change:".concat(property), this, value, data);
+
+      this._emitUpdate(data);
     }
+  },
+  _emitUpdate: function _emitUpdate() {
+    var addData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var em = this.em,
+        model = this.model;
+    if (!em) return;
+    var property = model.get('property');
+
+    var data = _objectSpread({}, this._getEventData(), {}, addData);
+
+    var id = data.id;
+    em.trigger('style:update', data);
+    em.trigger("style:update:".concat(property), data);
+    property !== id && em.trigger("style:update:".concat(id), data);
+  },
+  _getEventData: function _getEventData() {
+    var model = this.model;
+    return {
+      propertyView: this,
+      targets: this.getTargets(),
+      value: model.getFullValue(),
+      property: model,
+      id: model.get('id'),
+      name: model.get('property')
+    };
   },
   checkVisibility: function checkVisibility() {
     var result = 1; // Check if need to hide the property
@@ -46830,7 +47955,7 @@ var clearProp = 'data-clear-style';
 
     if (typeof customFetchValue == 'function' && !opts.ignoreCustomValue) {
       var index = model.collection.indexOf(model);
-      var customValue = customFetchValue(this, index);
+      var customValue = customFetchValue(this, index, result);
 
       if (customValue) {
         result = customValue;
@@ -46854,7 +47979,7 @@ var clearProp = 'data-clear-style';
     var notToSkip = avoid.indexOf(property) < 0;
     var value = computed[property];
     var valueDef = computedDef[Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["camelCase"])(property)];
-    return computed && notToSkip && valueDef !== value && value;
+    return computed && notToSkip && valueDef !== value && value || '';
   },
 
   /**
@@ -46917,10 +48042,12 @@ var clearProp = 'data-clear-style';
     var component = em && em.getSelected();
 
     if (em && component) {
-      em.trigger('component:update', component);
+      !opt.noEmit && em.trigger('component:update', component);
       em.trigger('component:styleUpdate', component, prop);
       em.trigger("component:styleUpdate:".concat(prop), component);
     }
+
+    this._emitUpdate();
   },
 
   /**
@@ -47087,9 +48214,10 @@ var clearProp = 'data-clear-style';
     var el = this.el;
     var property = model.get('property');
     var full = model.get('full');
+    var cls = model.get('className') || '';
     var className = "".concat(pfx, "property");
     el.innerHTML = this.template(model);
-    el.className = "".concat(className, " ").concat(pfx).concat(model.get('type'), " ").concat(className, "__").concat(property);
+    el.className = "".concat(className, " ").concat(pfx).concat(model.get('type'), " ").concat(className, "__").concat(property, " ").concat(cls).trim();
     el.className += full ? " ".concat(className, "--full") : '';
     this.updateStatus();
     var onRender = this.onRender && this.onRender.bind(this);
@@ -47244,7 +48372,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -47270,7 +48398,7 @@ var helperCls = 'hc-state';
     body.removeChild(dummy);
     this.propTarget = target;
     var coll = this.collection;
-    var events = 'component:toggled component:update:classes change:state change:device';
+    var events = 'component:toggled component:update:classes change:state change:device frame:resized';
     this.listenTo(coll, 'add', this.addTo);
     this.listenTo(coll, 'reset', this.render);
     this.listenTo(this.target, events, this.targetUpdated);
@@ -47596,7 +48724,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -48168,7 +49296,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -48527,7 +49655,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 /**
  * This module allows to manage the stack of changes applied in canvas.
@@ -49738,19 +50866,7 @@ __webpack_require__.r(__webpack_exports__);
     var viewHeight = cH + scT;
     var offset = input.offset();
     offset.top += inputHeight;
-    var offsetParent = $(".gjs-editor").offsetParent();
-    var leftCorrection = 0;
-    var topCorrection = 0;
-
-    if (offsetParent.length > 0) {
-      var offsetCorrection = offsetParent.offset();
-      leftCorrection = offsetCorrection.left;
-      topCorrection = offsetCorrection.top;
-    }
-
-    offset.top -= topCorrection;
-    offset.left -= leftCorrection;
-    offset.left -= dpWidth;
+    offset.left -= Math.min(offset.left, offset.left + dpWidth > viewWidth && viewWidth > dpWidth ? Math.abs(offset.left + dpWidth - viewWidth) : 0);
     offset.top -= Math.min(offset.top, offset.top + dpHeight > viewHeight && viewHeight > dpHeight ? Math.abs(dpHeight + inputHeight - extraY) : extraY);
     return offset;
   }
@@ -51181,7 +52297,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -51668,22 +52784,39 @@ __webpack_require__.r(__webpack_exports__);
 var Droppable =
 /*#__PURE__*/
 function () {
-  function Droppable(em) {
+  function Droppable(em, rootEl) {
+    var _this = this;
+
     _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default()(this, Droppable);
 
     this.em = em;
-    var el = em.get('DomComponents').getWrapper().getEl();
+    var el = rootEl || em.get('Canvas').getFrames().map(function (frame) {
+      return frame.get('root').getEl();
+    });
+    var els = Array.isArray(el) ? el : [el];
     this.el = el;
     this.counter = 0;
     Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'handleDragEnter', 'handleDragOver', 'handleDrop', 'handleDragLeave');
-    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"])(el, 'dragenter', this.handleDragEnter);
-    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"])(el, 'dragover', this.handleDragOver);
-    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"])(el, 'drop', this.handleDrop);
-    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"])(el, 'dragleave', this.handleDragLeave);
+    els.forEach(function (el) {
+      return _this.toggleEffects(el, 1);
+    });
     return this;
   }
 
   _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default()(Droppable, [{
+    key: "toggleEffects",
+    value: function toggleEffects(el, enable) {
+      var methods = {
+        on: utils_mixins__WEBPACK_IMPORTED_MODULE_2__["on"],
+        off: utils_mixins__WEBPACK_IMPORTED_MODULE_2__["off"]
+      };
+      var method = enable ? 'on' : 'off';
+      methods[method](el, 'dragenter', this.handleDragEnter);
+      methods[method](el, 'dragover', this.handleDragOver);
+      methods[method](el, 'drop', this.handleDrop);
+      methods[method](el, 'dragleave', this.handleDragLeave);
+    }
+  }, {
     key: "endDrop",
     value: function endDrop(cancel, ev) {
       var em = this.em,
@@ -51710,7 +52843,7 @@ function () {
   }, {
     key: "handleDragEnter",
     value: function handleDragEnter(ev) {
-      var _this = this;
+      var _this2 = this;
 
       var em = this.em;
       var dt = ev.dataTransfer;
@@ -51752,7 +52885,7 @@ function () {
                 position: position
               });
 
-              _this.handleDragEnd(comp, dt);
+              _this2.handleDragEnd(comp, dt);
             }
 
             target.remove();
@@ -51781,7 +52914,7 @@ function () {
           itemSel: '*',
           pfx: 'gjs-',
           onEndMove: function onEndMove(model) {
-            return _this.handleDragEnd(model, dt);
+            return _this2.handleDragEnd(model, dt);
           },
           document: canvas.getFrameEl().contentDocument
         });
@@ -51900,14 +53033,22 @@ function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/classCallCheck.js");
-/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/createClass.js");
-/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/classCallCheck.js");
+/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/createClass.js");
+/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
 
+
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -51922,6 +53063,7 @@ var defaultOpts = {
   onStart: null,
   onMove: null,
   onEnd: null,
+  onUpdateContainer: function onUpdateContainer() {},
   // Resize unit step
   step: 1,
   // Minimum dimension
@@ -52000,10 +53142,10 @@ function () {
   function Resizer() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default()(this, Resizer);
+    _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1___default()(this, Resizer);
 
     this.setOptions(opts);
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'handleKeyDown', 'handleMouseDown', 'move', 'stop');
     return this;
   }
   /**
@@ -52012,7 +53154,7 @@ function () {
    */
 
 
-  _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default()(Resizer, [{
+  _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_2___default()(Resizer, [{
     key: "getConfig",
     value: function getConfig() {
       return this.opts;
@@ -52026,7 +53168,7 @@ function () {
     key: "setOptions",
     value: function setOptions() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      this.opts = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["defaults"])(options, defaultOpts);
+      this.opts = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["defaults"])(options, defaultOpts);
       this.setup();
     }
     /**
@@ -52070,6 +53212,7 @@ function () {
       this.onStart = opts.onStart;
       this.onMove = opts.onMove;
       this.onEnd = opts.onEnd;
+      this.onUpdateContainer = opts.onUpdateContainer;
     }
     /**
      * Toggle iframes pointer event
@@ -52081,7 +53224,7 @@ function () {
     value: function toggleFrames(silent) {
       if (this.opts.silentFrames) {
         var frames = document.querySelectorAll('iframe');
-        Object(underscore__WEBPACK_IMPORTED_MODULE_2__["each"])(frames, function (frame) {
+        Object(underscore__WEBPACK_IMPORTED_MODULE_3__["each"])(frames, function (frame) {
           return frame.style.pointerEvents = silent ? 'none' : '';
         });
       }
@@ -52153,7 +53296,7 @@ function () {
       this.updateContainer({
         forceShow: 1
       });
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
+      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["on"])(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
     }
     /**
      * Blur from element
@@ -52165,7 +53308,7 @@ function () {
       this.container.style.display = 'none';
 
       if (this.el) {
-        Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
+        Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["off"])(this.getDocumentEl(), 'mousedown', this.handleMouseDown);
         this.el = null;
       }
     }
@@ -52208,10 +53351,10 @@ function () {
       }; // Listen events
 
       var doc = this.getDocumentEl();
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(doc, 'mousemove', this.move);
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(doc, 'keydown', this.handleKeyDown);
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(doc, 'mouseup', this.stop);
-      Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(this.onStart) && this.onStart(e, {
+      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["on"])(doc, 'mousemove', this.move);
+      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["on"])(doc, 'keydown', this.handleKeyDown);
+      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["on"])(doc, 'mouseup', this.stop);
+      Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(this.onStart) && this.onStart(e, {
         docs: doc,
         config: config,
         el: el,
@@ -52263,12 +53406,12 @@ function () {
     value: function stop(e) {
       var config = this.opts;
       var doc = this.getDocumentEl();
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(doc, 'mousemove', this.move);
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(doc, 'keydown', this.handleKeyDown);
-      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(doc, 'mouseup', this.stop);
+      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["off"])(doc, 'mousemove', this.move);
+      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["off"])(doc, 'keydown', this.handleKeyDown);
+      Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["off"])(doc, 'mouseup', this.stop);
       this.updateRect(1);
       this.toggleFrames();
-      Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(this.onEnd) && this.onEnd(e, {
+      Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(this.onEnd) && this.onEnd(e, {
         docs: doc,
         config: config
       });
@@ -52291,7 +53434,7 @@ function () {
           keyWidth = config.keyWidth,
           keyHeight = config.keyHeight; // Use custom updating strategy if requested
 
-      if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(updateTarget)) {
+      if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isFunction"])(updateTarget)) {
         updateTarget(el, rect, {
           store: store,
           selectedHandler: selectedHandler,
@@ -52316,15 +53459,19 @@ function () {
       var style = container.style;
 
       if (!opts.avoidContainerUpdate && el) {
-        var toUpdate = ['left', 'top', 'width', 'height'];
-        var rectEl = this.getElementPos(el, {
-          target: 'container'
-        });
-        toUpdate.forEach(function (pos) {
-          return style[pos] = "".concat(rectEl[pos], "px");
-        });
+        // On component resize container fits the tool,
+        // to check if this update is required somewhere else point
+        // const toUpdate = ['left', 'top', 'width', 'height'];
+        // const rectEl = this.getElementPos(el, { target: 'container' });
+        // toUpdate.forEach(pos => (style[pos] = `${rectEl[pos]}px`));
         if (opt.forceShow) style.display = 'block';
       }
+
+      this.onUpdateContainer({
+        el: container,
+        resizer: this,
+        opts: _objectSpread({}, opts, {}, opt)
+      });
     }
     /**
      * Get selected handler name
@@ -52404,28 +53551,28 @@ function () {
       var attr = data.handlerAttr;
 
       if (~attr.indexOf('r')) {
-        value = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["normalizeFloat"])(startW + deltaX * step, step);
+        value = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["normalizeFloat"])(startW + deltaX * step, step);
         value = Math.max(minDim, value);
         maxDim && (value = Math.min(maxDim, value));
         box.w = value;
       }
 
       if (~attr.indexOf('b')) {
-        value = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["normalizeFloat"])(startH + deltaY * step, step);
+        value = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["normalizeFloat"])(startH + deltaY * step, step);
         value = Math.max(minDim, value);
         maxDim && (value = Math.min(maxDim, value));
         box.h = value;
       }
 
       if (~attr.indexOf('l')) {
-        value = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["normalizeFloat"])(startW - deltaX * step, step);
+        value = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["normalizeFloat"])(startW - deltaX * step, step);
         value = Math.max(minDim, value);
         maxDim && (value = Math.min(maxDim, value));
         box.w = value;
       }
 
       if (~attr.indexOf('t')) {
-        value = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["normalizeFloat"])(startH - deltaY * step, step);
+        value = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["normalizeFloat"])(startH - deltaY * step, step);
         value = Math.max(minDim, value);
         maxDim && (value = Math.min(maxDim, value));
         box.h = value;
@@ -52487,7 +53634,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
@@ -52542,7 +53689,9 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
   getScale: function getScale() {
     return Object(underscore__WEBPACK_IMPORTED_MODULE_2__["result"])(this, scale) || 1;
   },
-  getContainerEl: function getContainerEl() {
+  getContainerEl: function getContainerEl(elem) {
+    if (elem) this.el = elem;
+
     if (!this.el) {
       var el = this.opt.container;
       this.el = typeof el === 'string' ? document.querySelector(el) : el;
@@ -52551,11 +53700,11 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
 
     return this.el;
   },
-  getDocuments: function getDocuments() {
+  getDocuments: function getDocuments(el) {
     var em = this.em;
-    var canvasDoc = em && em.get('Canvas').getBody().ownerDocument;
+    var elDoc = el ? el.ownerDocument : em && em.get('Canvas').getBody().ownerDocument;
     var docs = [document];
-    canvasDoc && docs.push(canvasDoc);
+    elDoc && docs.push(elDoc);
     return docs;
   },
 
@@ -52609,19 +53758,10 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
    */
   toggleSortCursor: function toggleSortCursor(active) {
     var em = this.em;
-    var body = document.body;
-    var pfx = this.ppfx || this.pfx;
-    var sortCls = pfx + 'grabbing';
-    var emBody = em ? em.get('Canvas').getBody() : ''; // Avoid updating body className as it causes a huge repaint
+    var cv = em && em.get('Canvas'); // Avoid updating body className as it causes a huge repaint
     // Noticeable with "fast" drag of blocks
 
-    if (active) {
-      em && em.get('Canvas').startAutoscroll(); //body.className += ' ' + sortCls;
-      //if (em) emBody.className += ' ' + sortCls;
-    } else {
-      em && em.get('Canvas').stopAutoscroll(); //body.className = body.className.replace(sortCls, '').trim();
-      //if(em) emBody.className = emBody.className.replace(sortCls, '').trim();
-    }
+    cv && (active ? cv.startAutoscroll() : cv.stopAutoscroll());
   },
 
   /**
@@ -52753,15 +53893,18 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
    * @param {HTMLElement} src
    * */
   startSort: function startSort(src) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var em = this.em;
     var itemSel = this.itemSel;
     var contSel = this.containerSel;
-    var container = this.getContainerEl();
-    var docs = this.getDocuments();
+    var container = this.getContainerEl(opts.container);
+    var docs = this.getDocuments(src);
     var onStart = this.onStart;
     var srcModel;
     var plh = this.plh;
     this.dropModel = null;
+    this.target = null;
+    this.prevTarget = null;
     this.moved = 0; // Check if the start element is a valid one, if not get the
     // closest valid one
 
@@ -52780,12 +53923,17 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     if (src) {
       srcModel = this.getSourceModel(src);
       srcModel && srcModel.set && srcModel.set('status', 'freezed');
+      this.srcModel = srcModel;
     }
 
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(container, 'mousemove dragover', this.onMove);
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(docs, 'mouseup dragend touchend', this.endMove);
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(docs, 'keydown', this.rollback);
-    onStart && onStart(); // Avoid strange effects on dragging
+    onStart && onStart({
+      target: srcModel,
+      parent: srcModel && srcModel.parent(),
+      index: srcModel && srcModel.index()
+    }); // Avoid strange effects on dragging
 
     em && em.clearSelection();
     this.toggleSortCursor(1);
@@ -52865,10 +54013,11 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
       return;
     }
 
-    var prevModel = this.targetModel;
+    var targetModel = this.targetModel; // Reset the previous model but not if it's the same as the source
+    // https://github.com/artf/grapesjs/issues/2478#issuecomment-570314736
 
-    if (prevModel) {
-      prevModel.set('status', '');
+    if (targetModel && targetModel !== this.srcModel) {
+      targetModel.set('status', '');
     }
 
     if (model && model.set) {
@@ -52898,7 +54047,9 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     var rX = e.pageX - this.elL + this.el.scrollLeft;
 
     if (this.canvasRelative && em) {
-      var mousePos = em.get('Canvas').getMouseRelativeCanvas(e);
+      var mousePos = em.get('Canvas').getMouseRelativeCanvas(e, {
+        noScroll: 1
+      });
       rX = mousePos.x;
       rY = mousePos.y;
     }
@@ -52910,9 +54061,10 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     var sourceModel = this.getSourceModel();
     var dims = this.dimsFromTarget(e.target, rX, rY);
     var target = this.target;
-    var targetModel = this.getTargetModel(target);
+    var targetModel = target && this.getTargetModel(target);
     this.selectTargetModel(targetModel);
     if (!targetModel) plh.style.display = 'none';
+    if (!target) return;
     this.lastDims = dims;
     var pos = this.findPosition(dims, rX, rY);
 
@@ -52940,7 +54092,12 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
       }
     }
 
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onMoveClb) && onMoveClb(e);
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onMoveClb) && onMoveClb({
+      event: e,
+      target: sourceModel,
+      parent: targetModel,
+      index: pos.index + (pos.method == 'after' ? 1 : 0)
+    });
     em && em.trigger('sorter:drag', {
       target: target,
       targetModel: targetModel,
@@ -53246,7 +54403,9 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
 
     if (canvasRelative && em) {
       var canvas = em.get('Canvas');
-      var pos = canvas.getElementPos(el);
+      var pos = canvas.getElementPos(el, {
+        noScroll: 1
+      });
       var elOffsets = canvas.getElementOffsets(el);
       top = pos.top - elOffsets.marginTop;
       left = pos.left - elOffsets.marginLeft;
@@ -53277,7 +54436,8 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     var trgModel = this.getTargetModel(trg);
 
     if (trgModel && trgModel.view && !this.ignoreViewChildren) {
-      trg = trgModel.view.getChildrenContainer();
+      var view = trgModel.getCurrentView ? trgModel.getCurrentView() : trgModel.view;
+      trg = view.getChildrenContainer();
     }
 
     Object(underscore__WEBPACK_IMPORTED_MODULE_2__["each"])(trg.children, function (el, i) {
@@ -53447,22 +54607,23 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
   endMove: function endMove(e) {
     var _this3 = this;
 
-    var moved = [null];
+    var src = this.eV;
+    var moved = [];
     var docs = this.getDocuments();
     var container = this.getContainerEl();
     var onEndMove = this.onEndMove;
     var target = this.target,
         lastPos = this.lastPos;
+    var srcModel;
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(container, 'mousemove dragover', this.onMove);
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(docs, 'mouseup dragend touchend', this.endMove);
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"])(docs, 'keydown', this.rollback);
     this.plh.style.display = 'none';
-    var src = this.eV;
 
-    if (src && this.selectOnEnd) {
-      var srcModel = this.getSourceModel();
+    if (src) {
+      srcModel = this.getSourceModel();
 
-      if (srcModel && srcModel.set) {
+      if (this.selectOnEnd && srcModel && srcModel.set) {
         srcModel.set('status', '');
         srcModel.set('status', 'selected');
       }
@@ -53489,7 +54650,11 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     this.toggleSortCursor();
     this.toMove = null;
     Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onEndMove) && moved.forEach(function (m) {
-      return onEndMove(m, _this3);
+      return onEndMove(m, _this3, {
+        target: srcModel,
+        parent: srcModel && srcModel.parent(),
+        index: srcModel && srcModel.index()
+      });
     });
   },
 
@@ -53616,14 +54781,18 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
 /*!**************************!*\
   !*** ./src/utils/dom.js ***!
   \**************************/
-/*! exports provided: empty, replaceWith, appendAtIndex, appendVNodes */
+/*! exports provided: motionsEv, empty, replaceWith, appendAtIndex, append, createEl, createCustomEvent, appendVNodes */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "motionsEv", function() { return motionsEv; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "empty", function() { return empty; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "replaceWith", function() { return replaceWith; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "appendAtIndex", function() { return appendAtIndex; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "append", function() { return append; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createEl", function() { return createEl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createCustomEvent", function() { return createCustomEvent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "appendVNodes", function() { return appendVNodes; });
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
@@ -53632,6 +54801,7 @@ __webpack_require__.r(__webpack_exports__);
 var KEY_TAG = 'tag';
 var KEY_ATTR = 'attributes';
 var KEY_CHILD = 'children';
+var motionsEv = 'transitionend oTransitionEnd transitionend webkitTransitionEnd';
 var empty = function empty(node) {
   while (node.firstChild) {
     node.removeChild(node.firstChild);
@@ -53645,11 +54815,59 @@ var appendAtIndex = function appendAtIndex(parent, child, index) {
   var total = childNodes.length;
   var at = Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isUndefined"])(index) ? total : index;
 
+  if (Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isString"])(child)) {
+    parent.insertAdjacentHTML('beforeEnd', child);
+    child = parent.lastChild;
+    parent.removeChild(child);
+  }
+
   if (at >= total) {
     parent.appendChild(child);
   } else {
     parent.insertBefore(child, childNodes[at]);
   }
+};
+var append = function append(parent, child) {
+  return appendAtIndex(parent, child);
+};
+var createEl = function createEl(tag) {
+  var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var child = arguments.length > 2 ? arguments[2] : undefined;
+  var el = document.createElement(tag);
+  attrs && Object(underscore__WEBPACK_IMPORTED_MODULE_0__["each"])(attrs, function (value, key) {
+    return el.setAttribute(key, value);
+  });
+
+  if (child) {
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isString"])(child)) el.innerHTML = child;else el.appendChild(child);
+  }
+
+  return el;
+}; // Unfortunately just creating `KeyboardEvent(e.type, e)` is not enough,
+// the keyCode/which will be always `0`. Even if it's an old/deprecated
+// property keymaster (and many others) still use it... using `defineProperty`
+// hack seems the only way
+
+var createCustomEvent = function createCustomEvent(e, cls) {
+  var oEvent;
+
+  try {
+    oEvent = new window[cls](e.type, e);
+  } catch (e) {
+    oEvent = document.createEvent(cls);
+    oEvent.initEvent(e.type, true, true);
+  }
+
+  oEvent.keyCodeVal = e.keyCode;
+  oEvent._parentEvent = e;
+  ['keyCode', 'which'].forEach(function (prop) {
+    Object.defineProperty(oEvent, prop, {
+      get: function get() {
+        return this.keyCodeVal;
+      }
+    });
+  });
+  return oEvent;
 };
 /**
  * Append an array of vNodes to an element
@@ -54114,7 +55332,7 @@ __webpack_require__.r(__webpack_exports__);
 /*!*****************************!*\
   !*** ./src/utils/mixins.js ***!
   \*****************************/
-/*! exports provided: isCommentNode, isTaggableNode, on, off, hasDnd, upFirst, matches, getModel, getElRect, camelCase, isTextNode, getKeyCode, getKeyChar, isEscKey, getElement, shallowDiff, normalizeFloat, getPointerEvent, getUnitFromValue, capitalize, appendStyles, isComponent, isRule */
+/*! exports provided: isCommentNode, isTaggableNode, on, off, hasDnd, upFirst, matches, getModel, getElRect, camelCase, isTextNode, getKeyCode, getKeyChar, isEscKey, getElement, shallowDiff, normalizeFloat, getPointerEvent, getUnitFromValue, capitalize, getViewEl, setViewEl, appendStyles, isComponent, isRule */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54139,6 +55357,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getPointerEvent", function() { return getPointerEvent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getUnitFromValue", function() { return getUnitFromValue; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "capitalize", function() { return capitalize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getViewEl", function() { return getViewEl; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setViewEl", function() { return setViewEl; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "appendStyles", function() { return appendStyles; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isComponent", function() { return isComponent; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isRule", function() { return isRule; });
@@ -54387,7 +55607,7 @@ var isEscKey = function isEscKey(ev) {
 };
 
 var capitalize = function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.substring(1);
+  return str && str.charAt(0).toUpperCase() + str.substring(1);
 };
 
 var isComponent = function isComponent(obj) {
@@ -54396,6 +55616,14 @@ var isComponent = function isComponent(obj) {
 
 var isRule = function isRule(obj) {
   return obj && obj.toCSS;
+};
+
+var getViewEl = function getViewEl(el) {
+  return el.__gjsv;
+};
+
+var setViewEl = function setViewEl(el, view) {
+  el.__gjsv = view;
 };
 
 
