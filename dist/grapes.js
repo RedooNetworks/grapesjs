@@ -1276,7 +1276,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
   // Set up Backbone appropriately for the environment. Start with AMD.
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js"), __webpack_require__(/*! jquery */ "./node_modules/cash-dom/dist/cash.js"), exports], __WEBPACK_AMD_DEFINE_RESULT__ = (function(_, $, exports) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js"), __webpack_require__(/*! jquery */ "./node_modules/cash-dom/dist/cash.esm.js"), exports], __WEBPACK_AMD_DEFINE_RESULT__ = (function(_, $, exports) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backbone.
       root.Backbone = factory(root, exports, _, $);
@@ -3178,972 +3178,1438 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
-/***/ "./node_modules/cash-dom/dist/cash.js":
-/*!********************************************!*\
-  !*** ./node_modules/cash-dom/dist/cash.js ***!
-  \********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ "./node_modules/cash-dom/dist/cash.esm.js":
+/*!************************************************!*\
+  !*** ./node_modules/cash-dom/dist/cash.esm.js ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;
+__webpack_require__.r(__webpack_exports__);
+/* MIT https://github.com/kenwheeler/cash */
 
-/*! cash-dom 1.3.7, https://github.com/kenwheeler/cash @license MIT */
-;(function (root, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
-				__WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else {}
-})(this, function () {
-  var doc = document, win = window, ArrayProto = Array.prototype, slice = ArrayProto.slice, filter = ArrayProto.filter, push = ArrayProto.push;
 
-  var noop = function () {}, isFunction = function (item) {
-    // @see https://crbug.com/568448
-    return typeof item === typeof noop && item.call;
-  }, isString = function (item) {
-    return typeof item === typeof "";
+var doc = document,
+    win = window,
+    _Array$prototype = Array.prototype,
+    filter = _Array$prototype.filter,
+    indexOf = _Array$prototype.indexOf,
+    map = _Array$prototype.map,
+    push = _Array$prototype.push,
+    reverse = _Array$prototype.reverse,
+    slice = _Array$prototype.slice,
+    splice = _Array$prototype.splice;
+var idRe = /^#[\w-]*$/,
+    classRe = /^\.[\w-]*$/,
+    htmlRe = /<.+>/,
+    tagRe = /^\w+$/; // @require ./variables.js
+
+function find(selector, context) {
+  if (context === void 0) {
+    context = doc;
+  }
+
+  return classRe.test(selector) ? context.getElementsByClassName(selector.slice(1)) : tagRe.test(selector) ? context.getElementsByTagName(selector) : context.querySelectorAll(selector);
+} // @require ./find.js
+// @require ./variables.js
+
+
+function Cash(selector, context) {
+  if (context === void 0) {
+    context = doc;
+  }
+
+  if (!selector) return;
+  if (selector.__cash) return selector;
+  var eles = selector;
+
+  if (isString(selector)) {
+    if (context.__cash) context = context[0];
+    eles = idRe.test(selector) ? context.getElementById(selector.slice(1)) : htmlRe.test(selector) ? parseHTML(selector) : find(selector, context);
+    if (!eles) return;
+  } else if (isFunction(selector)) {
+    return this.ready(selector); //FIXME: `fn.ready` is not included in `core`, but it's actually a core functionality
+  }
+
+  if (eles.nodeType || eles === win) eles = [eles];
+  this.length = eles.length;
+
+  for (var i = 0, l = this.length; i < l; i++) {
+    this[i] = eles[i];
+  }
+}
+
+function cash(selector, context) {
+  return new Cash(selector, context);
+}
+/* PROTOTYPE */
+
+
+var fn = cash.fn = cash.prototype = Cash.prototype = {
+  constructor: cash,
+  __cash: true,
+  length: 0,
+  splice: splice // Ensures a cash collection gets printed as array-like in Chrome
+
+}; // @require core/cash.js
+// @require core/variables.js
+
+fn.get = function (index) {
+  if (index === undefined) return slice.call(this);
+  return this[index < 0 ? index + this.length : index];
+}; // @require core/cash.js
+// @require ./get.js
+
+
+fn.eq = function (index) {
+  return cash(this.get(index));
+}; // @require core/cash.js
+// @require ./eq.js
+
+
+fn.first = function () {
+  return this.eq(0);
+}; // @require core/cash.js
+// @require ./eq.js
+
+
+fn.last = function () {
+  return this.eq(-1);
+}; // @require core/cash.js
+// @require core/variables.js
+
+
+fn.map = function (callback) {
+  return cash(map.call(this, function (ele, i) {
+    return callback.call(ele, i, ele);
+  }));
+}; // @require core/cash.js
+// @require core/variables.js
+
+
+fn.slice = function () {
+  return cash(slice.apply(this, arguments));
+}; // @require ./cash.js
+
+
+var camelCaseRe = /(?:^\w|[A-Z]|\b\w)/g,
+    camelCaseWhitespaceRe = /[\s-_]+/g;
+
+function camelCase(str) {
+  return str.replace(camelCaseRe, function (letter, index) {
+    return letter[!index ? 'toLowerCase' : 'toUpperCase']();
+  }).replace(camelCaseWhitespaceRe, '');
+}
+
+;
+cash.camelCase = camelCase; // @require ./cash.js
+
+function each(arr, callback) {
+  for (var i = 0, l = arr.length; i < l; i++) {
+    if (callback.call(arr[i], arr[i], i, arr) === false) break;
+  }
+}
+
+cash.each = each; // @require core/cash.js
+// @require core/each.js
+
+fn.each = function (callback) {
+  each(this, function (ele, i) {
+    return callback.call(ele, i, ele);
+  });
+  return this;
+}; // @require core/cash.js
+// @require collection/each.js
+
+
+fn.removeProp = function (prop) {
+  return this.each(function (i, ele) {
+    delete ele[prop];
+  });
+}; // @require ./cash.js
+
+
+function extend(target) {
+  if (target === void 0) {
+    target = this;
+  }
+
+  var args = arguments,
+      length = args.length;
+
+  for (var i = length < 2 ? 0 : 1; i < length; i++) {
+    for (var key in args[i]) {
+      target[key] = args[i][key];
+    }
+  }
+
+  return target;
+}
+
+;
+cash.extend = fn.extend = extend; // @require ./cash.js
+
+var guid = 1;
+cash.guid = guid; // @require ./cash.js
+
+function matches(ele, selector) {
+  var matches = ele && (ele.matches || ele.webkitMatchesSelector || ele.mozMatchesSelector || ele.msMatchesSelector || ele.oMatchesSelector);
+  return !!matches && matches.call(ele, selector);
+}
+
+cash.matches = matches; // @require ./cash.js
+
+function isFunction(x) {
+  return typeof x === 'function';
+}
+
+cash.isFunction = isFunction;
+
+function isString(x) {
+  return typeof x === 'string';
+}
+
+cash.isString = isString;
+
+function isNumeric(x) {
+  return !isNaN(parseFloat(x)) && isFinite(x);
+}
+
+cash.isNumeric = isNumeric;
+var isArray = Array.isArray;
+cash.isArray = isArray; // @require core/cash.js
+// @require core/type_checking.js
+// @require collection/each.js
+
+fn.prop = function (prop, value) {
+  if (!prop) return;
+
+  if (isString(prop)) {
+    if (arguments.length < 2) return this[0] && this[0][prop];
+    return this.each(function (i, ele) {
+      ele[prop] = value;
+    });
+  }
+
+  for (var key in prop) {
+    this.prop(key, prop[key]);
+  }
+
+  return this;
+}; // @require ./matches.js
+// @require ./type_checking.js
+
+
+function getCompareFunction(selector) {
+  return isString(selector) ? function (i, ele) {
+    return matches(ele, selector);
+  } : selector.__cash ? function (i, ele) {
+    return selector.is(ele);
+  } : function (i, ele, selector) {
+    return ele === selector;
   };
+} // @require core/cash.js
+// @require core/get_compare_function.js
+// @require core/type_checking.js
+// @require core/variables.js
+// @require collection/get.js
 
-  var idMatch = /^#[\w-]*$/, classMatch = /^\.[\w-]*$/, htmlMatch = /<.+>/, singlet = /^\w+$/;
 
-  function find(selector, context) {
-    context = context || doc;
-    var elems = (classMatch.test(selector) ? context.getElementsByClassName(selector.slice(1)) : singlet.test(selector) ? context.getElementsByTagName(selector) : context.querySelectorAll(selector));
-    return elems;
+fn.filter = function (selector) {
+  if (!selector) return cash();
+  var comparator = isFunction(selector) ? selector : getCompareFunction(selector);
+  return cash(filter.call(this, function (ele, i) {
+    return comparator.call(ele, i, ele, selector);
+  }));
+}; // @require ./type_checking.js
+
+
+var splitValuesRe = /\S+/g;
+
+function getSplitValues(str) {
+  return isString(str) ? str.match(splitValuesRe) || [] : [];
+} // @require core/cash.js
+// @require core/get_split_values.js
+// @require collection/each.js
+
+
+fn.hasClass = function (cls) {
+  var classes = getSplitValues(cls);
+  var check = false;
+
+  if (classes.length) {
+    this.each(function (i, ele) {
+      check = ele.classList.contains(classes[0]);
+      return !check;
+    });
   }
 
-  var frag;
-  function parseHTML(str) {
-    if (!frag) {
-      frag = doc.implementation.createHTMLDocument(null);
-      var base = frag.createElement("base");
-      base.href = doc.location.href;
-      frag.head.appendChild(base);
+  return check;
+}; // @require core/cash.js
+// @require core/get_split_values.js
+// @require collection/each.js
+
+
+fn.removeAttr = function (attr) {
+  var attrs = getSplitValues(attr);
+  if (!attrs.length) return this;
+  return this.each(function (i, ele) {
+    each(attrs, function (a) {
+      ele.removeAttribute(a);
+    });
+  });
+}; // @require core/cash.js
+// @require core/type_checking.js
+// @require collection/each.js
+// @require ./remove_attr.js
+
+
+fn.attr = function (attr, value) {
+  if (!attr) return;
+
+  if (isString(attr)) {
+    if (arguments.length < 2) {
+      if (!this[0]) return;
+
+      var _value = this[0].getAttribute(attr);
+
+      return _value === null ? undefined : _value;
     }
 
-    frag.body.innerHTML = str;
-
-    return frag.body.childNodes;
+    if (value === null) return this.removeAttr(attr);
+    return this.each(function (i, ele) {
+      ele.setAttribute(attr, value);
+    });
   }
 
-  function onReady(fn) {
-    if (doc.readyState !== "loading") {
-      setTimeout(fn);
-    } else {
-      doc.addEventListener("DOMContentLoaded", fn);
-    }
+  for (var key in attr) {
+    this.attr(key, attr[key]);
   }
 
-  function Init(selector, context) {
-    if (!selector) {
-      return this;
-    }
+  return this;
+}; // @require core/cash.js
+// @require core/each.js
+// @require core/get_split_values.js
+// @require collection/each.js
 
-    // If already a cash collection, don't do any further processing
-    if (selector.cash && selector !== win) {
-      return selector;
-    }
 
-    var elems = selector, i = 0, length;
-
-    if (isString(selector)) {
-      elems = (idMatch.test(selector) ?
-      // If an ID use the faster getElementById check
-      doc.getElementById(selector.slice(1)) : htmlMatch.test(selector) ?
-      // If HTML, parse it into real elements
-      parseHTML(selector) :
-      // else use `find`
-      find(selector, context));
-
-      // If function, use as shortcut for DOM ready
-    } else if (isFunction(selector)) {
-      onReady(selector);return this;
-    }
-
-    if (!elems) {
-      return this;
-    }
-
-    // If a single DOM element is passed in or received via ID, return the single element
-    if (elems.nodeType || elems === win) {
-      this[0] = elems;
-      this.length = 1;
-    } else {
-      // Treat like an array and loop through each item.
-      length = this.length = elems.length;
-      for (; i < length; i++) {
-        this[i] = elems[i];
+fn.toggleClass = function (cls, force) {
+  var classes = getSplitValues(cls),
+      isForce = force !== undefined;
+  if (!classes.length) return this;
+  return this.each(function (i, ele) {
+    each(classes, function (c) {
+      if (isForce) {
+        force ? ele.classList.add(c) : ele.classList.remove(c);
+      } else {
+        ele.classList.toggle(c);
       }
+    });
+  });
+}; // @require core/cash.js
+// @require ./toggle_class.js
+
+
+fn.addClass = function (cls) {
+  return this.toggleClass(cls, true);
+}; // @require core/cash.js
+// @require ./attr.js
+// @require ./toggle_class.js
+
+
+fn.removeClass = function (cls) {
+  return !arguments.length ? this.attr('class', '') : this.toggleClass(cls, false);
+}; // @optional ./add_class.js
+// @optional ./attr.js
+// @optional ./has_class.js
+// @optional ./prop.js
+// @optional ./remove_attr.js
+// @optional ./remove_class.js
+// @optional ./remove_prop.js
+// @optional ./toggle_class.js
+// @require ./cash.js
+
+
+function unique(arr) {
+  return arr.filter(function (item, index, self) {
+    return self.indexOf(item) === index;
+  });
+}
+
+cash.unique = unique; // @require core/cash.js
+// @require core/unique.js
+// @require ./get.js
+
+fn.add = function (selector, context) {
+  return cash(unique(this.get().concat(cash(selector, context).get())));
+}; // @require core/variables.js
+
+
+function computeStyle(ele, prop, isVariable) {
+  if (ele.nodeType !== 1) return;
+  var style = win.getComputedStyle(ele, null);
+  return prop ? isVariable ? style.getPropertyValue(prop) : style[prop] : style;
+} // @require ./compute_style.js
+
+
+function computeStyleInt(ele, prop) {
+  return parseInt(computeStyle(ele, prop), 10) || 0;
+}
+
+var cssVariableRe = /^--/; // @require ./variables.js
+
+function isCSSVariable(prop) {
+  return cssVariableRe.test(prop);
+} // @require core/camel_case.js
+// @require core/cash.js
+// @require core/each.js
+// @require core/variables.js
+// @require ./is_css_variable.js
+
+
+var prefixedProps = {},
+    _doc$createElement = doc.createElement('div'),
+    style = _doc$createElement.style,
+    vendorsPrefixes = ['webkit', 'moz', 'ms', 'o'];
+
+function getPrefixedProp(prop, isVariable) {
+  if (isVariable === void 0) {
+    isVariable = isCSSVariable(prop);
+  }
+
+  if (isVariable) return prop;
+
+  if (!prefixedProps[prop]) {
+    var propCC = camelCase(prop),
+        propUC = "" + propCC.charAt(0).toUpperCase() + propCC.slice(1),
+        props = (propCC + " " + vendorsPrefixes.join(propUC + " ") + propUC).split(' ');
+    each(props, function (p) {
+      if (p in style) {
+        prefixedProps[prop] = p;
+        return false;
+      }
+    });
+  }
+
+  return prefixedProps[prop];
+}
+
+;
+cash.prefixedProp = getPrefixedProp; // @require core/type_checking.js
+// @require ./is_css_variable.js
+
+var numericProps = {
+  animationIterationCount: true,
+  columnCount: true,
+  flexGrow: true,
+  flexShrink: true,
+  fontWeight: true,
+  lineHeight: true,
+  opacity: true,
+  order: true,
+  orphans: true,
+  widows: true,
+  zIndex: true
+};
+
+function getSuffixedValue(prop, value, isVariable) {
+  if (isVariable === void 0) {
+    isVariable = isCSSVariable(prop);
+  }
+
+  return !isVariable && !numericProps[prop] && isNumeric(value) ? value + "px" : value;
+} // @require core/cash.js
+// @require core/type_checking.js
+// @require collection/each.js
+// @require ./helpers/compute_style.js
+// @require ./helpers/get_prefixed_prop.js
+// @require ./helpers/get_suffixed_value.js
+// @require ./helpers/is_css_variable.js
+
+
+fn.css = function (prop, value) {
+  if (isString(prop)) {
+    var isVariable = isCSSVariable(prop);
+    prop = getPrefixedProp(prop, isVariable);
+    if (arguments.length < 2) return this[0] && computeStyle(this[0], prop, isVariable);
+    if (!prop) return this;
+    value = getSuffixedValue(prop, value, isVariable);
+    return this.each(function (i, ele) {
+      if (ele.nodeType !== 1) return;
+
+      if (isVariable) {
+        ele.style.setProperty(prop, value);
+      } else {
+        ele.style[prop] = value;
+      }
+    });
+  }
+
+  for (var key in prop) {
+    this.css(key, prop[key]);
+  }
+
+  return this;
+}; // @optional ./css.js
+
+
+var dataNamespace = '__cashData',
+    dataAttributeRe = /^data-(.*)/; // @require core/cash.js
+// @require ./helpers/variables.js
+
+cash.hasData = function (ele) {
+  return dataNamespace in ele;
+}; // @require ./variables.js
+
+
+function getDataCache(ele) {
+  return ele[dataNamespace] = ele[dataNamespace] || {};
+} // @require attributes/attr.js
+// @require ./get_data_cache.js
+
+
+function getData(ele, key) {
+  var cache = getDataCache(ele);
+
+  if (key) {
+    if (!(key in cache)) {
+      var value = ele.dataset ? ele.dataset[key] || ele.dataset[camelCase(key)] : cash(ele).attr("data-" + key);
+
+      if (value !== undefined) {
+        try {
+          value = JSON.parse(value);
+        } catch (e) {}
+
+        cache[key] = value;
+      }
+    }
+
+    return cache[key];
+  }
+
+  return cache;
+} // @require ./variables.js
+// @require ./get_data_cache.js
+
+
+function removeData(ele, key) {
+  if (key === undefined) {
+    delete ele[dataNamespace];
+  } else {
+    delete getDataCache(ele)[key];
+  }
+} // @require ./get_data_cache.js
+
+
+function setData(ele, key, value) {
+  getDataCache(ele)[key] = value;
+} // @require core/cash.js
+// @require core/type_checking.js
+// @require collection/each.js
+// @require ./helpers/get_data.js
+// @require ./helpers/set_data.js
+// @require ./helpers/variables.js
+
+
+fn.data = function (name, value) {
+  var _this = this;
+
+  if (!name) {
+    if (!this[0]) return;
+    each(this[0].attributes, function (attr) {
+      var match = attr.name.match(dataAttributeRe);
+      if (!match) return;
+
+      _this.data(match[1]);
+    });
+    return getData(this[0]);
+  }
+
+  if (isString(name)) {
+    if (value === undefined) return this[0] && getData(this[0], name);
+    return this.each(function (i, ele) {
+      return setData(ele, name, value);
+    });
+  }
+
+  for (var key in name) {
+    this.data(key, name[key]);
+  }
+
+  return this;
+}; // @require core/cash.js
+// @require collection/each.js
+// @require ./helpers/remove_data.js
+
+
+fn.removeData = function (key) {
+  return this.each(function (i, ele) {
+    return removeData(ele, key);
+  });
+}; // @optional ./data.js
+// @optional ./remove_data.js
+// @require css/helpers/compute_style_int.js
+
+
+function getExtraSpace(ele, xAxis) {
+  return computeStyleInt(ele, "border" + (xAxis ? 'Left' : 'Top') + "Width") + computeStyleInt(ele, "padding" + (xAxis ? 'Left' : 'Top')) + computeStyleInt(ele, "padding" + (xAxis ? 'Right' : 'Bottom')) + computeStyleInt(ele, "border" + (xAxis ? 'Right' : 'Bottom') + "Width");
+} // @require core/cash.js
+// @require core/each.js
+// @require core/variables.js
+
+
+each(['Width', 'Height'], function (prop) {
+  fn["inner" + prop] = function () {
+    if (!this[0]) return;
+    if (this[0] === win) return win["inner" + prop];
+    return this[0]["client" + prop];
+  };
+}); // @require core/camel_case.js
+// @require core/cash.js
+// @require core/each.js
+// @require core/variables.js
+// @require css/helpers/compute_style.js
+// @require css/helpers/get_suffixed_value.js
+// @require ./helpers/get_extra_space.js
+
+each(['width', 'height'], function (prop, index) {
+  fn[prop] = function (value) {
+    if (!this[0]) return value === undefined ? undefined : this;
+
+    if (!arguments.length) {
+      if (this[0] === win) return this[0][camelCase("outer-" + prop)];
+      return this[0].getBoundingClientRect()[prop] - getExtraSpace(this[0], !index);
+    }
+
+    value = parseInt(value, 10);
+    return this.each(function (i, ele) {
+      if (ele.nodeType !== 1) return;
+      var boxSizing = computeStyle(ele, 'boxSizing');
+      ele.style[prop] = getSuffixedValue(prop, value + (boxSizing === 'border-box' ? getExtraSpace(ele, !index) : 0));
+    });
+  };
+}); // @require core/cash.js
+// @require core/each.js
+// @require core/variables.js
+// @require css/helpers/compute_style_int.js
+
+each(['Width', 'Height'], function (prop, index) {
+  fn["outer" + prop] = function (includeMargins) {
+    if (!this[0]) return;
+    if (this[0] === win) return win["outer" + prop];
+    return this[0]["offset" + prop] + (includeMargins ? computeStyleInt(this[0], "margin" + (!index ? 'Left' : 'Top')) + computeStyleInt(this[0], "margin" + (!index ? 'Right' : 'Bottom')) : 0);
+  };
+}); // @optional ./inner.js
+// @optional ./normal.js
+// @optional ./outer.js
+
+function hasNamespaces(ns1, ns2) {
+  for (var i = 0, l = ns2.length; i < l; i++) {
+    if (ns1.indexOf(ns2[i]) < 0) return false;
+  }
+
+  return true;
+} // @require core/each.js
+
+
+function removeEventListeners(cache, ele, name) {
+  each(cache[name], function (_ref) {
+    var namespaces = _ref[0],
+        callback = _ref[1];
+    ele.removeEventListener(name, callback);
+  });
+  delete cache[name];
+}
+
+var eventsNamespace = '__cashEvents',
+    eventsNamespacesSeparator = '.'; // @require ./variables.js
+
+function getEventsCache(ele) {
+  return ele[eventsNamespace] = ele[eventsNamespace] || {};
+} // @require core/guid.js
+// @require events/helpers/get_events_cache.js
+
+
+function addEvent(ele, name, namespaces, callback) {
+  callback.guid = callback.guid || guid++;
+  var eventCache = getEventsCache(ele);
+  eventCache[name] = eventCache[name] || [];
+  eventCache[name].push([namespaces, callback]);
+  ele.addEventListener(name, callback);
+} // @require ./variables.js
+
+
+function parseEventName(eventName) {
+  var parts = eventName.split(eventsNamespacesSeparator);
+  return [parts[0], parts.slice(1).sort()]; // [name, namespaces]
+} // @require core/guid.js
+// @require ./get_events_cache.js
+// @require ./has_namespaces.js
+// @require ./parse_event_name.js
+// @require ./remove_event_listeners.js
+
+
+function removeEvent(ele, name, namespaces, callback) {
+  var cache = getEventsCache(ele);
+
+  if (!name) {
+    if (!namespaces || !namespaces.length) {
+      for (name in cache) {
+        removeEventListeners(cache, ele, name);
+      }
+    } else {
+      for (name in cache) {
+        removeEvent(ele, name, namespaces, callback);
+      }
+    }
+  } else {
+    var eventCache = cache[name];
+    if (!eventCache) return;
+    if (callback) callback.guid = callback.guid || guid++;
+    cache[name] = eventCache.filter(function (_ref2) {
+      var ns = _ref2[0],
+          cb = _ref2[1];
+      if (callback && cb.guid !== callback.guid || !hasNamespaces(ns, namespaces)) return true;
+      ele.removeEventListener(name, cb);
+    });
+  }
+} // @require core/cash.js
+// @require core/each.js
+// @require collection/each.js
+// @require ./helpers/parse_event_name.js
+// @require ./helpers/remove_event.js
+
+
+fn.off = function (eventFullName, callback) {
+  var _this2 = this;
+
+  if (eventFullName === undefined) {
+    this.each(function (i, ele) {
+      return removeEvent(ele);
+    });
+  } else {
+    each(getSplitValues(eventFullName), function (eventFullName) {
+      var _parseEventName = parseEventName(eventFullName),
+          name = _parseEventName[0],
+          namespaces = _parseEventName[1];
+
+      _this2.each(function (i, ele) {
+        return removeEvent(ele, name, namespaces, callback);
+      });
+    });
+  }
+
+  return this;
+}; // @require core/cash.js
+// @require core/get_split_values.js
+// @require core/guid.js
+// @require core/matches.js
+// @require core/type_checking.js
+// @require collection/each.js
+// @require ./helpers/variables.js
+// @require ./helpers/add_event.js
+// @require ./helpers/has_namespaces.js
+// @require ./helpers/parse_event_name.js
+// @require ./helpers/remove_event.js
+
+
+fn.on = function (eventFullName, selector, callback, _one) {
+  var _this3 = this;
+
+  if (!isString(eventFullName)) {
+    for (var key in eventFullName) {
+      this.on(key, selector, eventFullName[key]);
     }
 
     return this;
   }
 
-  function cash(selector, context) {
-    return new Init(selector, context);
+  if (isFunction(selector)) {
+    callback = selector;
+    selector = false;
   }
 
-  var fn = cash.fn = cash.prototype = Init.prototype = { // jshint ignore:line
-    cash: true,
-    length: 0,
-    push: push,
-    splice: ArrayProto.splice,
-    map: ArrayProto.map,
-    init: Init
+  each(getSplitValues(eventFullName), function (eventFullName) {
+    var _parseEventName2 = parseEventName(eventFullName),
+        name = _parseEventName2[0],
+        namespaces = _parseEventName2[1];
+
+    _this3.each(function (i, ele) {
+      var finalCallback = function finalCallback(event) {
+        if (event.namespace && !hasNamespaces(namespaces, event.namespace.split(eventsNamespacesSeparator))) return;
+        var thisArg = ele;
+
+        if (selector) {
+          var target = event.target;
+
+          while (!matches(target, selector)) {
+            if (target === ele) return;
+            target = target.parentNode;
+            if (!target) return;
+          }
+
+          thisArg = target;
+        }
+
+        event.namespace = event.namespace || '';
+        var returnValue = callback.call(thisArg, event, event.data);
+
+        if (_one) {
+          removeEvent(ele, name, namespaces, finalCallback);
+        }
+
+        if (returnValue === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      };
+
+      finalCallback.guid = callback.guid = callback.guid || guid++;
+      addEvent(ele, name, namespaces, finalCallback);
+    });
+  });
+  return this;
+}; // @require core/cash.js
+// @require ./on.js
+
+
+fn.one = function (eventFullName, delegate, callback) {
+  return this.on(eventFullName, delegate, callback, true);
+}; // @require core/cash.js
+// @require core/variables.js
+
+
+fn.ready = function (callback) {
+  var finalCallback = function finalCallback() {
+    return callback(cash);
   };
 
-  Object.defineProperty(fn, "constructor", { value: cash });
+  if (doc.readyState !== 'loading') {
+    setTimeout(finalCallback);
+  } else {
+    doc.addEventListener('DOMContentLoaded', finalCallback);
+  }
 
-  cash.parseHTML = parseHTML;
-  cash.noop = noop;
-  cash.isFunction = isFunction;
-  cash.isString = isString;
+  return this;
+}; // @require core/cash.js
+// @require core/type_checking.js
+// @require core/variables.js
+// @require collection/each.js
+// @require ./helpers/parse_event_name.js
+// @require ./helpers/variables.js
 
-  cash.extend = fn.extend = function (target) {
-    target = target || {};
 
-    var args = slice.call(arguments), length = args.length, i = 1;
+fn.trigger = function (eventFullName, data) {
+  var evt = eventFullName;
 
-    if (args.length === 1) {
-      target = this;
-      i = 0;
+  if (isString(eventFullName)) {
+    var _parseEventName3 = parseEventName(eventFullName),
+        name = _parseEventName3[0],
+        namespaces = _parseEventName3[1];
+
+    evt = doc.createEvent('HTMLEvents');
+    evt.initEvent(name, true, true);
+    evt.namespace = namespaces.join(eventsNamespacesSeparator);
+  }
+
+  evt.data = data;
+  return this.each(function (i, ele) {
+    ele.dispatchEvent(evt);
+  });
+}; // @optional ./off.js
+// @optional ./on.js
+// @optional ./one.js
+// @optional ./ready.js
+// @optional ./trigger.js
+// @require core/each.js
+
+
+function getValueSelectMultiple(ele) {
+  var values = [];
+  each(ele.options, function (option) {
+    if (option.selected && !option.disabled && !option.parentNode.disabled) {
+      values.push(option.value);
     }
+  });
+  return values;
+}
 
-    for (; i < length; i++) {
-      if (!args[i]) {
-        continue;
-      }
-      for (var key in args[i]) {
-        if (args[i].hasOwnProperty(key)) {
-          target[key] = args[i][key];
-        }
-      }
+function getValueSelectSingle(ele) {
+  return ele.selectedIndex < 0 ? null : ele.options[ele.selectedIndex].value;
+} // @require ./get_value_select_single.js
+// @require ./get_value_select_multiple.js
+
+
+var selectOneRe = /select-one/i,
+    selectMultipleRe = /select-multiple/i;
+
+function getValue(ele) {
+  var type = ele.type;
+  if (selectOneRe.test(type)) return getValueSelectSingle(ele);
+  if (selectMultipleRe.test(type)) return getValueSelectMultiple(ele);
+  return ele.value;
+}
+
+var queryEncodeSpaceRe = /%20/g;
+
+function queryEncode(prop, value) {
+  return "&" + encodeURIComponent(prop) + "=" + encodeURIComponent(value).replace(queryEncodeSpaceRe, '+');
+} // @require core/cash.js
+// @require core/each.js
+// @require core/type_checking.js
+// @require ./helpers/get_value.js
+// @require ./helpers/query_encode.js
+
+
+var skippableRe = /file|reset|submit|button|image/i,
+    checkableRe = /radio|checkbox/i;
+
+fn.serialize = function () {
+  var query = '';
+  this.each(function (i, ele) {
+    each(ele.elements || [ele], function (ele) {
+      if (ele.disabled || !ele.name || ele.tagName === 'FIELDSET') return;
+      if (skippableRe.test(ele.type)) return;
+      if (checkableRe.test(ele.type) && !ele.checked) return;
+      var value = getValue(ele);
+      if (value === undefined) return;
+      var values = isArray(value) ? value : [value];
+      each(values, function (value) {
+        query += queryEncode(ele.name, value);
+      });
+    });
+  });
+  return query.substr(1);
+}; // @require core/cash.js
+// @require core/each.js
+// @require core/type_checking.js
+// @require collection/each.js
+// @require ./helpers/get_value.js
+
+
+fn.val = function (value) {
+  if (value === undefined) return this[0] && getValue(this[0]);
+  return this.each(function (i, ele) {
+    var isMultiple = selectMultipleRe.test(ele.type),
+        eleValue = value === null ? isMultiple ? [] : '' : value;
+
+    if (isMultiple && isArray(eleValue)) {
+      each(ele.options, function (option) {
+        option.selected = eleValue.indexOf(option.value) >= 0;
+      });
+    } else {
+      ele.value = eleValue;
     }
+  });
+}; // @optional ./serialize.js
+// @optional ./val.js
+// @require core/cash.js
+// @require collection/map.js
 
-    return target;
+
+fn.clone = function () {
+  return this.map(function (i, ele) {
+    return ele.cloneNode(true);
+  });
+}; // @require core/cash.js
+// @require collection/each.js
+
+
+fn.detach = function () {
+  return this.each(function (i, ele) {
+    if (ele.parentNode) {
+      ele.parentNode.removeChild(ele);
+    }
+  });
+}; // @require ./cash.js
+// @require ./variables.js
+// @require ./type_checking.js
+// @require collection/get.js
+// @require manipulation/detach.js
+
+
+var fragmentRe = /^\s*<(\w+)[^>]*>/,
+    singleTagRe = /^\s*<(\w+)\s*\/?>(?:<\/\1>)?\s*$/;
+var containers;
+
+function initContainers() {
+  if (containers) return;
+  var table = doc.createElement('table'),
+      tr = doc.createElement('tr');
+  containers = {
+    '*': doc.createElement('div'),
+    tr: doc.createElement('tbody'),
+    td: tr,
+    th: tr,
+    thead: table,
+    tbody: table,
+    tfoot: table
   };
+}
 
-  function each(collection, callback) {
-    var l = collection.length, i = 0;
+function parseHTML(html) {
+  initContainers();
+  if (!isString(html)) return [];
+  if (singleTagRe.test(html)) return [doc.createElement(RegExp.$1)];
+  var fragment = fragmentRe.test(html) && RegExp.$1,
+      container = containers[fragment] || containers['*'];
+  container.innerHTML = html;
+  return cash(container.childNodes).detach().get();
+}
 
-    for (; i < l; i++) {
-      if (callback.call(collection[i], collection[i], i, collection) === false) {
-        break;
-      }
+cash.parseHTML = parseHTML; // @optional ./camel_case.js
+// @optional ./each.js
+// @optional ./export.js
+// @optional ./extend.js
+// @optional ./find.js
+// @optional ./get_compare_function.js
+// @optional ./get_split_values.js
+// @optional ./guid.js
+// @optional ./matches.js
+// @optional ./parse_html.js
+// @optional ./unique.js
+// @optional ./variables.js
+// @require ./cash.js
+// @require ./type_checking.js
+// @require core/cash.js
+
+fn.empty = function () {
+  var ele = this[0];
+
+  if (ele) {
+    while (ele.firstChild) {
+      ele.removeChild(ele.firstChild);
     }
   }
 
-  function matches(el, selector) {
-    var m = el && (el.matches || el.webkitMatchesSelector || el.mozMatchesSelector || el.msMatchesSelector || el.oMatchesSelector);
-    return !!m && m.call(el, selector);
-  }
+  return this;
+};
 
-  function getCompareFunction(selector) {
-    return (
-    /* Use browser's `matches` function if string */
-    isString(selector) ? matches :
-    /* Match a cash element */
-    selector.cash ? function (el) {
-      return selector.is(el);
-    } :
-    /* Direct comparison */
-    function (el, selector) {
-      return el === selector;
+function insertElement(ele, child, prepend) {
+  if (prepend) {
+    ele.insertBefore(child, ele.childNodes[0]);
+  } else {
+    ele.appendChild(child);
+  }
+} // @require core/each.js
+// @require core/type_checking.js
+// @require ./insert_element.js
+
+
+function insertContent(parent, child, prepend) {
+  if (child === undefined) return;
+  var isStr = isString(child);
+
+  if (!isStr && child.length) {
+    each(child, function (ele) {
+      return insertContent(parent, ele, prepend);
+    });
+  } else {
+    each(parent, isStr ? function (ele) {
+      ele.insertAdjacentHTML(prepend ? 'afterbegin' : 'beforeend', child);
+    } : function (ele, index) {
+      return insertElement(ele, !index ? child : child.cloneNode(true), prepend);
     });
   }
+} // @require core/cash.js
+// @require core/each.js
+// @require ./helpers/insert_content.js
 
-  function unique(collection) {
-    return cash(slice.call(collection).filter(function (item, index, self) {
-      return self.indexOf(item) === index;
-    }));
-  }
 
-  cash.extend({
-    merge: function (first, second) {
-      var len = +second.length, i = first.length, j = 0;
+fn.append = function () {
+  var _this4 = this;
 
-      for (; j < len; i++, j++) {
-        first[i] = second[j];
-      }
-
-      first.length = i;
-      return first;
-    },
-
-    each: each,
-    matches: matches,
-    unique: unique,
-    isArray: Array.isArray,
-    isNumeric: function (n) {
-      return !isNaN(parseFloat(n)) && isFinite(n);
-    }
-
+  each(arguments, function (content) {
+    insertContent(_this4, content);
   });
+  return this;
+}; // @require core/cash.js
+// @require ./helpers/insert_content.js
 
-  var uid = cash.uid = "_cash" + Date.now();
 
-  function getDataCache(node) {
-    return (node[uid] = node[uid] || {});
-  }
+fn.appendTo = function (parent) {
+  insertContent(cash(parent), this);
+  return this;
+}; // @require core/cash.js
+// @require collection/each.js
 
-  function setData(node, key, value) {
-    return (getDataCache(node)[key] = value);
-  }
 
-  function getData(node, key) {
-    var c = getDataCache(node);
-    if (c[key] === undefined) {
-      c[key] = node.dataset ? node.dataset[key] : cash(node).attr("data-" + key);
-    }
-    return c[key];
-  }
-
-  function removeData(node, key) {
-    var c = getDataCache(node);
-    if (c) {
-      delete c[key];
-    } else if (node.dataset) {
-      delete node.dataset[key];
-    } else {
-      cash(node).removeAttr("data-" + name);
-    }
-  }
-
-  fn.extend({
-    data: function (name, value) {
-      if (isString(name)) {
-        return (value === undefined ? getData(this[0], name) : this.each(function (v) {
-          return setData(v, name, value);
-        }));
-      }
-
-      for (var key in name) {
-        this.data(key, name[key]);
-      }
-
-      return this;
-    },
-
-    removeData: function (key) {
-      return this.each(function (v) {
-        return removeData(v, key);
-      });
-    }
-
+fn.html = function (content) {
+  if (content === undefined) return this[0] && this[0].innerHTML;
+  var source = content.nodeType ? content[0].outerHTML : content;
+  return this.each(function (i, ele) {
+    ele.innerHTML = source;
   });
+}; // @require core/cash.js
+// @require collection/each.js
 
-  var notWhiteMatch = /\S+/g;
 
-  function getClasses(c) {
-    return isString(c) && c.match(notWhiteMatch);
-  }
+fn.insertAfter = function (content) {
+  var _this5 = this;
 
-  function hasClass(v, c) {
-    return (v.classList ? v.classList.contains(c) : new RegExp("(^| )" + c + "( |$)", "gi").test(v.className));
-  }
+  cash(content).each(function (index, ele) {
+    var parent = ele.parentNode;
 
-  function addClass(v, c) {
-    if (v.classList) {
-      v.classList.add(c);
-    } else if (!hasClass(v, c)) {
-      v.className += " " + c;
-    }
-  }
-
-  function removeClass(v, c) {
-    if (v.classList) {
-      v.classList.remove(c);
-    } else {
-      v.className = v.className.replace(c, "");
-    }
-  }
-
-  fn.extend({
-    addClass: function (c) {
-      var classes = getClasses(c);
-
-      return (classes ? this.each(function (v) {
-        each(classes, function (c) {
-          addClass(v, c);
-        });
-      }) : this);
-    },
-
-    attr: function (name, value) {
-      if (!name) {
-        return undefined;
-      }
-
-      if (isString(name)) {
-        if (value === undefined) {
-          return this[0] ? this[0].getAttribute ? this[0].getAttribute(name) : this[0][name] : undefined;
-        }
-
-        return this.each(function (v) {
-          if (v.setAttribute) {
-            v.setAttribute(name, value);
-          } else {
-            v[name] = value;
-          }
-        });
-      }
-
-      for (var key in name) {
-        this.attr(key, name[key]);
-      }
-
-      return this;
-    },
-
-    hasClass: function (c) {
-      var check = false, classes = getClasses(c);
-      if (classes && classes.length) {
-        this.each(function (v) {
-          check = hasClass(v, classes[0]);
-          return !check;
-        });
-      }
-      return check;
-    },
-
-    prop: function (name, value) {
-      if (isString(name)) {
-        return (value === undefined ? this[0][name] : this.each(function (v) {
-          v[name] = value;
-        }));
-      }
-
-      for (var key in name) {
-        this.prop(key, name[key]);
-      }
-
-      return this;
-    },
-
-    removeAttr: function (name) {
-      return this.each(function (v) {
-        if (v.removeAttribute) {
-          v.removeAttribute(name);
-        } else {
-          delete v[name];
-        }
-      });
-    },
-
-    removeClass: function (c) {
-      if (!arguments.length) {
-        return this.attr("class", "");
-      }
-      var classes = getClasses(c);
-      return (classes ? this.each(function (v) {
-        each(classes, function (c) {
-          removeClass(v, c);
-        });
-      }) : this);
-    },
-
-    removeProp: function (name) {
-      return this.each(function (v) {
-        delete v[name];
-      });
-    },
-
-    toggleClass: function (c, state) {
-      if (state !== undefined) {
-        return this[state ? "addClass" : "removeClass"](c);
-      }
-      var classes = getClasses(c);
-      return (classes ? this.each(function (v) {
-        each(classes, function (c) {
-          if (hasClass(v, c)) {
-            removeClass(v, c);
-          } else {
-            addClass(v, c);
-          }
-        });
-      }) : this);
-    } });
-
-  fn.extend({
-    add: function (selector, context) {
-      return unique(cash.merge(this, cash(selector, context)));
-    },
-
-    each: function (callback) {
-      each(this, callback);
-      return this;
-    },
-
-    eq: function (index) {
-      return cash(this.get(index));
-    },
-
-    filter: function (selector) {
-      if (!selector) {
-        return this;
-      }
-
-      var comparator = (isFunction(selector) ? selector : getCompareFunction(selector));
-
-      return cash(filter.call(this, function (e) {
-        return comparator(e, selector);
-      }));
-    },
-
-    first: function () {
-      return this.eq(0);
-    },
-
-    get: function (index) {
-      if (index === undefined) {
-        return slice.call(this);
-      }
-      return (index < 0 ? this[index + this.length] : this[index]);
-    },
-
-    index: function (elem) {
-      var child = elem ? cash(elem)[0] : this[0], collection = elem ? this : cash(child).parent().children();
-      return slice.call(collection).indexOf(child);
-    },
-
-    last: function () {
-      return this.eq(-1);
-    }
-
-  });
-
-  var camelCase = (function () {
-    var camelRegex = /(?:^\w|[A-Z]|\b\w)/g, whiteSpace = /[\s-_]+/g;
-    return function (str) {
-      return str.replace(camelRegex, function (letter, index) {
-        return letter[index === 0 ? "toLowerCase" : "toUpperCase"]();
-      }).replace(whiteSpace, "");
-    };
-  }());
-
-  var getPrefixedProp = (function () {
-    var cache = {}, doc = document, div = doc.createElement("div"), style = div.style;
-
-    return function (prop) {
-      prop = camelCase(prop);
-      if (cache[prop]) {
-        return cache[prop];
-      }
-
-      var ucProp = prop.charAt(0).toUpperCase() + prop.slice(1), prefixes = ["webkit", "moz", "ms", "o"], props = (prop + " " + (prefixes).join(ucProp + " ") + ucProp).split(" ");
-
-      each(props, function (p) {
-        if (p in style) {
-          cache[p] = prop = cache[prop] = p;
-          return false;
-        }
-      });
-
-      return cache[prop];
-    };
-  }());
-
-  cash.prefixedProp = getPrefixedProp;
-  cash.camelCase = camelCase;
-
-  fn.extend({
-    css: function (prop, value) {
-      if (isString(prop)) {
-        prop = getPrefixedProp(prop);
-        return (arguments.length > 1 ? this.each(function (v) {
-          return v.style[prop] = value;
-        }) : win.getComputedStyle(this[0])[prop]);
-      }
-
-      for (var key in prop) {
-        this.css(key, prop[key]);
-      }
-
-      return this;
-    }
-
-  });
-
-  function compute(el, prop) {
-    return parseInt(win.getComputedStyle(el[0], null)[prop], 10) || 0;
-  }
-
-  each(["Width", "Height"], function (v) {
-    var lower = v.toLowerCase();
-
-    fn[lower] = function () {
-      return this[0].getBoundingClientRect()[lower];
-    };
-
-    fn["inner" + v] = function () {
-      return this[0]["client" + v];
-    };
-
-    fn["outer" + v] = function (margins) {
-      return this[0]["offset" + v] + (margins ? compute(this, "margin" + (v === "Width" ? "Left" : "Top")) + compute(this, "margin" + (v === "Width" ? "Right" : "Bottom")) : 0);
-    };
-  });
-
-  function registerEvent(node, eventName, callback) {
-    var eventCache = getData(node, "_cashEvents") || setData(node, "_cashEvents", {});
-    eventCache[eventName] = eventCache[eventName] || [];
-    eventCache[eventName].push(callback);
-    node.addEventListener(eventName, callback);
-  }
-
-  function removeEvent(node, eventName, callback) {
-    var events = getData(node, "_cashEvents"), eventCache = (events && events[eventName]), index;
-
-    if (!eventCache) {
-      return;
-    }
-
-    if (callback) {
-      node.removeEventListener(eventName, callback);
-      index = eventCache.indexOf(callback);
-      if (index >= 0) {
-        eventCache.splice(index, 1);
-      }
-    } else {
-      each(eventCache, function (event) {
-        node.removeEventListener(eventName, event);
-      });
-      eventCache = [];
-    }
-  }
-
-  fn.extend({
-    off: function (eventName, callback) {
-      return this.each(function (v) {
-        return removeEvent(v, eventName, callback);
-      });
-    },
-
-    on: function (eventName, delegate, callback, runOnce) {
-      // jshint ignore:line
-
-      var originalCallback;
-
-      if (!isString(eventName)) {
-        for (var key in eventName) {
-          this.on(key, delegate, eventName[key]);
-        }
-        return this;
-      }
-
-      if (isFunction(delegate)) {
-        callback = delegate;
-        delegate = null;
-      }
-
-      if (eventName === "ready") {
-        onReady(callback);
-        return this;
-      }
-
-      if (delegate) {
-        originalCallback = callback;
-        callback = function (e) {
-          var t = e.target;
-
-          while (!matches(t, delegate)) {
-            if (t === this) {
-              return (t = false);
-            }
-            t = t.parentNode;
-          }
-
-          if (t) {
-            originalCallback.call(t, e);
-          }
-        };
-      }
-
-      return this.each(function (v) {
-        var finalCallback = callback;
-        if (runOnce) {
-          finalCallback = function () {
-            callback.apply(this, arguments);
-            removeEvent(v, eventName, finalCallback);
-          };
-        }
-        registerEvent(v, eventName, finalCallback);
-      });
-    },
-
-    one: function (eventName, delegate, callback) {
-      return this.on(eventName, delegate, callback, true);
-    },
-
-    ready: onReady,
-
-    trigger: function (eventName, data) {
-      var evt = doc.createEvent("HTMLEvents");
-      evt.data = data;
-      evt.initEvent(eventName, true, false);
-      return this.each(function (v) {
-        return v.dispatchEvent(evt);
-      });
-    }
-
-  });
-
-  function encode(name, value) {
-    return "&" + encodeURIComponent(name) + "=" + encodeURIComponent(value).replace(/%20/g, "+");
-  }
-
-  function getSelectMultiple_(el) {
-    var values = [];
-    each(el.options, function (o) {
-      if (o.selected) {
-        values.push(o.value);
-      }
+    _this5.each(function (i, e) {
+      parent.insertBefore(!index ? e : e.cloneNode(true), ele.nextSibling);
     });
-    return values.length ? values : null;
-  }
-
-  function getSelectSingle_(el) {
-    var selectedIndex = el.selectedIndex;
-    return selectedIndex >= 0 ? el.options[selectedIndex].value : null;
-  }
-
-  function getValue(el) {
-    var type = el.type;
-    if (!type) {
-      return null;
-    }
-    switch (type.toLowerCase()) {
-      case "select-one":
-        return getSelectSingle_(el);
-      case "select-multiple":
-        return getSelectMultiple_(el);
-      case "radio":
-        return (el.checked) ? el.value : null;
-      case "checkbox":
-        return (el.checked) ? el.value : null;
-      default:
-        return el.value ? el.value : null;
-    }
-  }
-
-  fn.extend({
-    serialize: function () {
-      var query = "";
-
-      each(this[0].elements || this, function (el) {
-        if (el.disabled || el.tagName === "FIELDSET") {
-          return;
-        }
-        var name = el.name;
-        switch (el.type.toLowerCase()) {
-          case "file":
-          case "reset":
-          case "submit":
-          case "button":
-            break;
-          case "select-multiple":
-            var values = getValue(el);
-            if (values !== null) {
-              each(values, function (value) {
-                query += encode(name, value);
-              });
-            }
-            break;
-          default:
-            var value = getValue(el);
-            if (value !== null) {
-              query += encode(name, value);
-            }
-        }
-      });
-
-      return query.substr(1);
-    },
-
-    val: function (value) {
-      if (value === undefined) {
-        return getValue(this[0]);
-      } else {
-        return this.each(function (v) {
-          return v.value = value;
-        });
-      }
-    }
-
   });
+  return this;
+}; // @require core/cash.js
+// @require core/each.js
+// @require core/variables.js
+// @require collection/slice.js
+// @require ./insert_after.js
 
-  function insertElement(el, child, prepend) {
-    if (prepend) {
-      var first = el.childNodes[0];
-      el.insertBefore(child, first);
-    } else {
-      el.appendChild(child);
-    }
-  }
 
-  function insertContent(parent, child, prepend) {
-    var str = isString(child);
+fn.after = function () {
+  var _this6 = this;
 
-    if (!str && child.length) {
-      each(child, function (v) {
-        return insertContent(parent, v, prepend);
-      });
-      return;
-    }
+  each(reverse.apply(arguments), function (content) {
+    reverse.apply(cash(content).slice()).insertAfter(_this6);
+  });
+  return this;
+}; // @require core/cash.js
+// @require collection/each.js
 
-    each(parent, str ? function (v) {
-      return v.insertAdjacentHTML(prepend ? "afterbegin" : "beforeend", child);
-    } : function (v, i) {
-      return insertElement(v, (i === 0 ? child : child.cloneNode(true)), prepend);
+
+fn.insertBefore = function (selector) {
+  var _this7 = this;
+
+  cash(selector).each(function (index, ele) {
+    var parent = ele.parentNode;
+
+    _this7.each(function (i, e) {
+      parent.insertBefore(!index ? e : e.cloneNode(true), ele);
     });
+  });
+  return this;
+}; // @require core/cash.js
+// @require core/each.js
+// @require ./insert_before.js
+
+
+fn.before = function () {
+  var _this8 = this;
+
+  each(arguments, function (content) {
+    cash(content).insertBefore(_this8);
+  });
+  return this;
+}; // @require core/cash.js
+// @require core/each.js
+// @require ./helpers/insert_content.js
+
+
+fn.prepend = function () {
+  var _this9 = this;
+
+  each(arguments, function (content) {
+    insertContent(_this9, content, true);
+  });
+  return this;
+}; // @require core/cash.js
+// @require core/variables.js
+// @require collection/slice.js
+// @require ./helpers/insert_content.js
+
+
+fn.prependTo = function (parent) {
+  insertContent(cash(parent), reverse.apply(this.slice()), true);
+  return this;
+}; // @require core/cash.js
+// @require events/off.js
+// @require ./detach.js
+
+
+fn.remove = function () {
+  return this.detach().off();
+}; // @require core/cash.js
+// @require collection/each.js
+// @require collection/slice.js
+// @require ./after.js
+// @require ./remove.js
+
+
+fn.replaceWith = function (content) {
+  var _this10 = this;
+
+  return this.each(function (i, ele) {
+    var parent = ele.parentNode;
+    if (!parent) return;
+    var $eles = i ? cash(content).clone() : cash(content);
+
+    if (!$eles[0]) {
+      _this10.remove();
+
+      return false;
+    }
+
+    parent.replaceChild($eles[0], ele);
+    cash($eles[0]).after($eles.slice(1));
+  });
+}; // @require core/cash.js
+// @require ./replace_with.js
+
+
+fn.replaceAll = function (content) {
+  cash(content).replaceWith(this);
+  return this;
+}; // @require core/cash.js
+// @require collection/each.js
+
+
+fn.text = function (content) {
+  if (content === undefined) return this[0] ? this[0].textContent : '';
+  return this.each(function (i, ele) {
+    ele.textContent = content;
+  });
+}; // @optional ./after.js
+// @optional ./append.js
+// @optional ./append_to.js
+// @optional ./before.js
+// @optional ./clone.js
+// @optional ./detach.js
+// @optional ./empty.js
+// @optional ./html.js
+// @optional ./insert_after.js
+// @optional ./insert_before.js
+// @optional ./prepend.js
+// @optional ./prepend_to.js
+// @optional ./remove.js
+// @optional ./replace_all.js
+// @optional ./replace_with.js
+// @optional ./text.js
+// @require core/cash.js
+// @require core/variables.js
+
+
+var docEle = doc.documentElement;
+
+fn.offset = function () {
+  var ele = this[0];
+  if (!ele) return;
+  var rect = ele.getBoundingClientRect();
+  return {
+    top: rect.top + win.pageYOffset - docEle.clientTop,
+    left: rect.left + win.pageXOffset - docEle.clientLeft
+  };
+}; // @require core/cash.js
+
+
+fn.offsetParent = function () {
+  return cash(this[0] && this[0].offsetParent);
+}; // @require core/cash.js
+
+
+fn.position = function () {
+  var ele = this[0];
+  if (!ele) return;
+  return {
+    left: ele.offsetLeft,
+    top: ele.offsetTop
+  };
+}; // @optional ./offset.js
+// @optional ./offset_parent.js
+// @optional ./position.js
+// @require core/cash.js
+// @require core/matches.js
+// @require core/unique.js
+// @require collection/each.js
+// @require collection/filter.js
+
+
+fn.children = function (selector) {
+  var result = [];
+  this.each(function (i, ele) {
+    push.apply(result, ele.children);
+  });
+  result = cash(unique(result));
+  if (!selector) return result;
+  return result.filter(function (i, ele) {
+    return matches(ele, selector);
+  });
+}; // @require core/cash.js
+// @require core/unique.js
+// @require collection/each.js
+
+
+fn.contents = function () {
+  var result = [];
+  this.each(function (i, ele) {
+    push.apply(result, ele.tagName === 'IFRAME' ? [ele.contentDocument] : ele.childNodes);
+  });
+  return cash(result.length && unique(result));
+}; // @require core/cash.js
+// @require core/unique.js
+// @require core/find.js
+// @require core/variables.js
+
+
+fn.find = function (selector) {
+  var result = [];
+
+  for (var i = 0, l = this.length; i < l; i++) {
+    var found = find(selector, this[i]);
+
+    if (found.length) {
+      push.apply(result, found);
+    }
   }
 
-  fn.extend({
-    after: function (selector) {
-      cash(selector).insertAfter(this);
-      return this;
-    },
-
-    append: function (content) {
-      insertContent(this, content);
-      return this;
-    },
-
-    appendTo: function (parent) {
-      insertContent(cash(parent), this);
-      return this;
-    },
-
-    before: function (selector) {
-      cash(selector).insertBefore(this);
-      return this;
-    },
-
-    clone: function () {
-      return cash(this.map(function (v) {
-        return v.cloneNode(true);
-      }));
-    },
-
-    empty: function () {
-      this.html("");
-      return this;
-    },
-
-    html: function (content) {
-      if (content === undefined) {
-        return this[0].innerHTML;
-      }
-      var source = (content.nodeType ? content[0].outerHTML : content);
-      return this.each(function (v) {
-        return v.innerHTML = source;
-      });
-    },
-
-    insertAfter: function (selector) {
-      var _this = this;
+  return cash(result.length && unique(result));
+}; // @require core/cash.js
+// @require core/find.js
+// @require core/type_checking.js
+// @require collection/filter.js
 
 
-      cash(selector).each(function (el, i) {
-        var parent = el.parentNode, sibling = el.nextSibling;
-        _this.each(function (v) {
-          parent.insertBefore((i === 0 ? v : v.cloneNode(true)), sibling);
-        });
-      });
+fn.has = function (selector) {
+  var comparator = isString(selector) ? function (i, ele) {
+    return !!find(selector, ele).length;
+  } : function (i, ele) {
+    return ele.contains(selector);
+  };
+  return this.filter(comparator);
+}; // @require core/cash.js
+// @require core/get_compare_function.js
+// @require collection/each.js
 
-      return this;
-    },
 
-    insertBefore: function (selector) {
-      var _this2 = this;
-      cash(selector).each(function (el, i) {
-        var parent = el.parentNode;
-        _this2.each(function (v) {
-          parent.insertBefore((i === 0 ? v : v.cloneNode(true)), el);
-        });
-      });
-      return this;
-    },
-
-    prepend: function (content) {
-      insertContent(this, content, true);
-      return this;
-    },
-
-    prependTo: function (parent) {
-      insertContent(cash(parent), this, true);
-      return this;
-    },
-
-    remove: function () {
-      return this.each(function (v) {
-        return v.parentNode.removeChild(v);
-      });
-    },
-
-    text: function (content) {
-      if (content === undefined) {
-        return this[0].textContent;
-      }
-      return this.each(function (v) {
-        return v.textContent = content;
-      });
-    }
-
+fn.is = function (selector) {
+  if (!selector || !this[0]) return false;
+  var comparator = getCompareFunction(selector);
+  var check = false;
+  this.each(function (i, ele) {
+    check = comparator(i, ele, selector);
+    return !check;
   });
+  return check;
+}; // @require core/cash.js
 
-  var docEl = doc.documentElement;
 
-  fn.extend({
-    position: function () {
-      var el = this[0];
-      return {
-        left: el.offsetLeft,
-        top: el.offsetTop
-      };
-    },
+fn.next = function () {
+  return cash(this[0] && this[0].nextElementSibling);
+}; // @require core/cash.js
+// @require core/get_compare_function.js
+// @require collection/filter.js
 
-    offset: function () {
-      var rect = this[0].getBoundingClientRect();
-      return {
-        top: rect.top + win.pageYOffset - docEl.clientTop,
-        left: rect.left + win.pageXOffset - docEl.clientLeft
-      };
-    },
 
-    offsetParent: function () {
-      return cash(this[0].offsetParent);
-    }
-
+fn.not = function (selector) {
+  if (!selector || !this[0]) return this;
+  var comparator = getCompareFunction(selector);
+  return this.filter(function (i, ele) {
+    return !comparator(i, ele, selector);
   });
+}; // @require core/cash.js
+// @require core/unique.js
+// @require collection/each.js
 
-  fn.extend({
-    children: function (selector) {
-      var elems = [];
-      this.each(function (el) {
-        push.apply(elems, el.children);
-      });
-      elems = unique(elems);
 
-      return (!selector ? elems : elems.filter(function (v) {
-        return matches(v, selector);
-      }));
-    },
-
-    closest: function (selector) {
-      if (!selector || this.length < 1) {
-        return cash();
-      }
-      if (this.is(selector)) {
-        return this.filter(selector);
-      }
-      return this.parent().closest(selector);
-    },
-
-    is: function (selector) {
-      if (!selector) {
-        return false;
-      }
-
-      var match = false, comparator = getCompareFunction(selector);
-
-      this.each(function (el) {
-        match = comparator(el, selector);
-        return !match;
-      });
-
-      return match;
-    },
-
-    find: function (selector) {
-      if (!selector || selector.nodeType) {
-        return cash(selector && this.has(selector).length ? selector : null);
-      }
-
-      var elems = [];
-      this.each(function (el) {
-        push.apply(elems, find(selector, el));
-      });
-
-      return unique(elems);
-    },
-
-    has: function (selector) {
-      var comparator = (isString(selector) ? function (el) {
-        return find(selector, el).length !== 0;
-      } : function (el) {
-        return el.contains(selector);
-      });
-
-      return this.filter(comparator);
-    },
-
-    next: function () {
-      return cash(this[0].nextElementSibling);
-    },
-
-    not: function (selector) {
-      if (!selector) {
-        return this;
-      }
-
-      var comparator = getCompareFunction(selector);
-
-      return this.filter(function (el) {
-        return !comparator(el, selector);
-      });
-    },
-
-    parent: function () {
-      var result = [];
-
-      this.each(function (item) {
-        if (item && item.parentNode) {
-          result.push(item.parentNode);
-        }
-      });
-
-      return unique(result);
-    },
-
-    parents: function (selector) {
-      var last, result = [];
-
-      this.each(function (item) {
-        last = item;
-
-        while (last && last.parentNode && last !== doc.body.parentNode) {
-          last = last.parentNode;
-
-          if (!selector || (selector && matches(last, selector))) {
-            result.push(last);
-          }
-        }
-      });
-
-      return unique(result);
-    },
-
-    prev: function () {
-      return cash(this[0].previousElementSibling);
-    },
-
-    siblings: function () {
-      var collection = this.parent().children(), el = this[0];
-
-      return collection.filter(function (i) {
-        return i !== el;
-      });
+fn.parent = function () {
+  var result = [];
+  this.each(function (i, ele) {
+    if (ele && ele.parentNode) {
+      result.push(ele.parentNode);
     }
-
   });
+  return cash(unique(result));
+}; // @require core/cash.js
+// @require core/variables.js
+// @require traversal/children.js
+// @require traversal/parent.js
+// @require ./get.js
+//FIXME Ugly file name, is there a better option?
 
 
-  return cash;
-});
+fn.index = function (ele) {
+  var child = ele ? cash(ele)[0] : this[0],
+      collection = ele ? this : cash(child).parent().children();
+  return indexOf.call(collection, child);
+}; // @optional ./add.js
+// @optional ./each.js
+// @optional ./eq.js
+// @optional ./filter.js
+// @optional ./first.js
+// @optional ./get.js
+// @optional ./indexFn.js
+// @optional ./last.js
+// @optional ./map.js
+// @optional ./slice.js
+// @require core/cash.js
+// @require collection/filter.js
+// @require ./is.js
+// @require ./parent.js
+
+
+fn.closest = function (selector) {
+  if (!selector || !this[0]) return cash();
+  if (this.is(selector)) return this.filter(selector);
+  return this.parent().closest(selector);
+}; // @require core/cash.js
+// @require core/matches.js
+// @require core/unique.js
+// @require core/variables.js
+// @require collection/each.js
+
+
+fn.parents = function (selector) {
+  var result = [];
+  var last;
+  this.each(function (i, ele) {
+    last = ele;
+
+    while (last && last.parentNode && last !== doc.body.parentNode) {
+      last = last.parentNode;
+
+      if (!selector || selector && matches(last, selector)) {
+        result.push(last);
+      }
+    }
+  });
+  return cash(unique(result));
+}; // @require core/cash.js
+
+
+fn.prev = function () {
+  return cash(this[0] && this[0].previousElementSibling);
+}; // @require core/cash.js
+// @require collection/filter.js
+// @require ./children.js
+// @require ./parent.js
+
+
+fn.siblings = function () {
+  var ele = this[0];
+  return this.parent().children().filter(function (i, child) {
+    return child !== ele;
+  });
+}; // @optional ./children.js
+// @optional ./closest.js
+// @optional ./contents.js
+// @optional ./find.js
+// @optional ./has.js
+// @optional ./is.js
+// @optional ./next.js
+// @optional ./not.js
+// @optional ./parent.js
+// @optional ./parents.js
+// @optional ./prev.js
+// @optional ./siblings.js
+// @optional attributes/index.js
+// @optional collection/index.js
+// @optional css/index.js
+// @optional data/index.js
+// @optional dimensions/index.js
+// @optional events/index.js
+// @optional forms/index.js
+// @optional manipulation/index.js
+// @optional offset/index.js
+// @optional traversal/index.js
+// @require core/index.js
+/* harmony default export */ __webpack_exports__["default"] = (cash);
+
 
 /***/ }),
 
@@ -19365,7 +19831,9 @@ __webpack_require__.r(__webpack_exports__);
   //   var stopUpload = true;
   //   if(stopUpload) return false;
   // }
-  beforeUpload: null
+  beforeUpload: null,
+  // Toggles visiblity of assets url input
+  showUrlInput: true
 });
 
 /***/ }),
@@ -20021,7 +20489,13 @@ __webpack_require__.r(__webpack_exports__);
         em = _ref.em,
         view = _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0___default()(_ref, ["pfx", "ppfx", "em"]);
 
-    return "\n    <div class=\"".concat(pfx, "assets-cont\">\n      <div class=\"").concat(pfx, "assets-header\">\n        <form class=\"").concat(pfx, "add-asset\">\n          <div class=\"").concat(ppfx, "field ").concat(pfx, "add-field\">\n            <input placeholder=\"").concat(em && em.t('assetManager.inputPlh'), "\"/>\n          </div>\n          <button class=\"").concat(ppfx, "btn-prim\">").concat(em && em.t('assetManager.addButton'), "</button>\n          <div style=\"clear:both\"></div>\n        </form>\n      </div>\n      <div class=\"").concat(pfx, "assets\" data-el=\"assets\"></div>\n      <div style=\"clear:both\"></div>\n    </div>\n    ");
+    var form = '';
+
+    if (this.config.showUrlInput) {
+      form = "\n          <form class=\"".concat(pfx, "add-asset\">\n            <div class=\"").concat(ppfx, "field ").concat(pfx, "add-field\">\n              <input placeholder=\"").concat(em && em.t('assetManager.inputPlh'), "\"/>\n            </div>\n            <button class=\"").concat(ppfx, "btn-prim\">").concat(em && em.t('assetManager.addButton'), "</button>\n            <div style=\"clear:both\"></div>\n          </form>\n      ");
+    }
+
+    return "\n    <div class=\"".concat(pfx, "assets-cont\">\n      <div class=\"").concat(pfx, "assets-header\">\n        ").concat(form, "\n      </div>\n      <div class=\"").concat(pfx, "assets\" data-el=\"assets\"></div>\n      <div style=\"clear:both\"></div>\n    </div>\n    ");
   },
   initialize: function initialize(o) {
     this.options = o;
@@ -20045,7 +20519,7 @@ __webpack_require__.r(__webpack_exports__);
   handleSubmit: function handleSubmit(e) {
     e.preventDefault();
     var input = this.getAddInput();
-    var url = input.value.trim();
+    var url = input && input.value.trim();
     var handleAdd = this.config.handleAdd;
 
     if (!url) {
@@ -20911,6 +21385,8 @@ __webpack_require__.r(__webpack_exports__);
     resetId: 0,
     // Block label
     label: '',
+    // Disable the drag of the block
+    disable: 0,
     // HTML string for the media of the block, eg. SVG icon, image, etc.
     media: '',
     content: '',
@@ -21075,9 +21551,11 @@ __webpack_require__.r(__webpack_exports__);
    */
   startDrag: function startDrag(e) {
     var config = this.config,
-        em = this.em; //Right or middel click
+        em = this.em,
+        model = this.model;
+    var disable = model.get('disable'); //Right or middel click
 
-    if (e.button !== 0 || !config.getSorter || this.el.draggable) return;
+    if (e.button !== 0 || !config.getSorter || this.el.draggable || disable) return;
     em.refreshCanvas();
     var sorter = config.getSorter();
     sorter.setDragHelper(this.el, e);
@@ -21153,14 +21631,18 @@ __webpack_require__.r(__webpack_exports__);
         el = this.el,
         ppfx = this.ppfx,
         model = this.model;
+    var disable = model.get('disable');
+    var attr = model.get('attributes') || {};
+    var cls = attr.class || '';
     var className = "".concat(ppfx, "block");
     var label = em && em.t("blockManager.labels.".concat(model.id)) || model.get('label');
     var render = model.get('render');
     var media = model.get('media');
-    el.className += " ".concat(className, " ").concat(ppfx, "one-bg ").concat(ppfx, "four-color-h");
+    var clsAdd = disable ? "".concat(className, "--disable") : "".concat(ppfx, "four-color-h");
+    el.className = "".concat(cls, " ").concat(className, " ").concat(ppfx, "one-bg ").concat(clsAdd).trim();
     el.innerHTML = "\n      ".concat(media ? "<div class=\"".concat(className, "__media\">").concat(media, "</div>") : '', "\n      <div class=\"").concat(className, "-label\">").concat(label, "</div>\n    ");
     el.title = el.textContent.trim();
-    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["hasDnd"])(em) && el.setAttribute('draggable', true);
+    el.setAttribute('draggable', Object(utils_mixins__WEBPACK_IMPORTED_MODULE_2__["hasDnd"])(em) && !disable ? true : false);
     var result = render && render({
       el: el,
       model: model,
@@ -21666,8 +22148,8 @@ var _window = window,
     getElement: function getElement() {
       return CanvasView.el;
     },
-    getFrame: function getFrame() {
-      return canvas.get('frame');
+    getFrame: function getFrame(index) {
+      return index ? this.getFrames()[index] : canvas.get('frame');
     },
 
     /**
@@ -22265,7 +22747,12 @@ __webpack_require__.r(__webpack_exports__);
         styles = _config$styles === void 0 ? [] : _config$styles,
         _config$scripts = config.scripts,
         scripts = _config$scripts === void 0 ? [] : _config$scripts;
-    var frame = new _Frame__WEBPACK_IMPORTED_MODULE_1__["default"]({}, config);
+    var root = em && em.getWrapper();
+    var css = em && em.getStyle();
+    var frame = new _Frame__WEBPACK_IMPORTED_MODULE_1__["default"]({
+      root: root,
+      styles: css
+    }, config);
     styles.forEach(function (style) {
       return frame.addLink(style);
     });
@@ -22514,7 +23001,7 @@ var timerZoom;
     return "\n      <div class=\"".concat(pfx, "canvas__frames\" data-frames></div>\n      <div id=\"").concat(pfx, "tools\" class=\"").concat(pfx, "canvas__tools\" data-tools></div>\n    ");
   },
   initialize: function initialize(o) {
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'clearOff', 'onKeyPress');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'clearOff', 'onKeyPress', 'onCanvasMove');
     Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"])(window, 'scroll resize', this.clearOff);
     var model = this.model;
     var frames = model.get('frames');
@@ -22558,13 +23045,15 @@ var timerZoom;
       ev._parentEvent && ev._parentEvent.preventDefault();
     }
   },
+  onCanvasMove: function onCanvasMove(ev) {// const data = { x: ev.clientX, y: ev.clientY };
+    // const data2 = this.em.get('Canvas').getMouseRelativeCanvas(ev);
+    // const data3 = this.em.get('Canvas').getMouseRelativePos(ev);
+    // this.em.trigger('canvas:over', data, data2, data3);
+  },
   toggleListeners: function toggleListeners(enable) {
-    var method = enable ? 'on' : 'off';
-    var methods = {
-      on: utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"],
-      off: utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"]
-    };
-    methods[method](document, 'keypress', this.onKeyPress);
+    var el = this.el;
+    var fn = enable ? utils_mixins__WEBPACK_IMPORTED_MODULE_3__["on"] : utils_mixins__WEBPACK_IMPORTED_MODULE_3__["off"];
+    fn(document, 'keypress', this.onKeyPress); // fn(el, 'mousemove dragover', this.onCanvasMove);
   },
   onKeyPress: function onKeyPress(ev) {
     var em = this.em;
@@ -22772,12 +23261,12 @@ var timerZoom;
    * Get javascript container
    * @private
    */
-  getJsContainer: function getJsContainer() {
-    if (!this.jsContainer) {
-      this.jsContainer = $("<div class=\"".concat(this.ppfx, "js-cont\">")).get(0);
-    }
-
-    return this.jsContainer;
+  getJsContainer: function getJsContainer(view) {
+    var frameView = this.getFrameView(view);
+    return frameView && frameView.getJsContainer();
+  },
+  getFrameView: function getFrameView(view) {
+    return view && view._getFrame() || this.em.get('currentFrame');
   },
   render: function render() {
     var el = this.el,
@@ -23156,6 +23645,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     [{
       event: 'keydown keyup keypress',
       class: 'KeyboardEvent'
+    }, {
+      event: 'mousemove',
+      class: 'MouseEvent'
     }, {
       event: 'wheel',
       class: 'WheelEvent'
@@ -24370,6 +24862,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
             return em.stopDefault(defComOptions);
           };
 
+          var altMode = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(modes, mode);
           selAll.forEach(function (sel) {
             return sel.trigger('disable');
           });
@@ -24396,13 +24889,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
             });
             ed.select(selAll);
             sel.emitUpdate();
-            em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], ":end"), data);
-          }; // Dirty patch to prevent parent selection on drop
+            em.trigger("".concat(dom_components_model_Component__WEBPACK_IMPORTED_MODULE_5__["eventDrag"], ":end"), data); // Dirty patch to prevent parent selection on drop
 
+            (altMode || data.cancelled) && em.set('_cmpDrag', 1);
+          };
 
-          em.set('_cmpDrag', 1);
-
-          if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(modes, mode)) {
+          if (altMode) {
             // TODO move grabbing func in editor/canvas from the Sorter
             dragger = ed.runCommand('core:component-drag', {
               guidesInfo: 1,
@@ -26405,8 +26897,6 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
 /* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var style_manager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! style_manager */ "./src/style_manager/index.js");
-
 
 var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -26617,10 +27107,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
 
+var cmdVis = 'sw-visibility';
 /* harmony default export */ __webpack_exports__["default"] = ({
   getPanels: function getPanels(editor) {
     if (!this.panels) {
-      this.panels = editor.Panels.getPanelsEl();
+      this.panels = editor.Panels.getPanels();
     }
 
     return this.panels;
@@ -26636,7 +27127,12 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     this.sender = sender;
-    editor.stopCommand('sw-visibility');
+
+    if (!this.shouldRunSwVisibility) {
+      this.shouldRunSwVisibility = editor.Commands.isActive(cmdVis);
+    }
+
+    this.shouldRunSwVisibility && editor.stopCommand(cmdVis);
     editor.getModel().stopDefault();
     var panels = this.getPanels(editor);
     var canvas = editor.Canvas.getElement();
@@ -26657,7 +27153,9 @@ __webpack_require__.r(__webpack_exports__);
 
     this.helper.style.display = 'inline-block';
     this.tglPointers(editor);
-    panels.style.display = 'none';
+    panels.forEach(function (panel) {
+      return panel.set('visible', false);
+    });
     var canvasS = canvas.style;
     canvasS.width = '100%';
     canvasS.height = '100%';
@@ -26672,9 +27170,16 @@ __webpack_require__.r(__webpack_exports__);
         sender = _this$sender === void 0 ? {} : _this$sender;
     sender.set && sender.set('active', 0);
     var panels = this.getPanels(editor);
-    editor.runCommand('sw-visibility');
+
+    if (this.shouldRunSwVisibility) {
+      editor.runCommand(cmdVis);
+      this.shouldRunSwVisibility = false;
+    }
+
     editor.getModel().runDefault();
-    panels.style.display = '';
+    panels.forEach(function (panel) {
+      return panel.set('visible', true);
+    });
     var canvas = editor.Canvas.getElement();
     canvas.setAttribute('style', '');
 
@@ -26835,13 +27340,12 @@ var showOffsets;
     methods[method](window, 'resize', this.onFrameUpdated);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-    em[method]('component:update', this.onComponentUpdate, this);
-    em[method]('component:resize', this.updateGlobalPos, this);
+    em[method]('component:resize component:styleUpdate component:input', this.updateGlobalPos, this);
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas').getFrames().forEach(function (frame) {
       var view = frame.view;
-      trigger(view.getWindow(), view.getBody());
+      view && trigger(view.getWindow(), view.getBody());
     });
   },
 
@@ -26940,14 +27444,7 @@ var showOffsets;
     this.elSelected = result;
     this.updateToolsGlobal(); // This will hide some elements from the select component
 
-    this.updateToolsLocal(result); // if (el) {
-    //   this.showFixedElementOffset(el);
-    //   this.hideElementOffset();
-    //   this.hideHighlighter();
-    //   this.initResize(el);
-    // } else {
-    //   this.editor.stopCommand('resize');
-    // }
+    this.updateToolsLocal(result);
   }),
   updateGlobalPos: function updateGlobalPos() {
     var sel = this.getElSelected();
@@ -26973,9 +27470,9 @@ var showOffsets;
     this.currentDoc = null;
     this.em.setHovered(0);
     this.canvas.getFrames().forEach(function (frame) {
-      var el = frame.view.getToolsEl();
-
-      _this3.toggleToolsEl(0, 0, {
+      var view = frame.view;
+      var el = view && view.getToolsEl();
+      el && _this3.toggleToolsEl(0, 0, {
         el: el
       });
     });
@@ -26983,8 +27480,8 @@ var showOffsets;
   toggleToolsEl: function toggleToolsEl(on, view) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var el = opts.el || this.canvas.getToolsEl(view);
-    el.style.opacity = on ? 1 : 0;
-    return el;
+    el && (el.style.opacity = on ? 1 : 0);
+    return el || {};
   },
 
   /**
@@ -27530,9 +28027,6 @@ var showOffsets;
   updateAttached: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
     this.updateToolsGlobal();
   }),
-  onComponentUpdate: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
-    this.onSelect();
-  }),
 
   /**
    * Returns element's data info
@@ -27584,6 +28078,7 @@ var showOffsets;
     this.onOut();
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
+    this.editor = 0;
   }
 });
 
@@ -27922,10 +28417,13 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-    var method = active ? 'add' : 'remove';
-    ed.Canvas.getFrames().forEach(function (frame) {
-      frame.view.getBody().classList[method]("".concat(_this.ppfx, "dashed"));
-    });
+
+    if (!ed.Commands.isActive('preview')) {
+      var method = active ? 'add' : 'remove';
+      ed.Canvas.getFrames().forEach(function (frame) {
+        frame.view.getBody().classList[method]("".concat(_this.ppfx, "dashed"));
+      });
+    }
   }
 });
 
@@ -28486,6 +28984,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var _window = window,
+    CSS = _window.CSS;
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend(domain_abstract_model_Styleable__WEBPACK_IMPORTED_MODULE_2__["default"]).extend({
   defaults: {
     // Css selectors
@@ -28553,8 +29053,13 @@ __webpack_require__.r(__webpack_exports__);
     var wrapper = this.get('wrapper');
     var addSelector = this.get('selectorsAdd');
     var isBody = wrapper && em && em.getConfig('wrapperIsBody');
-    var selectors = isBody ? 'body' : this.get('selectors').getFullString();
-    var stateStr = state ? ":".concat(state) : '';
+    var selOpts = {
+      escape: function escape(str) {
+        return CSS && CSS.escape ? CSS.escape(str) : str;
+      }
+    };
+    var selectors = isBody ? 'body' : this.get('selectors').getFullString(0, selOpts);
+    var stateStr = state && !opts.skipState ? ":".concat(state) : '';
     selectors && result.push("".concat(selectors).concat(stateStr));
     addSelector && !opts.skipAdd && result.push(addSelector);
     return result.join(', ');
@@ -28681,21 +29186,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Collection.extend({
+  model: _CssRule__WEBPACK_IMPORTED_MODULE_1__["default"],
   initialize: function initialize(models, opt) {
+    var _this = this;
+
     // Inject editor
-    if (opt && opt.em) this.editor = opt.em; // Not used
+    if (opt && opt.em) this.editor = opt.em; // This will put the listener post CssComposer.postLoad
 
-    this.model = function (attrs, options) {
-      var model;
-      if (!options.em && opt && opt.em) options.em = opt.em;
-
-      switch (1) {
-        default:
-          model = new _CssRule__WEBPACK_IMPORTED_MODULE_1__["default"](attrs, options);
-      }
-
-      return model;
-    };
+    setTimeout(function () {
+      return _this.on('remove', _this.onRemove);
+    });
+  },
+  onRemove: function onRemove(removed) {
+    var em = this.editor;
+    em.stopListening(removed);
+    em.get('UndoManager').remove(removed);
   },
   add: function add(models) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -30082,6 +30587,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         state: ''
       });
       model && Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isEmpty"])(model.get('status')) && model.set('status', state);
+    },
+    allById: function allById() {
+      return componentsById;
     }
   };
 });
@@ -30367,7 +30875,8 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
    */
   find: function find(query) {
     var result = [];
-    this.view.$el.find(query).each(function (el, i, $els) {
+    var $els = this.view.$el.find(query);
+    $els.each(function (i) {
       var $el = $els.eq(i);
       var model = $el.data('model');
       model && result.push(model);
@@ -30376,21 +30885,21 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   },
 
   /**
-   * Find all inner components by component id.
+   * Find all inner components by component type.
    * The advantage of this method over `find` is that you can use it
    * also before rendering the component
-   * @param {String} id Component id
+   * @param {String} type Component type
    * @returns {Array<Component>}
    * @example
    * const allImages = component.findType('image');
    * console.log(allImages[0]) // prints the first found component
    */
-  findType: function findType(id) {
+  findType: function findType(type) {
     var result = [];
 
     var find = function find(components) {
       return components.forEach(function (item) {
-        item.is(id) && result.push(item);
+        item.is(type) && result.push(item);
         find(item.components());
       });
     };
@@ -30411,6 +30920,26 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
   closest: function closest(query) {
     var result = this.view.$el.closest(query);
     return result.length && result.data('model');
+  },
+
+  /**
+   * Find the closest parent component by its type.
+   * The advantage of this method over `closest` is that you can use it
+   * also before rendering the component
+   * @param {String} type Component type
+   * @returns {Component} Found component, otherwise `undefined`
+   * @example
+   * const Section = component.closestType('section');
+   * console.log(Section);
+   */
+  closestType: function closestType(type) {
+    var parent = this.parent();
+
+    while (parent && !parent.is(type)) {
+      parent = parent.parent();
+    }
+
+    return parent;
   },
 
   /**
@@ -30754,6 +31283,16 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
       coll.reset();
       return _components && this.append(_components);
     }
+  },
+
+  /**
+   * Remove all inner components
+   * * @return {this}
+   */
+  empty: function empty() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    this.components().reset(null, opts);
+    return this;
   },
 
   /**
@@ -31382,6 +31921,25 @@ var Component = backbone__WEBPACK_IMPORTED_MODULE_5___default.a.Model.extend(dom
       tagName: el.tagName ? el.tagName.toLowerCase() : ''
     };
   },
+  ensureInList: function ensureInList(model) {
+    var list = Component.getList(model);
+    var id = model.getId();
+    var current = list[id];
+
+    if (!current) {
+      // Insert in list
+      list[id] = model;
+    } else if (current !== model) {
+      // Create new ID
+      var nextId = Component.getIncrementId(id, list);
+      model.setId(nextId);
+      list[nextId] = model;
+    }
+
+    model.components().forEach(function (i) {
+      return Component.ensureInList(i);
+    });
+  },
 
   /**
    * Relying simply on the number of components becomes a problem when you
@@ -31610,7 +32168,7 @@ var svgAttrs = 'xmlns="http://www.w3.org/2000/svg" width="100" viewBox="0 0 24 2
     }
 
     var attr = _Component__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.getAttrToHTML.apply(this, args);
-    var src = this.get('src');
+    var src = this.getSrcResult();
     if (src) attr.src = src;
     return attr;
   },
@@ -32312,32 +32870,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 /* harmony default export */ __webpack_exports__["default"] = (_Component__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
   defaults: _objectSpread({}, _Component__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults, {
-    type: 'row',
     tagName: 'tr',
     draggable: ['thead', 'tbody', 'tfoot'],
     droppable: ['th', 'td']
-  }),
-  initialize: function initialize(o, opt) {
-    _Component__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.initialize.apply(this, arguments); // Clean the row from non cell components
-
-    var cells = [];
-    var components = this.get('components');
-    components.each(function (model) {
-      return model.is('cell') && cells.push(model);
-    });
-    components.reset(cells);
-  }
+  })
 }, {
   isComponent: function isComponent(el) {
-    var result = '';
-
-    if (el.tagName == 'TR') {
-      result = {
-        type: 'row'
-      };
-    }
-
-    return result;
+    return el.tagName == 'TR' && true;
   }
 }));
 
@@ -32871,38 +33410,106 @@ var Component;
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     this.opt = opt;
     this.listenTo(this, 'add', this.onAdd);
+    this.listenTo(this, 'remove', this.removeChildren);
+    this.listenTo(this, 'reset', this.resetChildren);
     this.config = opt.config;
     this.em = opt.em;
-    var em = this.em;
+    this.domc = opt.domc;
+  },
+  resetChildren: function resetChildren(models) {
+    var _this = this;
 
-    this.model = function (attrs, options) {
-      var model;
-      var df = opt.em.get('DomComponents').componentTypes;
-      options.em = opt.em;
-      options.config = opt.config;
-      options.componentTypes = df;
-      options.domc = opt.domc;
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var coll = this;
+    var _opts$previousModels = opts.previousModels,
+        previousModels = _opts$previousModels === void 0 ? [] : _opts$previousModels;
+    previousModels.forEach(function (md) {
+      return _this.removeChildren(md, coll, opts);
+    });
+    models.each(function (model) {
+      return _this.onAdd(model);
+    });
+  },
+  removeChildren: function removeChildren(removed, coll) {
+    var _this2 = this;
 
-      for (var it = 0; it < df.length; it++) {
-        var dfId = df[it].id;
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var domc = this.domc,
+        em = this.em;
+    var allByID = domc ? domc.allById() : {};
 
-        if (dfId == attrs.type) {
-          model = df[it].model;
-          break;
-        }
+    if (!opts.temporary) {
+      // Remove the component from the gloabl list
+      var id = removed.getId();
+      var sels = em.get('SelectorManager').getAll();
+      var rules = em.get('CssComposer').getAll();
+      delete allByID[id]; // Remove all component related styles
+
+      var rulesRemoved = rules.remove(rules.filter(function (r) {
+        return r.getSelectors().getFullString() === "#".concat(id);
+      })); // Clean selectors
+
+      sels.remove(rulesRemoved.map(function (rule) {
+        return rule.getSelectors().at(0);
+      }));
+
+      if (!removed.opt.temporary) {
+        var cm = em.get('Commands');
+        var hasSign = removed.get('style-signature');
+        var optStyle = {
+          target: removed
+        };
+        hasSign && cm.run('core:component-style-clear', optStyle);
+        removed.removed();
+        em.trigger('component:remove', removed);
       }
 
-      if (!model) {
-        // get the last one
-        model = df[df.length - 1].model;
-        em && attrs.type && em.logWarning("Component type '".concat(attrs.type, "' not found"), {
-          attrs: attrs,
-          options: options
-        });
-      }
+      var _inner = removed.components();
 
-      return new model(attrs, options);
-    };
+      _inner.forEach(function (it) {
+        return _this2.removeChildren(it, coll, opts);
+      }); // removed.empty(opts);
+
+    } // Remove stuff registered in DomComponents.handleChanges
+
+
+    var inner = removed.components();
+    var um = em.get('UndoManager');
+    em.stopListening(inner);
+    em.stopListening(removed);
+    em.stopListening(removed.get('classes'));
+    um.remove(removed);
+    um.remove(inner);
+  },
+  model: function model(attrs, options) {
+    var opt = options.collection.opt;
+    var em = opt.em;
+    var model;
+    var df = em.get('DomComponents').componentTypes;
+    options.em = em;
+    options.config = opt.config;
+    options.componentTypes = df;
+    options.domc = opt.domc;
+
+    for (var it = 0; it < df.length; it++) {
+      var dfId = df[it].id;
+
+      if (dfId == attrs.type) {
+        model = df[it].model;
+        break;
+      }
+    } // If no model found, get the default one
+
+
+    if (!model) {
+      model = df[df.length - 1].model;
+      em && attrs.type && em.logWarning("Component type '".concat(attrs.type, "' not found"), {
+        attrs: attrs,
+        options: options
+      });
+    }
+
+    return new model(attrs, options);
   },
   parseString: function parseString(value) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -32923,7 +33530,7 @@ var Component;
     return parsed.html;
   },
   add: function add(models) {
-    var _this = this;
+    var _this3 = this;
 
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
@@ -32932,7 +33539,7 @@ var Component;
     } else if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(models)) {
       models.forEach(function (item, index) {
         if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isString"])(item)) {
-          models[index] = _this.parseString(item, opt);
+          models[index] = _this3.parseString(item, opt);
         }
       });
     }
@@ -32941,7 +33548,7 @@ var Component;
     models = (isMult ? models : [models]).filter(function (i) {
       return i;
     }).map(function (model) {
-      return _this.processDef(model);
+      return _this3.processDef(model);
     });
     models = isMult ? models : models[0];
     return backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Collection.prototype.add.apply(this, [models, opt]);
@@ -33008,9 +33615,11 @@ var Component;
   },
   onAdd: function onAdd(model, c) {
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var em = this.em;
+    var domc = this.domc,
+        em = this.em;
     var style = model.getStyle();
     var avoidInline = em && em.getConfig('avoidInlineStyle');
+    domc && domc.Component.ensureInList(model);
 
     if (!Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isEmpty"])(style) && !avoidInline && em && em.get && em.getConfig('forceClass') && !opts.temporary) {
       var name = model.cid;
@@ -33655,15 +34264,39 @@ var compProt = _ComponentView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype;
       comps.trigger('resetNavigator');
     }
   },
+  getModelsFromEl: function getModelsFromEl(el) {
+    var result = [];
+    var children = (el || this.el).childNodes;
+
+    for (var index = 0; index < children.length; index++) {
+      var child = children[index];
+      var model = child.__cashData && child.__cashData.model;
+
+      if (model) {
+        model.components = this.getModelsFromEl(child);
+
+        if (model.get('content')) {
+          model.attributes.content = child.textContent;
+        } // TODO add attributes;
+
+
+        result.push(model);
+      }
+    }
+
+    return result;
+  },
 
   /**
    * Callback on input event
    * @param  {Event} e
    */
   onInput: function onInput() {
-    var em = this.em; // Update toolbars
+    var em = this.em;
+    var evPfx = 'component';
+    var ev = ["".concat(evPfx, ":update"), "".concat(evPfx, ":input")].join(' '); // Update toolbars
 
-    em && em.trigger('component:update', this.model);
+    em && em.trigger(ev, this.model);
   },
 
   /**
@@ -33987,18 +34620,31 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
    */
   onDisable: function onDisable() {},
   remove: function remove() {
-    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
-    var model = this.model;
-    var frame = this._getFrame() || {};
+    var view = this;
+    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(view, arguments);
+    var model = view.model;
+    var frame = view._getFrame() || {};
     var frameM = frame.model;
     model.components().forEach(function (comp) {
       var view = comp.getView(frameM);
       view && view.remove();
     });
     var views = model.views;
-    views.splice(views.indexOf(this), 1);
-    this.removed(this._clbObj());
-    return this;
+    views.splice(views.indexOf(view), 1);
+    view.removed(view._clbObj());
+    view.$el.data({
+      model: '',
+      collection: '',
+      view: ''
+    });
+    delete view.model;
+    delete view.$el;
+    delete view.el.__gjsv;
+    delete view.childrenView;
+    delete view.scriptContainer;
+    delete view.opts; // delete view.el;
+
+    return view;
   },
   handleDragStart: function handleDragStart(event) {
     event.preventDefault();
@@ -34389,7 +35035,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   renderChildren: function renderChildren() {
     this.updateContent();
     var container = this.getChildrenContainer();
-    var view = new _ComponentsView__WEBPACK_IMPORTED_MODULE_4__["default"]({
+    var view = this.childrenView || new _ComponentsView__WEBPACK_IMPORTED_MODULE_4__["default"]({
       collection: this.model.get('components'),
       config: this.config,
       componentTypes: this.opts.componentTypes
@@ -34411,6 +35057,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     if (this.modelOpt.temporary) return this;
     this.renderChildren();
     this.updateScript();
+    Object(utils_mixins__WEBPACK_IMPORTED_MODULE_7__["setViewEl"])(this.el, this);
     this.postRender();
     return this;
   },
@@ -34458,43 +35105,18 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var em = this.config.em;
-    var tempRemove = opts.temporary;
     removed.views.forEach(function (view) {
       if (!view) return;
-      view.remove.apply(view);
       var childrenView = view.childrenView,
           scriptContainer = view.scriptContainer;
       childrenView && childrenView.stopListening();
       scriptContainer && scriptContainer.remove();
+      view.remove.apply(view);
     });
-    removed.components().forEach(function (it) {
+    var inner = removed.components();
+    inner.forEach(function (it) {
       return _this.removeChildren(it, coll, opts);
     });
-
-    if (em && !tempRemove) {
-      // Remove the component from the global list
-      var id = removed.getId();
-      var domc = em.get('DomComponents');
-      delete domc.componentsById[id]; // Remove all related CSS rules
-      // TODO: remove from the frame container
-
-      var allRules = em.get('CssComposer').getAll();
-      allRules.remove(allRules.filter(function (rule) {
-        return rule.getSelectors().getFullString() === "#".concat(id);
-      }));
-
-      if (!removed.opt.temporary) {
-        var cm = em.get('Commands');
-        var hasSign = removed.get('style-signature');
-        var optStyle = {
-          target: removed
-        };
-        hasSign && cm.run('core:component-style-clear', optStyle);
-        removed.removed();
-        em.trigger('component:remove', removed);
-      }
-    }
   },
 
   /**
@@ -34538,6 +35160,9 @@ __webpack_require__.r(__webpack_exports__);
         opts = this.opts,
         em = this.em;
     var fragment = fragmentEl || null;
+    var _config$frameView = config.frameView,
+        frameView = _config$frameView === void 0 ? {} : _config$frameView;
+    var sameFrameView = frameView.model && model.getView(frameView.model);
     var dt = opts.componentTypes || em && em.get('DomComponents').getTypes();
     var type = model.get('type');
     var viewObject = this.compView;
@@ -34549,7 +35174,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     }
 
-    var view = new viewObject({
+    var view = sameFrameView || new viewObject({
       model: model,
       config: config,
       componentTypes: dt
@@ -34583,11 +35208,18 @@ __webpack_require__.r(__webpack_exports__);
 
     return rendered;
   },
-  resetChildren: function resetChildren() {
+  resetChildren: function resetChildren(models) {
     var _this2 = this;
 
+    var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref$previousModels = _ref.previousModels,
+        previousModels = _ref$previousModels === void 0 ? [] : _ref$previousModels;
+
     this.parentEl.innerHTML = '';
-    this.collection.each(function (model) {
+    previousModels.forEach(function (md) {
+      return _this2.removeChildren(md, _this2.collection);
+    });
+    models.each(function (model) {
       return _this2.addToCollection(model);
     });
   },
@@ -34864,7 +35496,8 @@ var parseStyle = Object(parser_model_ParserHtml__WEBPACK_IMPORTED_MODULE_3__["de
       var imp = opts.important;
       var important = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isArray"])(imp) ? imp.indexOf(prop) >= 0 : imp;
       var value = "".concat(style[prop]).concat(important ? ' !important' : '');
-      value && result.push("".concat(prop, ":").concat(value, ";"));
+      var propPrv = prop.substr(0, 2) == '__';
+      value && !propPrv && result.push("".concat(prop, ":").concat(value, ";"));
     }
 
     return result.join('');
@@ -35197,7 +35830,7 @@ Object(utils_ColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"])($);
     inputEl.value = value;
     colorEl.get(0).style.backgroundColor = valueClr; // This prevents from adding multiple thumbs in spectrum
 
-    if (opts.fromTarget) {
+    if (opts.fromTarget || opts.fromInput && !opts.avoidStore) {
       colorEl.spectrum('set', valueClr);
       this.noneColor = value == 'none';
     }
@@ -35209,13 +35842,14 @@ Object(utils_ColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"])($);
    */
   getColorEl: function getColorEl() {
     if (!this.colorEl) {
+      var em = this.em;
       var self = this;
       var ppfx = this.ppfx;
       var model = this.model;
       var colorEl = $("<div class=\"".concat(this.ppfx, "field-color-picker\"></div>"));
       var cpStyle = colorEl.get(0).style;
-      var elToAppend = this.em && this.em.config ? this.em.config.el : '';
-      var colorPickerConfig = this.em && this.em.getConfig && this.em.getConfig('colorPicker') || {};
+      var elToAppend = em && em.config ? em.config.el : '';
+      var colorPickerConfig = em && em.getConfig && em.getConfig('colorPicker') || {};
 
       var getColor = function getColor(color) {
         var cl = color.getAlpha() == 1 ? color.toHexString() : color.toRgbString();
@@ -35244,6 +35878,8 @@ Object(utils_ColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"])($);
           changed = 1;
           var cl = getColor(color);
           cpStyle.backgroundColor = cl;
+          model.setValueFromInput(0, 0); // for UndoManager
+
           model.setValueFromInput(cl);
           self.noneColor = 0;
         },
@@ -35263,6 +35899,10 @@ Object(utils_ColorPicker__WEBPACK_IMPORTED_MODULE_3__["default"])($);
           }
         }
       }));
+      em && em.on && em.on('component:selected', function () {
+        changed = 1;
+        colorEl.spectrum('hide');
+      });
       this.colorEl = colorEl;
     }
 
@@ -35578,10 +36218,13 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
   // Default view
   itemView: '',
   // Defines the View per type
@@ -35593,6 +36236,7 @@ __webpack_require__.r(__webpack_exports__);
     var config = arguments.length > 1 ? arguments[1] : undefined;
     this.config = config || opts.config || {};
     this.autoAdd && this.listenTo(this.collection, 'add', this.addTo);
+    this.items = [];
     this.init();
   },
   init: function init() {},
@@ -35622,8 +36266,10 @@ __webpack_require__.r(__webpack_exports__);
   add: function add(model, fragment) {
     var config = this.config,
         reuseView = this.reuseView,
+        items = this.items,
         _this$itemsView = this.itemsView,
         itemsView = _this$itemsView === void 0 ? {} : _this$itemsView;
+    var inputTypes = ['button', 'checkbox', 'color', 'date', 'datetime-local', 'email', 'file', 'hidden', 'image', 'month', 'number', 'password', 'radio', 'range', 'reset', 'search', 'submit', 'tel', 'text', 'time', 'url', 'week'];
     var frag = fragment || null;
     var itemView = this.itemView;
     var typeField = model.get(this.itemType);
@@ -35631,7 +36277,7 @@ __webpack_require__.r(__webpack_exports__);
 
     if (itemsView[typeField]) {
       itemView = itemsView[typeField];
-    } else if (typeField && !itemsView[typeField]) {
+    } else if (typeField && !itemsView[typeField] && !Object(underscore__WEBPACK_IMPORTED_MODULE_0__["includes"])(inputTypes, typeField)) {
       this.itemViewNotFound(typeField);
     }
 
@@ -35644,11 +36290,13 @@ __webpack_require__.r(__webpack_exports__);
       }, config);
     }
 
+    items && items.push(view);
     var rendered = view.render().el;
     if (frag) frag.appendChild(rendered);else this.$el.append(rendered);
   },
   render: function render() {
     var frag = document.createDocumentFragment();
+    this.clearItems();
     this.$el.empty();
     if (this.collection.length) this.collection.each(function (model) {
       this.add(model, frag);
@@ -35657,7 +36305,16 @@ __webpack_require__.r(__webpack_exports__);
     this.onRender();
     return this;
   },
-  onRender: function onRender() {}
+  onRender: function onRender() {},
+  remove: function remove() {
+    this.clearItems();
+    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
+  },
+  clearItems: function clearItems() {
+    var items = this.items || []; // TODO Traits do not update the target anymore
+    // items.forEach(item => item.remove());
+    // this.items = [];
+  }
 }));
 
 /***/ }),
@@ -35885,8 +36542,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var cash_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! cash-dom */ "./node_modules/cash-dom/dist/cash.js");
-/* harmony import */ var cash_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(cash_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var cash_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! cash-dom */ "./node_modules/cash-dom/dist/cash.esm.js");
 /* harmony import */ var _config_config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./config/config */ "./src/editor/config/config.js");
 /* harmony import */ var _model_Editor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./model/Editor */ "./src/editor/model/Editor.js");
 /* harmony import */ var _view_EditorView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./view/EditorView */ "./src/editor/view/EditorView.js");
@@ -36018,145 +36674,13 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     config: c
   });
   return {
-    $: cash_dom__WEBPACK_IMPORTED_MODULE_1___default.a,
+    $: cash_dom__WEBPACK_IMPORTED_MODULE_1__["default"],
 
     /**
      * @property {EditorModel}
      * @private
      */
     editor: em,
-
-    /**
-     * @property {I18n}
-     * @private
-     */
-    I18n: em.get('I18n'),
-
-    /**
-     * @property {DomComponents}
-     * @private
-     */
-    DomComponents: em.get('DomComponents'),
-
-    /**
-     * @property {LayerManager}
-     * @private
-     */
-    LayerManager: em.get('LayerManager'),
-
-    /**
-     * @property {CssComposer}
-     * @private
-     */
-    CssComposer: em.get('CssComposer'),
-
-    /**
-     * @property {StorageManager}
-     * @private
-     */
-    StorageManager: em.get('StorageManager'),
-
-    /**
-     * @property {AssetManager}
-     * @private
-     */
-    AssetManager: em.get('AssetManager'),
-
-    /**
-     * @property {BlockManager}
-     * @private
-     */
-    BlockManager: em.get('BlockManager'),
-
-    /**
-     * @property {TraitManager}
-     * @private
-     */
-    TraitManager: em.get('TraitManager'),
-
-    /**
-     * @property {SelectorManager}
-     * @private
-     */
-    SelectorManager: em.get('SelectorManager'),
-
-    /**
-     * @property {CodeManager}
-     * @private
-     */
-    CodeManager: em.get('CodeManager'),
-
-    /**
-     * @property {Commands}
-     * @private
-     */
-    Commands: em.get('Commands'),
-
-    /**
-     * @property {Keymaps}
-     * @private
-     */
-    Keymaps: em.get('Keymaps'),
-
-    /**
-     * @property {Modal}
-     * @private
-     */
-    Modal: em.get('Modal'),
-
-    /**
-     * @property {Panels}
-     * @private
-     */
-    Panels: em.get('Panels'),
-
-    /**
-     * @property {StyleManager}
-     * @private
-     */
-    StyleManager: em.get('StyleManager'),
-
-    /**
-     * @property {Canvas}
-     * @private
-     */
-    Canvas: em.get('Canvas'),
-
-    /**
-     * @property {UndoManager}
-     * @private
-     */
-    UndoManager: em.get('UndoManager'),
-
-    /**
-     * @property {DeviceManager}
-     * @private
-     */
-    DeviceManager: em.get('DeviceManager'),
-
-    /**
-     * @property {RichTextEditor}
-     * @private
-     */
-    RichTextEditor: em.get('RichTextEditor'),
-
-    /**
-     * @property {Parser}
-     * @private
-     */
-    Parser: em.get('Parser'),
-
-    /**
-     * @property {Utils}
-     * @private
-     */
-    Utils: em.get('Utils'),
-
-    /**
-     * @property {Utils}
-     * @private
-     */
-    Config: em.get('Config'),
 
     /**
      * Initialize editor model
@@ -36166,7 +36690,15 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     init: function init() {
       var _this = this;
 
-      em.init(this); // Do post render stuff after the iframe is loaded otherwise it'll
+      var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      em.init(this, _objectSpread({}, c, {}, opts));
+      ['I18n', 'Utils', 'Config', 'Commands', 'Keymaps', 'Modal', 'Panels', 'Canvas', 'Parser', 'CodeManager', 'UndoManager', 'RichTextEditor', 'DomComponents', ['Components', 'DomComponents'], 'LayerManager', ['Layers', 'LayerManager'], 'CssComposer', ['Css', 'CssComposer'], 'StorageManager', ['Storage', 'StorageManager'], 'AssetManager', ['Assets', 'AssetManager'], 'BlockManager', ['Blocks', 'BlockManager'], 'TraitManager', ['Traits', 'TraitManager'], 'SelectorManager', ['Selectors', 'SelectorManager'], 'StyleManager', ['Styles', 'StyleManager'], 'DeviceManager', ['Devices', 'DeviceManager']].forEach(function (prop) {
+        if (Array.isArray(prop)) {
+          _this[prop[0]] = em.get(prop[1]);
+        } else {
+          _this[prop] = em.get(prop);
+        }
+      }); // Do post render stuff after the iframe is loaded otherwise it'll
       // be empty during tests
 
       em.on('loaded', function () {
@@ -36682,10 +37214,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var utils_extender__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils/extender */ "./src/utils/extender.js");
-/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var cash_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! cash-dom */ "./node_modules/cash-dom/dist/cash.esm.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var utils_extender__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! utils/extender */ "./src/utils/extender.js");
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -36696,22 +37229,23 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 
+
+backbone__WEBPACK_IMPORTED_MODULE_3___default.a.$ = cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"];
 var deps = [__webpack_require__(/*! utils */ "./src/utils/index.js"), __webpack_require__(/*! i18n */ "./src/i18n/index.js"), __webpack_require__(/*! keymaps */ "./src/keymaps/index.js"), __webpack_require__(/*! undo_manager */ "./src/undo_manager/index.js"), __webpack_require__(/*! storage_manager */ "./src/storage_manager/index.js"), __webpack_require__(/*! device_manager */ "./src/device_manager/index.js"), __webpack_require__(/*! parser */ "./src/parser/index.js"), __webpack_require__(/*! selector_manager */ "./src/selector_manager/index.js"), __webpack_require__(/*! style_manager */ "./src/style_manager/index.js"), __webpack_require__(/*! modal_dialog */ "./src/modal_dialog/index.js"), __webpack_require__(/*! code_manager */ "./src/code_manager/index.js"), __webpack_require__(/*! panels */ "./src/panels/index.js"), __webpack_require__(/*! rich_text_editor */ "./src/rich_text_editor/index.js"), __webpack_require__(/*! asset_manager */ "./src/asset_manager/index.js"), __webpack_require__(/*! css_composer */ "./src/css_composer/index.js"), __webpack_require__(/*! trait_manager */ "./src/trait_manager/index.js"), __webpack_require__(/*! dom_components */ "./src/dom_components/index.js"), __webpack_require__(/*! navigator */ "./src/navigator/index.js"), __webpack_require__(/*! canvas */ "./src/canvas/index.js"), __webpack_require__(/*! commands */ "./src/commands/index.js"), __webpack_require__(/*! block_manager */ "./src/block_manager/index.js")];
-var Collection = backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Collection;
+var Collection = backbone__WEBPACK_IMPORTED_MODULE_3___default.a.Collection;
 var timedInterval;
 var updateItr;
-Object(utils_extender__WEBPACK_IMPORTED_MODULE_3__["default"])({
-  Backbone: backbone__WEBPACK_IMPORTED_MODULE_2___default.a,
-  $: backbone__WEBPACK_IMPORTED_MODULE_2___default.a.$
+Object(utils_extender__WEBPACK_IMPORTED_MODULE_4__["default"])({
+  Backbone: backbone__WEBPACK_IMPORTED_MODULE_3___default.a,
+  $: backbone__WEBPACK_IMPORTED_MODULE_3___default.a.$
 });
-var $ = backbone__WEBPACK_IMPORTED_MODULE_2___default.a.$;
 var logs = {
   debug: console.log,
   info: console.info,
   warning: console.warn,
   error: console.error
 };
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Model.extend({
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_3___default.a.Model.extend({
   defaults: function defaults() {
     return {
       editing: 0,
@@ -36737,10 +37271,12 @@ var logs = {
     this.set('modules', []);
     this.set('toLoad', []);
     this.set('storables', []);
+    this.set('selected', new Collection());
     this.set('dmode', c.dragMode);
     var el = c.el;
     var log = c.log;
     var toLog = log === true ? Object(underscore__WEBPACK_IMPORTED_MODULE_1__["keys"])(logs) : Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isArray"])(log) ? log : [];
+    Object(underscore__WEBPACK_IMPORTED_MODULE_1__["bindAll"])(this, 'initBaseColorPicker');
     if (el && c.fromElement) this.config.components = el.innerHTML;
     this.attrsOrig = el ? Object(underscore__WEBPACK_IMPORTED_MODULE_1__["toArray"])(el.attributes).reduce(function (res, next) {
       res[next.nodeName] = next.nodeValue;
@@ -36893,6 +37429,13 @@ var logs = {
    * @private
    */
   init: function init(editor) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (this.destroyed) {
+      this.initialize(opts);
+      this.destroyed = 0;
+    }
+
     this.set('Editor', editor);
   },
   getEditor: function getEditor() {
@@ -36976,7 +37519,7 @@ var logs = {
       return !Object(underscore__WEBPACK_IMPORTED_MODULE_1__["contains"])(els, s);
     }));
     els.forEach(function (el) {
-      var model = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["getModel"])(el, $);
+      var model = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_5__["getModel"])(el, cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"]);
       if (model && !model.get('selectable')) return;
       !multiple && _this5.removeSelected(selected.filter(function (s) {
         return s !== model;
@@ -36998,7 +37541,7 @@ var logs = {
     var _this6 = this;
 
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var model = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["getModel"])(el, $);
+    var model = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_5__["getModel"])(el, cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"]);
     var models = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isArray"])(model) ? model : [model];
     models.forEach(function (model) {
       if (model && !model.get('selectable')) return;
@@ -37018,7 +37561,7 @@ var logs = {
    */
   removeSelected: function removeSelected(el) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    this.get('selected').remove(Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["getModel"])(el, $), opts);
+    this.get('selected').remove(Object(utils_mixins__WEBPACK_IMPORTED_MODULE_5__["getModel"])(el, cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"]), opts);
   },
 
   /**
@@ -37031,7 +37574,7 @@ var logs = {
     var _this7 = this;
 
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var model = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["getModel"])(el, $);
+    var model = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_5__["getModel"])(el, cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"]);
     var models = Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isArray"])(model) ? model : [model];
     models.forEach(function (model) {
       if (_this7.get('selected').contains(model)) {
@@ -37050,7 +37593,7 @@ var logs = {
    */
   setHovered: function setHovered(el) {
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var model = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["getModel"])(el, $);
+    var model = Object(utils_mixins__WEBPACK_IMPORTED_MODULE_5__["getModel"])(el, cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"]);
     if (model && !model.get('hoverable')) return;
     opts.forceChange && this.set('componentHovered', '');
     this.set('componentHovered', model, opts);
@@ -37287,7 +37830,8 @@ var logs = {
    */
   stopDefault: function stopDefault() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var command = this.get('Commands').get(this.config.defaultCommand);
+    var commands = this.get('Commands');
+    var command = commands.get(this.config.defaultCommand);
     if (!command) return;
     command.stop(this, this, opts);
     this.defaultRunning = 0;
@@ -37378,6 +37922,13 @@ var logs = {
    * Destroy editor
    */
   destroyAll: function destroyAll() {
+    var config = this.config;
+    var editor = this.getEditor();
+
+    var _ref = config.grapesjs || {},
+        _ref$editors = _ref.editors,
+        editors = _ref$editors === void 0 ? [] : _ref$editors;
+
     var _this$attributes = this.attributes,
         DomComponents = _this$attributes.DomComponents,
         CssComposer = _this$attributes.CssComposer,
@@ -37386,6 +37937,7 @@ var logs = {
         Canvas = _this$attributes.Canvas,
         Keymaps = _this$attributes.Keymaps,
         RichTextEditor = _this$attributes.RichTextEditor;
+    this.stopDefault();
     DomComponents.clear();
     CssComposer.clear();
     UndoManager.clear().removeAll();
@@ -37395,7 +37947,12 @@ var logs = {
     RichTextEditor.destroy();
     this.view.remove();
     this.stopListening();
-    $(this.config.el).empty().attr(this.attrsOrig);
+    this.clear({
+      silent: true
+    });
+    this.destroyed = 1;
+    editors.splice(editors.indexOf(editor), 1);
+    Object(cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"])(config.el).empty().attr(this.attrsOrig);
   },
   setEditing: function setEditing(value) {
     this.set('editing', value);
@@ -37432,6 +37989,24 @@ var logs = {
     this.log(msg, _objectSpread({}, opts, {
       level: 'error'
     }));
+  },
+  initBaseColorPicker: function initBaseColorPicker(el) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var config = this.getConfig();
+    var _config$colorPicker = config.colorPicker,
+        colorPicker = _config$colorPicker === void 0 ? {} : _config$colorPicker;
+    var elToAppend = config.el;
+    var ppfx = config.stylePrefix;
+    return Object(cash_dom__WEBPACK_IMPORTED_MODULE_2__["default"])(el).spectrum(_objectSpread({
+      containerClassName: "".concat(ppfx, "one-bg ").concat(ppfx, "two-color"),
+      appendTo: elToAppend || 'body',
+      maxSelectionSize: 8,
+      showPalette: true,
+      palette: [],
+      showAlpha: true,
+      chooseText: 'Ok',
+      cancelText: '⨯'
+    }, opts, {}, colorPicker));
   },
 
   /**
@@ -37953,8 +38528,7 @@ var traitInputAttr = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var cash_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! cash-dom */ "./node_modules/cash-dom/dist/cash.js");
-/* harmony import */ var cash_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(cash_dom__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var cash_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! cash-dom */ "./node_modules/cash-dom/dist/cash.esm.js");
 /* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./editor */ "./src/editor/index.js");
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_3__);
@@ -37983,11 +38557,11 @@ var defaultConfig = {
   pluginsOpts: {}
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
-  $: cash_dom__WEBPACK_IMPORTED_MODULE_1___default.a,
+  $: cash_dom__WEBPACK_IMPORTED_MODULE_1__["default"],
   editors: editors,
   plugins: plugins,
   // Will be replaced on build
-  version: '0.15.17',
+  version: '0.16.12',
 
   /**
    * Initialize the editor with passed options
@@ -38008,7 +38582,9 @@ var defaultConfig = {
     var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var els = config.container;
     if (!els) throw new Error("'container' is required");
-    config = _objectSpread({}, defaultConfig, {}, config);
+    config = _objectSpread({}, defaultConfig, {}, config, {
+      grapesjs: this
+    });
     config.el = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isElement"])(els) ? els : document.querySelector(els);
     var editor = new _editor__WEBPACK_IMPORTED_MODULE_2__["default"](config).init(); // Load plugins
 
@@ -38976,12 +39552,21 @@ var ItemsView;
   toggleVisibility: function toggleVisibility(e) {
     e && e.stopPropagation();
     var model = this.model;
+    var prevDspKey = '__prev-display';
+    var prevDisplay = model.get(prevDspKey);
     var style = model.getStyle();
-    var hidden = style.display == 'none';
+    var display = style.display;
+    var hidden = display == 'none';
 
     if (hidden) {
       delete style.display;
+
+      if (prevDisplay) {
+        style.display = prevDisplay;
+        model.unset(prevDspKey);
+      }
     } else {
+      display && model.set(prevDspKey, display);
       style.display = 'none';
     }
 
@@ -39341,7 +39926,8 @@ __webpack_require__.r(__webpack_exports__);
   removeChildren: function removeChildren(removed) {
     var view = removed.viewLayer;
     if (!view) return;
-    view.remove.apply(view);
+    view.remove();
+    removed.viewLayer = 0;
   },
 
   /**
@@ -40143,9 +40729,9 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
   clicked: function clicked(e) {
     if (this.model.get('bntsVis')) return;
     if (this.model.get('disable')) return;
-    this.toogleActive();
+    this.toggleActive();
   },
-  toogleActive: function toogleActive() {
+  toggleActive: function toggleActive() {
     var model = this.model;
     var _model$attributes = model.attributes,
         active = _model$attributes.active,
@@ -42607,6 +43193,9 @@ var Selector = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model.extend({
    * @return {string}
    */
   getFullName: function getFullName() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var escape = opts.escape;
+    var name = this.get('name');
     var init = '';
 
     switch (this.get('type')) {
@@ -42619,7 +43208,7 @@ var Selector = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.Model.extend({
         break;
     }
 
-    return init + this.get('name');
+    return init + (escape ? escape(name) : name);
   }
 }, {
   // All type selectors: https://developer.mozilla.org/it/docs/Web/CSS/CSS_Selectors
@@ -42679,10 +43268,11 @@ __webpack_require__.r(__webpack_exports__);
     });
   },
   getFullString: function getFullString(collection) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var result = [];
     var coll = collection || this;
     coll.forEach(function (selector) {
-      return result.push(selector.getFullName());
+      return result.push(selector.getFullName(opts));
     });
     return result.join('').trim();
   }
@@ -44095,7 +44685,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
       return this;
     },
     onLoad: function onLoad() {
-      sectors.add(c.sectors);
+      // Use silent as sectors' view will be created and rendered on StyleManager.render
+      sectors.add(c.sectors, {
+        silent: true
+      });
     },
     postRender: function postRender() {
       var elTo = this.getConfig().appendTo;
@@ -44282,7 +44875,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * @return {Model}
      */
     getModelToStyle: function getModelToStyle(model) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var em = c.em;
+      var skipAdd = options.skipAdd;
       var classes = model.get('classes');
       var id = model.getId();
 
@@ -44295,6 +44890,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
         var state = !config.devicePreviewMode ? em.get('state') : '';
         var valid = classes.getStyleable();
         var hasClasses = valid.length;
+        var useClasses = !smConf.componentFirst || options.useClasses;
         var opts = {
           state: state
         };
@@ -44305,16 +44901,16 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
         um.stop();
 
-        if (hasClasses && !smConf.componentFirst) {
+        if (hasClasses && useClasses) {
           var deviceW = em.getCurrentMedia();
           rule = cssC.get(valid, state, deviceW);
 
-          if (!rule) {
+          if (!rule && !skipAdd) {
             rule = cssC.add(valid, state, deviceW);
           }
         } else if (config.avoidInlineStyle) {
           rule = cssC.getIdRule(id, opts);
-          !rule && (rule = cssC.setIdRule(id, {}, opts));
+          !rule && !skipAdd && (rule = cssC.setIdRule(id, {}, opts));
           if (model.is('wrapper')) rule.set('wrapper', 1);
         }
 
@@ -44450,15 +45046,12 @@ __webpack_require__.r(__webpack_exports__);
     properties: []
   },
   initialize: function initialize() {
-    var _this = this;
-
-    var properties = this.get('properties');
+    var prp = this.get('properties');
     var value = this.get('value');
-    this.set('properties', properties instanceof _Properties__WEBPACK_IMPORTED_MODULE_1__["default"] ? properties : new _Properties__WEBPACK_IMPORTED_MODULE_1__["default"](properties));
-    this.get('properties').forEach(function (item) {
-      var collection = _this.collection;
-      item.parent = collection && collection.property;
-    }); // If there is no value I'll try to get it from values
+    this.set('properties', prp instanceof _Properties__WEBPACK_IMPORTED_MODULE_1__["default"] ? prp : new _Properties__WEBPACK_IMPORTED_MODULE_1__["default"](prp));
+    var props = this.get('properties');
+    props.forEach(this.onPropAdd, this);
+    this.listenTo(props, 'add', this.onPropAdd); // If there is no value I'll try to get it from values
     // I need value setted to make preview working
 
     if (!value) {
@@ -44471,6 +45064,10 @@ __webpack_require__.r(__webpack_exports__);
 
       this.set('value', val.trim());
     }
+  },
+  onPropAdd: function onPropAdd(prop) {
+    var coll = this.collection;
+    prop.parent = coll && coll.property;
   },
 
   /**
@@ -44495,7 +45092,7 @@ __webpack_require__.r(__webpack_exports__);
     this.get('properties').each(function (prop) {
       return result.push(prop.getFullValue());
     });
-    return result.join(' ');
+    return result.join(' ').trim();
   }
 }));
 
@@ -44512,9 +45109,11 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _Layer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Layer */ "./src/style_manager/model/Layer.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _Layer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Layer */ "./src/style_manager/model/Layer.js");
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -44523,8 +45122,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Collection.extend({
-  model: _Layer__WEBPACK_IMPORTED_MODULE_2__["default"],
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.Collection.extend({
+  model: _Layer__WEBPACK_IMPORTED_MODULE_3__["default"],
   initialize: function initialize() {
     this.idx = 1;
     this.on('add', this.onAdd);
@@ -44532,6 +45132,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   },
   onAdd: function onAdd(model, c, opts) {
     if (!opts.noIncrement) model.set('index', this.idx++);
+    opts.active && this.active(this.indexOf(model));
   },
   onReset: function onReset() {
     this.idx = 1;
@@ -44584,7 +45185,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   getLayersFromStyle: function getLayersFromStyle(styleObj) {
     var layers = [];
     var properties = this.properties;
-    var propNames = properties.pluck('property');
     properties.each(function (propModel) {
       var style = styleObj[propModel.get('property')];
       var values = style ? style.split(', ') : [];
@@ -44634,11 +45234,11 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
     });
     return result.join(this.getSeparator());
   },
-  getPropertyValues: function getPropertyValues(property) {
+  getPropertyValues: function getPropertyValues(property, defValue) {
     var result = [];
     this.each(function (layer) {
       var value = layer.getPropertyValue(property);
-      value && result.push(value);
+      value ? result.push(value) : !Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isUndefined"])(defValue) && result.push(defValue);
     });
     return result.join(', ');
   }
@@ -44919,15 +45519,16 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
     var complete = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
     var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var parsed = this.parseValue(value);
-    this.set(parsed, _objectSpread({}, opts, {
-      avoidStore: 1
-    })); // It's important to set an empty value, otherwise the
-    // UndoManager won't see the change
-
-    if (complete) {
-      this.set('value', '', opts);
-      this.set(parsed, opts);
-    }
+    var avoidStore = !complete;
+    !avoidStore && this.set({
+      value: ''
+    }, {
+      avoidStore: avoidStore,
+      silent: true
+    });
+    this.set(parsed, _objectSpread({
+      avoidStore: avoidStore
+    }, opts));
   },
 
   /**
@@ -44995,6 +45596,42 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
   },
 
   /**
+   * Helper function to safely split a string of values.
+   * Useful when style values are inside functions
+   * eg:
+   * -> input: 'value(1,2,4), 123, value(4,5)' -- default separator: ','
+   * -> output: ['value(1,2,4)', '123', 'value(4,5)']
+   * @param {String} values Values to split
+   * @param {String} [separator] Separator
+   */
+  splitValues: function splitValues(values) {
+    var separator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ',';
+    var res = [];
+    var op = '(';
+    var cl = ')';
+    var curr = '';
+    var acc = 0;
+    (values || '').split('').forEach(function (str) {
+      if (str == op) {
+        acc++;
+        curr = curr + op;
+      } else if (str == cl && acc > 0) {
+        acc--;
+        curr = curr + cl;
+      } else if (str === separator && acc == 0) {
+        res.push(curr);
+        curr = '';
+      } else {
+        curr = curr + str;
+      }
+    });
+    curr !== '' && res.push(curr);
+    return res.map(function (i) {
+      return i.trim();
+    });
+  },
+
+  /**
    * Get the default value
    * @return {string}
    * @private
@@ -45013,8 +45650,13 @@ var Property = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.Model.extend({
    */
   getFullValue: function getFullValue(val) {
     var fn = this.get('functionName');
+    var def = this.getDefaultValue();
     var value = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(val) ? this.get('value') : val;
     var hasValue = !Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(value) && value !== '';
+
+    if (value && def && value === def) {
+      return def;
+    }
 
     if (fn && hasValue) {
       value = "".concat(fn, "(").concat(value, ")");
@@ -46281,8 +46923,10 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertyComposite */ "./src/style_manager/model/PropertyComposite.js");
-/* harmony import */ var _Layers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Layers */ "./src/style_manager/model/Layers.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PropertyComposite */ "./src/style_manager/model/PropertyComposite.js");
+/* harmony import */ var _Layers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Layers */ "./src/style_manager/model/Layers.js");
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
@@ -46291,25 +46935,28 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 
 
-/* harmony default export */ __webpack_exports__["default"] = (_PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
-  defaults: _objectSpread({}, _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.defaults, {
+
+/* harmony default export */ __webpack_exports__["default"] = (_PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].extend({
+  defaults: _objectSpread({}, _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.defaults, {
     // Array of layers (which contain properties)
     layers: [],
     // The separator used to join layer values
     layerSeparator: ', ',
+    // Prepend new layers in the list
+    prepend: 0,
     // Layer preview
     preview: 0
   }),
   initialize: function initialize() {
     var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].callParentInit(_PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"], this, props, opts);
+    _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].callParentInit(_PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"], this, props, opts);
     var layers = this.get('layers');
-    var layersColl = new _Layers__WEBPACK_IMPORTED_MODULE_2__["default"](layers);
+    var layersColl = new _Layers__WEBPACK_IMPORTED_MODULE_3__["default"](layers);
     layersColl.property = this;
     layersColl.properties = this.get('properties');
     this.set('layers', layersColl);
-    _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].callInit(this, props, opts);
+    _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].callInit(this, props, opts);
   },
   getLayers: function getLayers() {
     return this.get('layers');
@@ -46325,11 +46972,25 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   getValueFromStyle: function getValueFromStyle() {
     var styles = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var layers = this.getLayers().getLayersFromStyle(styles);
-    return new _Layers__WEBPACK_IMPORTED_MODULE_2__["default"](layers).getFullValue();
+    return new _Layers__WEBPACK_IMPORTED_MODULE_3__["default"](layers).getFullValue();
   },
   clearValue: function clearValue() {
     this.getLayers().reset();
-    return _PropertyComposite__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.clearValue.apply(this, arguments);
+    return _PropertyComposite__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.clearValue.apply(this, arguments);
+  },
+  getValueFromTarget: function getValueFromTarget(target) {
+    var _this$attributes = this.attributes,
+        detached = _this$attributes.detached,
+        property = _this$attributes.property,
+        properties = _this$attributes.properties;
+    var style = target.getStyle();
+    var validStyles = {};
+    properties.forEach(function (prop) {
+      var name = prop.get('property');
+      var value = style[name];
+      if (value) validStyles[name] = value;
+    });
+    return !detached ? style[property] : Object(underscore__WEBPACK_IMPORTED_MODULE_1__["keys"])(validStyles).length ? validStyles : '';
   },
 
   /**
@@ -46488,15 +47149,18 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _PropertiesView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertiesView */ "./src/style_manager/view/PropertiesView.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _PropertiesView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PropertiesView */ "./src/style_manager/view/PropertiesView.js");
 
 
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.extend({
+
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
   events: {
     click: 'active',
-    'click [data-close-layer]': 'remove',
+    'click [data-close-layer]': 'removeItem',
     'mousedown [data-move-layer]': 'initSorter',
     'touchstart [data-move-layer]': 'initSorter'
   },
@@ -46510,7 +47174,7 @@ __webpack_require__.r(__webpack_exports__);
   initialize: function initialize() {
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var model = this.model;
-    this.stackModel = o.stackModel || {};
+    this.stackModel = o.stackModel;
     this.config = o.config || {};
     this.em = this.config.em;
     this.pfx = this.config.stylePrefix || '';
@@ -46537,16 +47201,18 @@ __webpack_require__.r(__webpack_exports__);
   initSorter: function initSorter(e) {
     if (this.sorter) this.sorter.startSort(this.el);
   },
-  remove: function remove(e) {
-    if (e && e.stopPropagation) e.stopPropagation();
-    var model = this.model;
-    var collection = model.collection;
+  removeItem: function removeItem(ev) {
+    ev && ev.stopPropagation();
+    this.remove();
+  },
+  remove: function remove() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var model = this.model,
+        props = this.props;
+    var coll = model.collection;
     var stackModel = this.stackModel;
-    backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.prototype.remove.apply(this, arguments);
-
-    if (collection.contains(model)) {
-      collection.remove(model);
-    }
+    backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.prototype.remove.apply(this, arguments);
+    coll && coll.contains(model) && coll.remove(model);
 
     if (stackModel && stackModel.set) {
       stackModel.set({
@@ -46554,8 +47220,10 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         silent: true
       });
-      stackModel.trigger('updateValue');
+      !opts.fromTarget && stackModel.trigger('updateValue');
     }
+
+    props && props.remove();
   },
 
   /**
@@ -46564,11 +47232,15 @@ __webpack_require__.r(__webpack_exports__);
    * @param {Element} $el
    */
   onPreview: function onPreview(value) {
+    var stackModel = this.stackModel;
+    var detach = stackModel && stackModel.get('detached');
     var values = value.split(' ');
     var lim = 3;
     var result = [];
+    var resultObj = {};
     this.model.get('properties').each(function (prop, index) {
-      var value = values[index] || '';
+      var property = prop.get('property');
+      var value = detach ? prop.getFullValue() : values[index] || '';
 
       if (value) {
         if (prop.get('type') == 'integer') {
@@ -46582,8 +47254,9 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       result.push(value);
+      resultObj[property] = value;
     });
-    return result.join(' ');
+    return detach ? resultObj : result.join(' ');
   },
   updatePreview: function updatePreview() {
     var stackModel = this.stackModel;
@@ -46593,7 +47266,17 @@ __webpack_require__.r(__webpack_exports__);
     var preview = customPreview ? customPreview(value) : this.onPreview(value);
 
     if (preview && stackModel && previewEl) {
-      previewEl.style[stackModel.get('property')] = preview;
+      var style = previewEl.style;
+
+      if (Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isString"])(preview)) {
+        style[stackModel.get('property')] = preview;
+      } else {
+        var prvStr = [];
+        Object(underscore__WEBPACK_IMPORTED_MODULE_0__["each"])(preview, function (val, prop) {
+          return prvStr.push("".concat(prop, ":").concat(val));
+        });
+        previewEl.setAttribute('style', prvStr.join(';'));
+      }
     }
   },
   getPropertiesWrapper: function getPropertiesWrapper() {
@@ -46628,17 +47311,19 @@ __webpack_require__.r(__webpack_exports__);
         el = this.el,
         pfx = this.pfx;
     var preview = model.get('preview');
-    var properties = new _PropertiesView__WEBPACK_IMPORTED_MODULE_1__["default"]({
+    var properties = new _PropertiesView__WEBPACK_IMPORTED_MODULE_2__["default"]({
       collection: model.get('properties'),
       config: this.config,
       target: propsConfig.target,
       customValue: propsConfig.customValue,
       propTarget: propsConfig.propTarget,
       onChange: propsConfig.onChange
-    }).render().el;
+    });
+    var propsEl = properties.render().el;
     el.innerHTML = this.template(model);
     el.className = "".concat(pfx, "layer").concat(!preview ? " ".concat(pfx, "no-preview") : '');
-    this.getPropertiesWrapper().appendChild(properties);
+    this.props = properties;
+    this.getPropertiesWrapper().appendChild(propsEl);
     this.updateVisibility();
     this.updatePreview();
     return this;
@@ -46675,7 +47360,8 @@ __webpack_require__.r(__webpack_exports__);
     this.className = "".concat(pfx, "layers ").concat(ppfx, "field");
     this.listenTo(collection, 'add', this.addTo);
     this.listenTo(collection, 'deselectAll', this.deselectAll);
-    this.listenTo(collection, 'reset', this.render);
+    this.listenTo(collection, 'reset', this.reset);
+    this.items = [];
     var em = this.config.em || '';
     var utils = em ? em.get('Utils') : '';
     this.sorter = utils ? new utils.Sorter({
@@ -46729,6 +47415,7 @@ __webpack_require__.r(__webpack_exports__);
       propsConfig: propsConfig
     });
     var rendered = view.render().el;
+    this.items.push(view);
 
     if (fragment) {
       fragment.appendChild(rendered);
@@ -46760,6 +47447,10 @@ __webpack_require__.r(__webpack_exports__);
   deselectAll: function deselectAll() {
     this.$el.find('.' + this.pfx + 'layer').removeClass(this.pfx + 'active');
   },
+  reset: function reset(coll, opts) {
+    this.clearItems(opts);
+    this.render();
+  },
   render: function render() {
     var fragment = document.createDocumentFragment();
     this.$el.empty();
@@ -46770,6 +47461,16 @@ __webpack_require__.r(__webpack_exports__);
     this.$el.attr('class', this.className);
     if (this.sorter) this.sorter.plh = null;
     return this;
+  },
+  remove: function remove() {
+    this.clearItems();
+    backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.prototype.remove.apply(this, arguments);
+  },
+  clearItems: function clearItems(opts) {
+    this.items.forEach(function (item) {
+      return item.remove(opts);
+    });
+    this.items = [];
   }
 }));
 
@@ -46833,14 +47534,26 @@ __webpack_require__.r(__webpack_exports__);
   render: function render() {
     var _this = this;
 
-    this.properties = [];
+    var $el = this.$el;
+    this.clearItems();
     var fragment = document.createDocumentFragment();
     this.collection.each(function (model) {
       return _this.add(model, fragment);
     });
-    this.$el.append(fragment);
-    this.$el.attr('class', "".concat(this.pfx, "properties"));
+    $el.empty();
+    $el.append(fragment);
+    $el.attr('class', "".concat(this.pfx, "properties"));
     return this;
+  },
+  remove: function remove() {
+    backbone__WEBPACK_IMPORTED_MODULE_0___default.a.View.prototype.remove.apply(this, arguments);
+    this.clearItems();
+  },
+  clearItems: function clearItems() {
+    this.properties.forEach(function (item) {
+      return item.remove();
+    });
+    this.properties = [];
   }
 }));
 
@@ -46904,13 +47617,21 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _PropertyView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertyView */ "./src/style_manager/view/PropertyView.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _PropertyView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PropertyView */ "./src/style_manager/view/PropertyView.js");
 
 
-var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
-/* harmony default export */ __webpack_exports__["default"] = (_PropertyView__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+
+
+var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
+/* harmony default export */ __webpack_exports__["default"] = (_PropertyView__WEBPACK_IMPORTED_MODULE_2__["default"].extend({
   templateInput: function templateInput() {
     var pfx = this.pfx;
     return "\n      <div class=\"".concat(pfx, "field ").concat(pfx, "composite\">\n        <span id=\"").concat(pfx, "input-holder\"></span>\n      </div>\n    ");
@@ -46923,7 +47644,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
         args[_key] = arguments[_key];
       }
 
-      _PropertyView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.inputValueChanged.apply(this, args);
+      _PropertyView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.inputValueChanged.apply(this, args);
     }
   },
   clear: function clear(e) {
@@ -46931,7 +47652,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     props && props.forEach(function (propView) {
       return propView.clear();
     });
-    _PropertyView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.clear.apply(this, arguments);
+    _PropertyView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.clear.apply(this, arguments);
   },
 
   /**
@@ -46983,7 +47704,9 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     var that = this;
     var model = this.model;
     var result = {
-      config: this.config,
+      config: _objectSpread({}, this.config, {
+        highlightComputed: 0
+      }),
       collection: this.props,
       target: this.target,
       propTarget: this.propTarget,
@@ -47032,7 +47755,7 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_0___default.a.$;
     return value;
   },
   clearCached: function clearCached() {
-    _PropertyView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.clearCached.apply(this, arguments);
+    _PropertyView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.clearCached.apply(this, arguments);
     this.$input = null;
     this.props = null;
     this.$props = null;
@@ -47109,6 +47832,9 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
   setPreviewView: function setPreviewView(v) {
     var pv = this.$previewBox;
     pv && pv[v ? 'addClass' : 'removeClass']("".concat(this.pfx, "show"));
+    pv && pv.css({
+      display: v ? 'block' : 'none'
+    });
   },
 
   /**
@@ -47272,16 +47998,18 @@ __webpack_require__.r(__webpack_exports__);
     var model = this.model;
     var prop = model.get('property');
     var options = model.get('list') || model.get('options') || [];
+    var cid = model.cid;
+    var clsInput = "".concat(pfx, "radio ").concat(pfx, "radio-").concat(prop);
 
     if (!this.input) {
       if (options && options.length) {
         var inputStr = '';
         options.forEach(function (el) {
           var cl = el.className ? "".concat(el.className, " ").concat(pfx, "icon ").concat(itemCls) : '';
-          var id = "".concat(prop, "-").concat(el.value);
+          var id = "".concat(prop, "-").concat(el.value, "-").concat(cid);
           var labelTxt = el.name || el.value;
           var titleAttr = el.title ? "title=\"".concat(el.title, "\"") : '';
-          inputStr += "\n            <div class=\"".concat(ppfx, "radio-item\">\n              <input type=\"radio\" class=\"").concat(pfx, "radio\" id=\"").concat(id, "\" name=\"").concat(prop, "\" value=\"").concat(el.value, "\"/>\n              <label class=\"").concat(cl || itemCls, "\" ").concat(titleAttr, " for=\"").concat(id, "\">").concat(cl ? '' : labelTxt, "</label>\n            </div>\n          ");
+          inputStr += "\n            <div class=\"".concat(ppfx, "radio-item\">\n              <input type=\"radio\" class=\"").concat(clsInput, "\" id=\"").concat(id, "\" name=\"").concat(prop, "-").concat(cid, "\" value=\"").concat(el.value, "\"/>\n              <label class=\"").concat(cl || itemCls, "\" ").concat(titleAttr, " for=\"").concat(id, "\">").concat(cl ? '' : labelTxt, "</label>\n            </div>\n          ");
         });
         var inputHld = this.el.querySelector(".".concat(ppfx, "field"));
         inputHld.innerHTML = "<div class=\"".concat(ppfx, "radio-items\">").concat(inputStr, "</div>");
@@ -47453,14 +48181,25 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PropertyCompositeView */ "./src/style_manager/view/PropertyCompositeView.js");
-/* harmony import */ var _LayersView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./LayersView */ "./src/style_manager/view/LayersView.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./PropertyCompositeView */ "./src/style_manager/view/PropertyCompositeView.js");
+/* harmony import */ var _LayersView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./LayersView */ "./src/style_manager/view/LayersView.js");
+/* harmony import */ var code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! code_manager/model/CssGenerator */ "./src/code_manager/model/CssGenerator.js");
+
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
-/* harmony default export */ __webpack_exports__["default"] = (_PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].extend({
+
+
+var cssGen = new code_manager_model_CssGenerator__WEBPACK_IMPORTED_MODULE_4__["default"]();
+/* harmony default export */ __webpack_exports__["default"] = (_PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].extend({
   templateInput: function templateInput() {
     var pfx = this.pfx;
     var ppfx = this.ppfx;
@@ -47474,6 +48213,25 @@ __webpack_require__.r(__webpack_exports__);
     this.listenTo(model, 'change:stackIndex', this.indexChanged);
     this.listenTo(model, 'updateValue', this.inputValueChanged);
     this.delegateEvents();
+    var propsConfig = this.getPropsConfig();
+    this.layers = new _LayersView__WEBPACK_IMPORTED_MODULE_3__["default"]({
+      collection: this.getLayers(),
+      stackModel: model,
+      preview: model.get('preview'),
+      config: this.config,
+      propsConfig: propsConfig
+    });
+
+    var PropertiesView = __webpack_require__(/*! ./PropertiesView */ "./src/style_manager/view/PropertiesView.js").default;
+
+    this.propsView = new PropertiesView({
+      target: this.target,
+      collection: model.get('properties'),
+      stackModel: model,
+      config: this.config,
+      onChange: propsConfig.onChange,
+      propTarget: propsConfig.propTarget
+    });
   },
 
   /**
@@ -47482,17 +48240,27 @@ __webpack_require__.r(__webpack_exports__);
    * so we gonna check all props and find if it has any difference
    * */
   targetUpdated: function targetUpdated() {
+    var _this = this;
+
+    var data;
+
     if (!this.model.get('detached')) {
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 
-      _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.targetUpdated.apply(this, args);
+      data = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.targetUpdated.apply(this, args);
     } else {
+      data = this._getTargetData();
+      this.setStatus(data.status);
       this.checkVisibility();
-    }
+    } // I have to wait the update of inner properites (like visibility)
+    // before render layers
 
-    this.refreshLayers();
+
+    setTimeout(function () {
+      return _this.refreshLayers(data);
+    });
   },
 
   /**
@@ -47518,22 +48286,30 @@ __webpack_require__.r(__webpack_exports__);
   addLayer: function addLayer() {
     var model = this.model;
     var layers = this.getLayers();
+    var prepend = model.get('prepend');
     var properties = model.get('properties').deepClone();
     properties.each(function (property) {
       return property.set('value', '');
     });
     var layer = layers.add({
       properties: properties
-    }); // In detached mode inputValueChanged will add new 'layer value'
+    }, _objectSpread({
+      active: 1
+    }, prepend && {
+      at: 0
+    })); // In detached mode inputValueChanged will add new 'layer value'
     // to all subprops
 
-    this.inputValueChanged(); // This will set subprops with a new default values
+    this.inputValueChanged({
+      up: 1
+    }); // This will set subprops with a new default values
 
     model.set('stackIndex', layers.indexOf(layer));
   },
   inputValueChanged: function inputValueChanged() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var model = this.model;
-    this.elementUpdated(); // If not detached I'll just put all the values from layers to property
+    opts.up && this.elementUpdated(); // If not detached I'll just put all the values from layers to property
     // eg. background: layer1Value, layer2Value, layer3Value, ...
 
     if (!model.get('detached')) {
@@ -47559,32 +48335,151 @@ __webpack_require__.r(__webpack_exports__);
   getLayerValues: function getLayerValues() {
     return this.getLayers().getFullValue();
   },
+  _getClassRule: function _getClassRule() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var em = this.em;
+    var _opts$skipAdd = opts.skipAdd,
+        skipAdd = _opts$skipAdd === void 0 ? 1 : _opts$skipAdd;
+    var selected = em.getSelected();
+    var targetAlt = em.get('StyleManager').getModelToStyle(selected, {
+      skipAdd: skipAdd,
+      useClasses: 1
+    });
+    return targetAlt !== selected && targetAlt;
+  },
+
+  /**
+   * Return the parent style rule of the passed one
+   * @private
+   */
+  _getParentTarget: function _getParentTarget(target) {
+    var opts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var em = this.em,
+        model = this.model;
+    var property = model.get('property');
+
+    var isValid = opts.isValid || function (rule) {
+      return rule.getStyle()[property];
+    };
+
+    var targetsDevice = em.get('CssComposer').getAll().filter(function (rule) {
+      return rule.selectorsToString() === target.getSelectorsString();
+    });
+    var map = targetsDevice.reduce(function (acc, rule) {
+      acc[rule.getAtRule()] = rule;
+      return acc;
+    }, {});
+    var mapSorted = cssGen.sortMediaObject(map);
+    var sortedRules = mapSorted.map(function (item) {
+      return item.value;
+    });
+    var currIndex = sortedRules.indexOf(target);
+    var rulesToCheck = sortedRules.splice(0, currIndex);
+    var result;
+
+    for (var i = rulesToCheck.length - 1; i > -1; i--) {
+      var rule = rulesToCheck[i];
+
+      if (isValid(rule)) {
+        // only for not detached
+        result = rule;
+        break;
+      }
+    }
+
+    return result;
+  },
 
   /**
    * Refresh layers
    * */
   refreshLayers: function refreshLayers() {
+    var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var layersObj = [];
-    var model = this.model;
+    var model = this.model,
+        em = this.em;
     var layers = this.getLayers();
     var detached = model.get('detached');
-    var target = this.getTarget(); // With detached layers values will be assigned to their properties
+    var property = model.get('property');
+    var target = this.getTarget();
+    var valueComput = this.getComputedValue();
+    var selected = em.getSelected();
+    var updateOpts = {
+      fromTarget: 1
+    };
+    var resultValue, style, targetAlt, targetAltDevice, valueTargetAlt, valueTrgAltDvc; // With detached layers values will be assigned to their properties
 
     if (detached) {
-      var style = target ? target.getStyle() : {};
+      style = opts.targetValue || {};
+
+      var hasDetachedStyle = function hasDetachedStyle(rule) {
+        var name = model.get('properties').at(0).get('property');
+        return rule && !Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isUndefined"])(rule.getStyle()[name]);
+      }; // If the style object is empty but the target has a computed value,
+      // that means the style might exist in some other place
+
+
+      if (!Object(underscore__WEBPACK_IMPORTED_MODULE_1__["keys"])(style).length && valueComput && selected) {
+        // Styles of the same target but with a higher rule
+        var parentOpts = {
+          isValid: function isValid(rule) {
+            return hasDetachedStyle(rule);
+          }
+        };
+        targetAltDevice = this._getParentTarget(target, parentOpts);
+
+        if (targetAltDevice) {
+          style = targetAltDevice.getStyle();
+        } else {
+          // The target is a component but the style is in the class rules
+          targetAlt = this._getClassRule();
+          valueTargetAlt = hasDetachedStyle(targetAlt) && targetAlt.getStyle();
+          targetAltDevice = !valueTargetAlt && this._getParentTarget(this._getClassRule({
+            skipAdd: 0
+          }), parentOpts);
+          valueTrgAltDvc = hasDetachedStyle(targetAltDevice) && targetAltDevice.getStyle();
+          style = valueTargetAlt || valueTrgAltDvc || {};
+        }
+      }
+
+      resultValue = style;
       layersObj = layers.getLayersFromStyle(style);
     } else {
-      var value = this.getTargetValue({
+      var valueTrg = this.getTargetValue({
         ignoreDefault: 1
       });
-      if (!value) value = this.getComputedValue();
+      var value = valueTrg; // Try to check if the style is in another rule
+
+      if (!value && valueComput) {
+        // Styles of the same target but with a higher rule
+        targetAltDevice = this._getParentTarget(target);
+
+        if (targetAltDevice) {
+          value = targetAltDevice.getStyle()[property];
+        } else {
+          // Computed value is not always reliable due to the browser's CSSOM parser
+          // here we try to look for the style in class rules
+          targetAlt = this._getClassRule();
+          valueTargetAlt = targetAlt && targetAlt.getStyle()[property];
+          targetAltDevice = !valueTargetAlt && this._getParentTarget(this._getClassRule({
+            skipAdd: 0
+          }));
+          valueTrgAltDvc = targetAltDevice && targetAltDevice.getStyle()[property];
+          value = valueTargetAlt || valueTrgAltDvc || valueComput;
+        }
+      }
+
       value = value == model.getDefaultValue() ? '' : value;
+      resultValue = value;
       layersObj = layers.getLayersFromValue(value);
     }
 
-    var toAdd = model.getLayersFromTarget(target) || layersObj;
-    layers.reset();
-    layers.add(toAdd);
+    var toAdd = model.getLayersFromTarget(target, {
+      resultValue: resultValue,
+      layersObj: layersObj
+    }) || layersObj;
+    layers.reset(null, updateOpts);
+    layers.add(toAdd, updateOpts);
     model.set({
       stackIndex: null
     }, {
@@ -47593,32 +48488,33 @@ __webpack_require__.r(__webpack_exports__);
   },
   getTargetValue: function getTargetValue() {
     var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var result = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_1__["default"].prototype.getTargetValue.call(this, opts);
-    var detached = this.model.attributes.detached; // It might happen that the browser split properties on CSSOM parse
+    var model = this.model;
+    var detached = model.attributes.detached;
+    var target = this.getTarget();
+    var result = _PropertyCompositeView__WEBPACK_IMPORTED_MODULE_2__["default"].prototype.getTargetValue.call(this, opts); // It might happen that the browser split properties on CSSOM parse
 
-    if (Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isUndefined"])(result) && !detached) {
-      result = this.model.getValueFromStyle(this.getTarget().getStyle());
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_1__["isUndefined"])(result) && !detached) {
+      result = model.getValueFromStyle(target.getStyle());
+    } else if (detached) {
+      result = model.getValueFromTarget(target);
     }
 
     return result;
   },
-  onRender: function onRender() {
+  getPropsConfig: function getPropsConfig() {
     var self = this;
-    var model = this.model;
-    var fieldEl = this.el.querySelector('[data-layers-wrapper]');
-
-    var PropertiesView = __webpack_require__(/*! ./PropertiesView */ "./src/style_manager/view/PropertiesView.js").default;
-
-    var propsConfig = {
-      target: this.target,
-      propTarget: this.propTarget,
+    var model = self.model;
+    return {
+      target: self.target,
+      propTarget: self.propTarget,
       // Things to do when a single sub-property is changed
       onChange: function onChange(el, view, opt) {
         var subModel = view.model;
 
         if (model.get('detached')) {
           var subProp = subModel.get('property');
-          var values = self.getLayers().getPropertyValues(subProp);
+          var defVal = subModel.getDefaultValue();
+          var values = self.getLayers().getPropertyValues(subProp, defVal);
           view.updateTargetStyle(values, null, opt);
         } else {
           // Update only if there is an actual update (to avoid changes for computed styles)
@@ -47632,24 +48528,15 @@ __webpack_require__.r(__webpack_exports__);
         }
       }
     };
-    var layers = new _LayersView__WEBPACK_IMPORTED_MODULE_2__["default"]({
-      collection: this.getLayers(),
-      stackModel: model,
-      preview: model.get('preview'),
-      config: this.config,
-      propsConfig: propsConfig
-    }).render().el; // Will use it to propogate changes
+  },
+  onRender: function onRender() {
+    var el = this.el,
+        layers = this.layers,
+        propsView = this.propsView;
+    var fieldEl = el.querySelector('[data-layers-wrapper]');
+    propsView.render(); // Will use it to propogate changes
 
-    new PropertiesView({
-      target: this.target,
-      collection: this.model.get('properties'),
-      stackModel: model,
-      config: this.config,
-      onChange: propsConfig.onChange,
-      propTarget: propsConfig.propTarget
-    }).render(); //model.get('properties')
-
-    fieldEl.appendChild(layers);
+    fieldEl.appendChild(layers.render().el);
   }
 }));
 
@@ -47664,25 +48551,28 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
-/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
-/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+/* harmony import */ var _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/objectWithoutProperties.js");
+/* harmony import */ var _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! backbone */ "./node_modules/backbone/backbone.js");
+/* harmony import */ var backbone__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(backbone__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! underscore */ "./node_modules/underscore/underscore.js");
+/* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var utils_mixins__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! utils/mixins */ "./src/utils/mixins.js");
+
 
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 
 
 
 
 var clearProp = 'data-clear-style';
-/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_1___default.a.View.extend({
+/* harmony default export */ __webpack_exports__["default"] = (backbone__WEBPACK_IMPORTED_MODULE_2___default.a.View.extend({
   template: function template(model) {
     var pfx = this.pfx;
     return "\n      <div class=\"".concat(pfx, "label\">\n        ").concat(this.templateLabel(model), "\n      </div>\n      <div class=\"").concat(this.ppfx, "fields\">\n        ").concat(this.templateInput(model), "\n      </div>\n    ");
@@ -47704,14 +48594,14 @@ var clearProp = 'data-clear-style';
   templateInput: function templateInput(model) {
     return "\n      <div class=\"".concat(this.ppfx, "field\">\n        <input placeholder=\"").concat(model.getDefaultValue(), "\"/>\n      </div>\n    ");
   },
-  events: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default()({
+  events: _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_1___default()({
     change: 'inputValueChanged'
   }, "click [".concat(clearProp, "]"), 'clear'),
   initialize: function initialize() {
     var _this = this;
 
     var o = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    Object(underscore__WEBPACK_IMPORTED_MODULE_2__["bindAll"])(this, 'targetUpdated');
+    Object(underscore__WEBPACK_IMPORTED_MODULE_3__["bindAll"])(this, 'targetUpdated');
     this.config = o.config || {};
     var em = this.config.em;
     this.em = em;
@@ -47847,11 +48737,9 @@ var clearProp = 'data-clear-style';
    * Triggers when the value of element input/s is changed, so have to update
    * the value of the model which will propogate those changes to the target
    */
-  inputValueChanged: function inputValueChanged(e) {
-    e && e.stopPropagation();
-    this.model.setValue(this.getInputValue(), 1, {
-      fromInput: 1
-    });
+  inputValueChanged: function inputValueChanged(ev) {
+    ev && ev.stopPropagation();
+    this.model.setValueFromInput(this.getInputValue());
     this.elementUpdated();
   },
 
@@ -47866,33 +48754,20 @@ var clearProp = 'data-clear-style';
     var parent = this.model.parent;
     parent && value == 'updated' && parent.set('status', value);
   },
-  emitUpdateTarget: Object(underscore__WEBPACK_IMPORTED_MODULE_2__["debounce"])(function () {
+  emitUpdateTarget: Object(underscore__WEBPACK_IMPORTED_MODULE_3__["debounce"])(function () {
     var em = this.config.em;
     em && em.trigger('styleManager:update:target', this.getTarget());
   }),
-
-  /**
-   * Fired when the target is changed
-   * */
-  targetUpdated: function targetUpdated(mod, val) {
-    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    this.emitUpdateTarget();
-
-    if (!this.checkVisibility()) {
-      return;
-    }
-
-    var config = this.config;
-    var em = config.em;
-    var model = this.model;
-    var property = model.get('property');
-    var value = '';
-    var status = '';
+  _getTargetData: function _getTargetData() {
+    var model = this.model,
+        config = this.config;
     var targetValue = this.getTargetValue({
       ignoreDefault: 1
     });
     var defaultValue = model.getDefaultValue();
     var computedValue = this.getComputedValue();
+    var value = '';
+    var status = '';
 
     if (targetValue) {
       value = targetValue;
@@ -47911,24 +48786,54 @@ var clearProp = 'data-clear-style';
       status = '';
     }
 
+    return {
+      value: value,
+      status: status,
+      targetValue: targetValue,
+      defaultValue: defaultValue,
+      computedValue: computedValue
+    };
+  },
+
+  /**
+   * Fired when the target is changed
+   * */
+  targetUpdated: function targetUpdated(mod, val) {
+    var opts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    this.emitUpdateTarget();
+
+    if (!this.checkVisibility()) {
+      return;
+    }
+
+    var config = this.config;
+    var em = config.em;
+    var model = this.model;
+    var property = model.get('property');
+
+    var _this$_getTargetData = this._getTargetData(),
+        status = _this$_getTargetData.status,
+        value = _this$_getTargetData.value,
+        targetData = _babel_runtime_helpers_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0___default()(_this$_getTargetData, ["status", "value"]);
+
+    var data = _objectSpread({
+      status: status,
+      value: value
+    }, targetData);
+
     this.setStatus(status);
     model.setValue(value, 0, _objectSpread({
       fromTarget: 1
     }, opts));
 
     if (em) {
-      var data = {
-        status: status,
-        targetValue: targetValue,
-        defaultValue: defaultValue,
-        computedValue: computedValue,
-        value: value
-      };
       em.trigger('styleManager:change', this, property, value, data);
       em.trigger("styleManager:change:".concat(property), this, value, data);
 
       this._emitUpdate(data);
     }
+
+    return data;
   },
   _emitUpdate: function _emitUpdate() {
     var addData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -48025,7 +48930,7 @@ var clearProp = 'data-clear-style';
     var property = this.model.get('property');
     var notToSkip = avoid.indexOf(property) < 0;
     var value = computed[property];
-    var valueDef = computedDef[Object(utils_mixins__WEBPACK_IMPORTED_MODULE_3__["camelCase"])(property)];
+    var valueDef = computedDef[Object(utils_mixins__WEBPACK_IMPORTED_MODULE_4__["camelCase"])(property)];
     return computed && notToSkip && valueDef !== value && value || '';
   },
 
@@ -48054,11 +48959,14 @@ var clearProp = 'data-clear-style';
 
     if (!opt.fromInput) {
       this.setValue(value);
-    }
+    } // Avoid target update if the changes comes from it
 
-    this.getTargets().forEach(function (target) {
-      return _this3.__updateTarget(target, opt);
-    });
+
+    if (!opt.fromTarget) {
+      this.getTargets().forEach(function (target) {
+        return _this3.__updateTarget(target, opt);
+      });
+    }
   },
   __updateTarget: function __updateTarget(target) {
     var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -48114,6 +49022,13 @@ var clearProp = 'data-clear-style';
       style[property] = value;
     } else {
       delete style[property];
+    } // Forces to trigger the change (for UndoManager)
+
+
+    if (opts.avoidStore) {
+      style.__ = 1;
+    } else {
+      delete style.__;
     }
 
     target.setStyle(style, opts); // Helper is used by `states` like ':hover' to show its preview
@@ -48142,12 +49057,12 @@ var clearProp = 'data-clear-style';
     var stylable = trg.get('stylable'); // Stylable could also be an array indicating with which property
     // the target could be styled
 
-    if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isArray"])(stylable)) {
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(stylable)) {
       stylable = stylable.indexOf(property) >= 0;
     } // Check if the property was signed as unstylable
 
 
-    if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isArray"])(unstylable)) {
+    if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isArray"])(unstylable)) {
       stylable = unstylable.indexOf(property) < 0;
     } // Check if the property is available only if requested
 
@@ -48161,9 +49076,9 @@ var clearProp = 'data-clear-style';
       var properties = Object.keys(requires);
       sectors.each(function (sector) {
         sector.get('properties').each(function (model) {
-          if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(properties, model.id)) {
+          if (Object(underscore__WEBPACK_IMPORTED_MODULE_3__["includes"])(properties, model.id)) {
             var values = requires[model.id];
-            stylable = stylable && Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(values, model.get('value'));
+            stylable = stylable && Object(underscore__WEBPACK_IMPORTED_MODULE_3__["includes"])(values, model.get('value'));
           }
         });
       });
@@ -48176,8 +49091,8 @@ var clearProp = 'data-clear-style';
 
       if (parentEl) {
         var styles = window.getComputedStyle(parentEl);
-        Object(underscore__WEBPACK_IMPORTED_MODULE_2__["each"])(requiresParent, function (values, property) {
-          stylable = stylable && styles[property] && Object(underscore__WEBPACK_IMPORTED_MODULE_2__["includes"])(values, styles[property]);
+        Object(underscore__WEBPACK_IMPORTED_MODULE_3__["each"])(requiresParent, function (values, property) {
+          stylable = stylable && styles[property] && Object(underscore__WEBPACK_IMPORTED_MODULE_3__["includes"])(values, styles[property]);
         });
       } else {
         stylable = false;
@@ -48222,7 +49137,7 @@ var clearProp = 'data-clear-style';
    * */
   setValue: function setValue(value) {
     var model = this.model;
-    var val = Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isUndefined"])(value) ? model.getDefaultValue() : value;
+    var val = Object(underscore__WEBPACK_IMPORTED_MODULE_3__["isUndefined"])(value) ? model.getDefaultValue() : value;
     var input = this.getInputEl();
     input && (input.value = val);
   },
@@ -48270,7 +49185,7 @@ var clearProp = 'data-clear-style';
     var onRender = this.onRender && this.onRender.bind(this);
     onRender && onRender();
     this.setValue(model.get('value'), {
-      targetUpdate: 1
+      fromTarget: 1
     });
   }
 }));
@@ -48466,7 +49381,7 @@ var helperCls = 'hc-state';
     var enable = arguments.length > 1 ? arguments[1] : undefined;
     targets.forEach(function (trg) {
       var el = trg.getEl();
-      el && el.classList[enable ? 'add' : 'remove'](helperCls);
+      el && el.classList && el.classList[enable ? 'add' : 'remove'](helperCls);
     });
   },
 
@@ -49735,7 +50650,9 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
   var um;
   var config;
   var beforeCache;
-  var configDef = {};
+  var configDef = {
+    maximumStackLength: 500
+  };
   return {
     name: 'UndoManager',
 
@@ -49895,7 +50812,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * um.undo();
      */
     undo: function undo() {
-      !em.isEditing() && um.undo(1);
+      var all = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      !em.isEditing() && um.undo(all);
       return this;
     },
 
@@ -49917,7 +50835,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      * um.redo();
      */
     redo: function redo() {
-      !em.isEditing() && um.redo(1);
+      var all = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+      !em.isEditing() && um.redo(all);
       return this;
     },
 
@@ -49961,6 +50880,33 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
      */
     getStack: function getStack() {
       return um.stack;
+    },
+
+    /**
+     * Get grouped undo manager stack.
+     * The difference between `getStack` is when you do multiple operations at a time,
+     * like appending multiple components:
+     * `editor.getWrapper().append(`<div>C1</div><div>C2</div>`);`
+     * `getStack` will return a collection length of 2.
+     *  `getStackGroup` instead will group them as a single operation (the first
+     * inserted component will be returned in the list) by returning an array length of 1.
+     * @return {Array}
+     */
+    getStackGroup: function getStackGroup() {
+      var result = [];
+      var inserted = [];
+      this.getStack().forEach(function (item) {
+        var index = item.get('magicFusionIndex');
+
+        if (inserted.indexOf(index) < 0) {
+          inserted.push(index);
+          result.push(item);
+        }
+      });
+      return result;
+    },
+    getPointer: function getPointer() {
+      return this.getStack().pointer;
     },
 
     /**
@@ -50536,7 +51482,7 @@ __webpack_require__.r(__webpack_exports__);
         return;
       }
 
-      boundElement.trigger(event, [get()]);
+      boundElement.trigger('beforeShow.spectrum', [get()]);
 
       if (callbacks.beforeShow(get()) === false || event.isDefaultPrevented()) {
         return;
@@ -50913,19 +51859,7 @@ __webpack_require__.r(__webpack_exports__);
     var viewHeight = cH + scT;
     var offset = input.offset();
     offset.top += inputHeight;
-    var offsetParent = $(".gjs-editor").offsetParent();
-    var leftCorrection = 0;
-    var topCorrection = 0;
-
-    if (offsetParent.length > 0) {
-      var offsetCorrection = offsetParent.offset();
-      leftCorrection = offsetCorrection.left;
-      topCorrection = offsetCorrection.top;
-    }
-
-    offset.top -= topCorrection;
-    offset.left -= leftCorrection;
-    offset.left -= dpWidth;
+    offset.left -= Math.min(offset.left, offset.left + dpWidth > viewWidth && viewWidth > dpWidth ? Math.abs(offset.left + dpWidth - viewWidth) : 0);
     offset.top -= Math.min(offset.top, offset.top + dpHeight > viewHeight && viewHeight > dpHeight ? Math.abs(dpHeight + inputHeight - extraY) : extraY);
     return offset;
   }
@@ -54613,13 +55547,11 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
         h = 0,
         un = 'px',
         margI = 5,
-        brdCol = '#62c462',
-        brd = 3,
         method = pos.method;
-    var elDim = dims[pos.index];
-    plh.style.borderColor = 'transparent ' + brdCol;
-    plh.style.borderWidth = brd + un + ' ' + (brd + 2) + un;
-    plh.style.margin = '-' + brd + 'px 0 0';
+    var elDim = dims[pos.index]; // Placeholder orientation
+
+    plh.classList.remove('vertical');
+    plh.classList.add('horizontal');
 
     if (elDim) {
       // If it's not in flow (like 'float' element)
@@ -54628,9 +55560,8 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
         h = elDim[2] - marg * 2 + un;
         t = elDim[0] + marg;
         l = method == 'before' ? elDim[1] - marg : elDim[1] + elDim[3] - marg;
-        plh.style.borderColor = brdCol + ' transparent';
-        plh.style.borderWidth = brd + 2 + un + ' ' + brd + un;
-        plh.style.margin = '0 0 0 -' + brd + 'px';
+        plh.classList.remove('horizontal');
+        plh.classList.add('vertical');
       } else {
         w = elDim[3] + un;
         h = 'auto';
@@ -54708,6 +55639,8 @@ var $ = backbone__WEBPACK_IMPORTED_MODULE_1___default.a.$;
     this.selectTargetModel();
     this.toggleSortCursor();
     this.toMove = null;
+    this.eventMove = 0;
+    this.dropModel = null;
 
     if (Object(underscore__WEBPACK_IMPORTED_MODULE_2__["isFunction"])(onEndMove)) {
       var data = {
@@ -54969,200 +55902,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var underscore__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(underscore__WEBPACK_IMPORTED_MODULE_0__);
 
 /* harmony default export */ __webpack_exports__["default"] = (function (_ref) {
-  var $ = _ref.$,
-      Backbone = _ref.Backbone;
-
-  if (Backbone) {
-    var ViewProt = Backbone.View.prototype;
-    var eventNsMap = {};
-    ViewProt.eventNsMap = eventNsMap;
-
-    ViewProt.delegate = function (eventName, selector, listener) {
-      var vid = '.delegateEvents' + this.cid;
-      this.$el.on(eventName, selector, listener); //return this;
-
-      var eventMap = eventNsMap[vid];
-
-      if (!eventMap) {
-        eventMap = [];
-        eventNsMap[vid] = eventMap;
-      }
-
-      eventMap.push({
-        eventName: eventName,
-        selector: selector,
-        listener: listener
-      });
-      return this;
-    };
-
-    ViewProt.undelegateEvents = function () {
-      var _this = this;
-
-      var vid = '.delegateEvents' + this.cid;
-
-      if (this.$el) {
-        //this.$el.off(); return this;
-        var eventMap = eventNsMap[vid];
-
-        if (eventMap) {
-          eventMap.forEach(function (_ref2) {
-            var eventName = _ref2.eventName,
-                selector = _ref2.selector,
-                listener = _ref2.listener;
-
-            _this.$el.off(eventName);
-          });
-        }
-      }
-
-      return this;
-    };
-
-    ViewProt.undelegate = function (ev, sel, list) {
-      var _this2 = this;
-
-      var vid = '.delegateEvents' + this.cid; //this.$el.off(ev, sel, list); return this;
-
-      var eventMap = eventNsMap[vid];
-
-      if (eventMap) {
-        eventMap.forEach(function (_ref3) {
-          var eventName = _ref3.eventName,
-              selector = _ref3.selector,
-              listener = _ref3.listener;
-
-          if (eventName == ev && selector == sel) {
-            _this2.$el.off(eventName);
-          }
-        });
-      }
-
-      return this;
-    };
-  }
+  var $ = _ref.$;
 
   if ($ && $.prototype.constructor.name !== 'jQuery') {
-    var fn = $.fn;
-
-    var splitNamespace = function splitNamespace(name) {
-      var namespaceArray = name.split('.');
-      return name.indexOf('.') !== 0 ? [namespaceArray[0], namespaceArray.slice(1)] : [null, namespaceArray];
-    };
-
-    var on = $.prototype.on;
-    var off = $.prototype.off;
-    var trigger = $.prototype.trigger;
-    var offset = $.prototype.offset;
-
-    var getEvents = function getEvents(eventName) {
-      return eventName.split(/[,\s]+/g);
-    };
-
-    var getNamespaces = function getNamespaces(eventName) {
-      return eventName.split('.');
-    };
-
-    fn.on = function (eventName, delegate, callback, runOnce) {
-      var _this3 = this;
-
-      if (typeof eventName == 'string') {
-        var events = getEvents(eventName);
-
-        if (events.length == 1) {
-          eventName = events[0];
-          var namespaces = getNamespaces(eventName);
-
-          if (eventName.indexOf('.') !== 0) {
-            eventName = namespaces[0];
-          }
-
-          namespaces = namespaces.slice(1);
-
-          if (namespaces.length) {
-            //console.log('Found event with namespaces', namespaces, eventName, delegate, this);
-            var cashNs = this.data('_cashNs') || []; // cashNs[namespace]
-
-            this.data('_cashNs', namespaces); // for each ns need to store '.store' => eventName, delegate, callback
-          }
-
-          return on.call(this, eventName, delegate, callback, runOnce);
-        } else {
-          events.forEach(function (eventName) {
-            return _this3.on(eventName, delegate, callback, runOnce);
-          });
-          return this;
-        }
-      } else {
-        return on.call(this, eventName, delegate, callback, runOnce);
-      }
-    };
-
-    fn.off = function (eventName, callback) {
-      var _this4 = this;
-
-      if (typeof eventName == 'string') {
-        var events = getEvents(eventName);
-
-        if (events.length == 1) {
-          eventName = events[0];
-          var namespaces = getNamespaces(eventName);
-
-          if (eventName.indexOf('.') !== 0) {
-            eventName = namespaces[0];
-          }
-
-          namespaces = namespaces.slice(1);
-
-          if (namespaces.length) {// Have to off only with the same namespace
-          }
-
-          return off.call(this, eventName, callback);
-        } else {
-          events.forEach(function (eventName) {
-            return _this4.off(eventName, callback);
-          });
-          return this;
-        }
-      } else {
-        return off.call(this, eventName, callback);
-      }
-    };
-
-    fn.trigger = function (eventName, data) {
-      var _this5 = this;
-
-      if (eventName instanceof $.Event) {
-        return this.trigger(eventName.type, data);
-      }
-
-      if (typeof eventName == 'string') {
-        var events = getEvents(eventName);
-
-        if (events.length == 1) {
-          eventName = events[0];
-          var namespaces = getNamespaces(eventName);
-
-          if (eventName.indexOf('.') !== 0) {
-            eventName = namespaces[0];
-          }
-
-          namespaces = namespaces.slice(1);
-
-          if (namespaces.length) {// have to trigger with same namespaces and eventName
-          }
-
-          return trigger.call(this, eventName, data);
-        } else {
-          events.forEach(function (eventName) {
-            return _this5.trigger(eventName, data);
-          });
-          return this;
-        }
-      } else {
-        return trigger.call(this, eventName, data);
-      }
-    };
+    var fn = $.fn; // Additional helpers
 
     fn.hide = function () {
       return this.css('display', 'none');
@@ -55177,35 +55920,37 @@ __webpack_require__.r(__webpack_exports__);
       el && el.focus();
       return this;
     }; // For SVGs in IE
+    // (fn.removeClass = function(c) {
+    //   if (!arguments.length) {
+    //     return this.attr('class', '');
+    //   }
+    //   const classes = isString(c) && c.match(/\S+/g);
+    //   return classes
+    //     ? this.each(function(el) {
+    //         each(classes, function(c) {
+    //           if (el.classList) {
+    //             el.classList.remove(c);
+    //           } else {
+    //             const val = el.className;
+    //             const bval = el.className.baseVal;
+    //             if (!isUndefined(bval)) {
+    //               val.baseVal = bval.replace(c, '');
+    //             } else {
+    //               el.className = val.replace(c, '');
+    //             }
+    //           }
+    //         });
+    //       })
+    //     : this;
+    // }),
+    //   (fn.remove = function() {
+    //     return this.each(node => {
+    //       return node.parentNode && node.parentNode.removeChild(node);
+    //     });
+    //   }),
+    // For spectrum compatibility
 
 
-    fn.removeClass = function (c) {
-      if (!arguments.length) {
-        return this.attr('class', '');
-      }
-
-      var classes = Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isString"])(c) && c.match(/\S+/g);
-      return classes ? this.each(function (el) {
-        Object(underscore__WEBPACK_IMPORTED_MODULE_0__["each"])(classes, function (c) {
-          if (el.classList) {
-            el.classList.remove(c);
-          } else {
-            var val = el.className;
-            var bval = el.className.baseVal;
-
-            if (!Object(underscore__WEBPACK_IMPORTED_MODULE_0__["isUndefined"])(bval)) {
-              val.baseVal = bval.replace(c, '');
-            } else {
-              el.className = val.replace(c, '');
-            }
-          }
-        });
-      }) : this;
-    }, fn.remove = function () {
-      return this.each(function (node) {
-        return node.parentNode && node.parentNode.removeChild(node);
-      });
-    }, // For spectrum compatibility
     fn.bind = function (ev, h) {
       return this.on(ev, h);
     };
@@ -55258,6 +56003,8 @@ __webpack_require__.r(__webpack_exports__);
       var win = el instanceof Window ? el : null;
       return win ? win.pageYOffset : el.scrollTop || 0;
     };
+
+    var offset = $.prototype.offset;
 
     fn.offset = function (coords) {
       var top, left;
@@ -55447,7 +56194,7 @@ var appendStyles = function appendStyles(styles) {
   if (stls.length) {
     var href = stls.shift();
 
-    if (!opts.unique || !document.querySelector("link[href=\"".concat(href, "\"]"))) {
+    if (href && (!opts.unique || !document.querySelector("link[href=\"".concat(href, "\"]")))) {
       var _document = document,
           head = _document.head;
       var link = document.createElement('link');

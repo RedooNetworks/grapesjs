@@ -84,15 +84,18 @@ export default {
     methods[method](window, 'resize', this.onFrameUpdated);
     em[method]('component:toggled', this.onSelect, this);
     em[method]('change:componentHovered', this.onHovered, this);
-    em[method]('component:update', this.onComponentUpdate, this);
-    em[method]('component:resize', this.updateGlobalPos, this);
+    em[method](
+      'component:resize component:styleUpdate component:input',
+      this.updateGlobalPos,
+      this
+    );
     em[method]('change:canvasOffset', this.updateAttached, this);
     em[method]('frame:updated', this.onFrameUpdated, this);
     em.get('Canvas')
       .getFrames()
       .forEach(frame => {
         const { view } = frame;
-        trigger(view.getWindow(), view.getBody());
+        view && trigger(view.getWindow(), view.getBody());
       });
   },
 
@@ -173,15 +176,6 @@ export default {
     this.updateToolsGlobal();
     // This will hide some elements from the select component
     this.updateToolsLocal(result);
-
-    // if (el) {
-    //   this.showFixedElementOffset(el);
-    //   this.hideElementOffset();
-    //   this.hideHighlighter();
-    //   this.initResize(el);
-    // } else {
-    //   this.editor.stopCommand('resize');
-    // }
   }),
 
   updateGlobalPos() {
@@ -210,15 +204,16 @@ export default {
     this.currentDoc = null;
     this.em.setHovered(0);
     this.canvas.getFrames().forEach(frame => {
-      const el = frame.view.getToolsEl();
-      this.toggleToolsEl(0, 0, { el });
+      const { view } = frame;
+      const el = view && view.getToolsEl();
+      el && this.toggleToolsEl(0, 0, { el });
     });
   },
 
   toggleToolsEl(on, view, opts = {}) {
     const el = opts.el || this.canvas.getToolsEl(view);
-    el.style.opacity = on ? 1 : 0;
-    return el;
+    el && (el.style.opacity = on ? 1 : 0);
+    return el || {};
   },
 
   /**
@@ -735,10 +730,6 @@ export default {
     this.updateToolsGlobal();
   }),
 
-  onComponentUpdate: debounce(function() {
-    this.onSelect();
-  }),
-
   /**
    * Returns element's data info
    * @param {HTMLElement} el
@@ -790,5 +781,6 @@ export default {
     this.onOut();
     this.toggleToolsEl();
     editor && editor.stopCommand('resize');
+    this.editor = 0;
   }
 };
